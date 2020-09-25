@@ -3,12 +3,30 @@
 *.ali
 *.cswi
 *.pyc
+*.ci
 *-loc.xml
 gnatinspect.db
 b__*.ad[bs]
 .#*
-obj
 install
+**/arm-eabi
+test/main
+test/main.s
+gpsauto.cgpr
+*.stderr
+*.stdout
+*.db*
+*.bexch
+main
+main.s
+map.txt
+
+cortex-ar/zynq7000/ravenscar-full/obj/
+
+# binary
+scenari/scenario_0/obj/scenario_0
+scenari/scenario_1/obj/scenario_1
+scenari/scenario_*/obj/resident_sw
 
 *.a
 
