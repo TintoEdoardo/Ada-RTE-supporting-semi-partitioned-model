@@ -6,6 +6,7 @@ with System.BB.Time;
 use System.BB.Time;
 with System.Task_Primitives.Operations;
 pragma Warnings (On);
+with CPU_Budget_Monitor;
 
 package body Periodic_Tasks is
 
@@ -22,6 +23,8 @@ package body Periodic_Tasks is
          Ada.Text_IO.Put_Line ("Budget correctly setted");
       end if;
 
+      Initialization_Done.Inform_Monitor (System.BB.Time.Microseconds (Budget));
+
       loop
          delay until Next_Period;
          Next_Period := Next_Period + Period_To_Add;
@@ -35,6 +38,17 @@ package body Periodic_Tasks is
          Ada.Text_IO.Put_Line ("Init");
       end loop;
    end Init;
+   
+   protected body Initialization_Done is
+      procedure Inform_Monitor (Budget : System.BB.Time.Time_Span)is
+      begin
+         CPU_Budget_Monitor.Start_Monitor (Budget);
+      end Inform_Monitor;
+   end Initialization_Done;
+
+   ------------------------
+   --  Tasks Allocation  --
+   ------------------------
 
    P1 : Periodic_First_CPU (Pri => 10, Budget => 300_000, Period => 1_000_000);
    
