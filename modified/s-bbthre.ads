@@ -179,6 +179,11 @@ package System.BB.Threads is
       pragma Volatile (Active_Release_Jitter);
 
       First_Execution : Boolean := False;
+
+      --  Additions for MCS by Xu & Burns
+
+      Budget : System.BB.Time.Time_Span;
+
    end record;
 
    function Get_Affinity
@@ -354,5 +359,12 @@ package System.BB.Threads is
    function Get_ATCB return System.Address;
    pragma Inline (Get_ATCB);
    --  Returns the ATCB of the currently executing thread
+
+   -----------------------
+   -- Additions for MCS --
+   -----------------------
+
+   procedure Set_Budget
+       (Budget : System.BB.Time.Time_Span);
 
 end System.BB.Threads;

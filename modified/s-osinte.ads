@@ -223,4 +223,16 @@ package System.OS_Interface is
      renames System.BB.Board_Support.Multiprocessors.Current_CPU;
    --  Return the id of the current CPU
 
+   -----------------------
+   -- Additions for MCS --
+   -----------------------
+
+   ----------------
+   -- Set_Budget --
+   ----------------
+
+   procedure Set_Budget
+       (Budget : System.BB.Time.Time_Span)
+        renames System.BB.Threads.Set_Budget;
+
 end System.OS_Interface;

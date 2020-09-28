@@ -4,10 +4,9 @@ Questo scenario, costruito a partire dallo [scenario 1](../scenario_1/scenario_1
 
 Bisogna:
 
-- [ ] rappresentare il budget di un task. 
+- [x] rappresentare il budget di un task. 
   - [X] l'applicazione deve poterlo esprimere in microsecondi.
   - [X] deve essere compreso nella specifica di un task.
-  - [ ] deve essere compreso nel descrittore del task.
   ```
     task type Periodic_First_CPU
      (Pri    : System.Priority;
@@ -17,7 +16,7 @@ Bisogna:
       pragma Priority (Pri);
    end Periodic_First_CPU;
   ```
-- [ ] impostarlo prima dell'esecuzione del corpo del task, ovvero all'interno della sua *regione dichiarativa*.
+- [X] ~~impostarlo prima dell'esecuzione del corpo del task, ovvero all'interno della sua *regione dichiarativa*.~~ Il compilatore non permette di invocare procedure di questo tipo nella zona dichiarativa. Ergo, tutte le operazioni di questo tipo devono essere fatte appena dopo il `begin` del task. Servirà in futuro un meccanismo che forzi i task ad iniziare ad eseguire il loro `loop` nello stesso istante.
   - questo implica che il descrittore di quel task dovrà contenere un campo relativo al suo budget. 
 - [ ] forzare il task ad eseguire per oltre il suo budget, così da ricreare un `CPU_Budget_Exceeded`.
 - [ ] al verificarsi di un `CPU_Budget_Exceeded`, deve essere invocato un apposito gestore (*handler* `CPU_BE_Detected`) che scrive sulla porta seriale (UART) "CPU_Budget_Exceeded detected". Tale handler **deve** eseguire sullo stesso core sul quale il `CPU_Budget_Exceeded` è stato osservato (per ora il core0). Questo implica che l'handler deve prendere il possesso del core a discapito del task che ha ecceduto il suo budget. Siano:

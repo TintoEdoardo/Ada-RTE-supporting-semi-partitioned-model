@@ -460,4 +460,17 @@ package body System.Task_Primitives.Operations is
       return System.OS_Interface.Current_Interrupt = No_Interrupt;
    end Is_Task_Context;
 
+   ----------------
+   -- Set_Budget --
+   ----------------
+
+   procedure Set_Budget
+       (T : ST.Task_Id;
+       Budget : System.BB.Time.Time_Span) is
+   begin
+      pragma Assert (T = Self);
+
+      System.OS_Interface.Set_Budget (Budget);
+   end Set_Budget;
+
 end System.Task_Primitives.Operations;

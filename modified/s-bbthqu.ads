@@ -402,4 +402,12 @@ package System.BB.Threads.Queues is
    --  Return True iff thread list headed by HEAD is correctly ordered by
    --  priority.
 
+   -----------------------
+   -- Additions for MCS --
+   -----------------------
+
+   procedure Set_Budget
+     (Thread : Thread_Id;
+      Budget : System.BB.Time.Time_Span);
+
 end System.BB.Threads.Queues;

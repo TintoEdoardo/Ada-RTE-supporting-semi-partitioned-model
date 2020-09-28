@@ -1,11 +1,10 @@
 with System;
-with Ada.Real_Time;
 
 package Periodic_Tasks is
 
   task type Periodic_First_CPU
    (Pri    : System.Priority;
-    Budget : Ada.Real_Time.Microseconds
+    Budget : Natural;
     Period : Positive) with CPU => 1
   is
     pragma Priority (Pri);

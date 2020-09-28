@@ -807,4 +807,15 @@ package body System.BB.Threads.Queues is
       end loop;
    end Queue_Ordered;
 
+   ------------------
+   --  Set_Budget  --
+   ------------------
+
+   procedure Set_Budget
+     (Thread : Thread_Id;
+      Budget : System.BB.Time.Time_Span) is
+   begin
+      Thread.Budget := Budget;
+   end Set_Budget;
+
 end System.BB.Threads.Queues;

@@ -528,4 +528,19 @@ package body System.BB.Threads is
       Protection.Leave_Kernel;
    end Wakeup;
 
+   --------------------------
+   --  Set_LO_Crit_Budget  --
+   --------------------------
+
+   procedure Set_Budget
+       (Budget : System.BB.Time.Time_Span) is
+   begin
+      Protection.Enter_Kernel;
+
+      Queues.Set_Budget
+               (Queues.Running_Thread, Budget);
+
+      Protection.Leave_Kernel;
+   end Set_Budget;
+
 end System.BB.Threads;

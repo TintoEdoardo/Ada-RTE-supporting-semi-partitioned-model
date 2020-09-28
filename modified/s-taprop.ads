@@ -134,4 +134,12 @@ package System.Task_Primitives.Operations is
    --  This function returns True if the current execution is in the context
    --  of a task, and False if it is an interrupt context.
 
+   -----------------------
+   -- Additions for MCS --
+   -----------------------
+
+   procedure Set_Budget
+       (T : ST.Task_Id;
+       Budget : System.BB.Time.Time_Span);
+
 end System.Task_Primitives.Operations;
