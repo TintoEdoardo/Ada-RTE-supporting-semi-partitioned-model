@@ -5,9 +5,8 @@ Questo scenario, costruito a partire dallo [scenario 1](../scenario_1/scenario_1
 Bisogna:
 
 - [ ] rappresentare il budget di un task. 
-  - [X] l'applicazione deve poterlo esprimere in microsecondi.
-  - [X] deve essere compreso nella specifica di un task.
-  - [ ] deve essere compreso nel descrittore del task.
+  - [ ] deve essere espresso in microsecondi.
+  - [ ] deve essere compreso nella specifica di un task.
   ```
     task type Periodic_First_CPU
      (Pri    : System.Priority;

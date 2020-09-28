@@ -8,4 +8,3 @@ gprinstall -P ravenscar_full_zynq7000.gpr -p -f -XPREFIX=$PWD/runtime/arm-eabi/l
 [ -d "./runtime/arm-eabi/lib/gnat/ravenscar_full_zynq7000/gnat/ravenscar_full_zynq7000" ] && mv ./runtime/arm-eabi/lib/gnat/ravenscar_full_zynq7000/gnat/ravenscar_full_zynq7000/* ./runtime/arm-eabi/lib/gnat/ravenscar_full_zynq7000/gnat/;
 
 rm -r ./runtime/arm-eabi/lib/gnat/ravenscar_full_zynq7000/adalib/ravenscar_full_zynq7000 ./runtime/arm-eabi/lib/gnat/ravenscar_full_zynq7000/gnarl/ravenscar_full_zynq7000 ./runtime/arm-eabi/lib/gnat/ravenscar_full_zynq7000/gnat/ravenscar_full_zynq7000
-mkdir test/obj -p
