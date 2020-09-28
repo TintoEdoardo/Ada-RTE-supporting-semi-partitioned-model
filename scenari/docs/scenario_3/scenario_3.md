@@ -1,5 +1,7 @@
 # Scenario 3
 
+Torna all'[indice](../index.md)
+
 Questo scenario, costruito a partire dallo [scenario 2](../scenario_2/scenario_2.md), si occupa di:
 - aggiungere una casistica nella quale si deve disarmare l'evento temporale associato al task che sta perdendo/cedendo il core.
 - formulare una prima (ma non completa) serie di azioni da effettuare in caso di rilevazione di un `CPU_Budget_Exceeded`.
@@ -68,3 +70,4 @@ end BE_First_CPU;
     - per ora, un task inserito in questa coda, non viene mai più re-inserito nella coda dei pronti.
     - la coda dei rimossi deve essere strutturalmente il più simile possibile a quella dei pronti e dei sospesi. In questo modo, sarà più probabile riuscire a riutilizzare le operazioni sulle code che sono già presenti nel runtime Ravenscar.
 
+Torna all'[indice](../index.md)
