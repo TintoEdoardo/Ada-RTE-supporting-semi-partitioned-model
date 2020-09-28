@@ -43,6 +43,7 @@ with System.BB.Threads.Queues;
 with System.BB.Timing_Events;
 with Ada.Unchecked_Conversion;
 with System.OS_Interface;
+with CPU_Budget_Monitor;
 
 package body System.BB.Time is
 
@@ -130,11 +131,17 @@ package body System.BB.Time is
       Response_Jitter   : Time_Span;
       Temp1             : Time_Span;
       Temp2             : Time;
+      Cancelled         : Boolean;
 
    begin
       --  First mask interrupts, this is necessary to handle thread queues
 
       Protection.Enter_Kernel;
+
+      --  Stop budget monitoring
+      pragma Warnings (Off);
+      CPU_Budget_Monitor.Clear_Monitor (Cancelled);
+      pragma Warnings (On);
 
       --  Read the clock once the interrupts are masked to avoid being
       --  interrupted before the alarm is set.

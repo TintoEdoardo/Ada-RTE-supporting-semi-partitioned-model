@@ -6,7 +6,9 @@ with System.BB.Time;
 use System.BB.Time;
 with System.Task_Primitives.Operations;
 pragma Warnings (On);
+
 with CPU_Budget_Monitor;
+with Production_Workload;
 
 package body Periodic_Tasks is
 
@@ -27,6 +29,7 @@ package body Periodic_Tasks is
 
       loop
          delay until Next_Period;
+         Production_Workload.Small_Whetstone (Workload);
          Next_Period := Next_Period + Period_To_Add;
       end loop;
 
@@ -38,7 +41,7 @@ package body Periodic_Tasks is
          Ada.Text_IO.Put_Line ("Init");
       end loop;
    end Init;
-   
+
    protected body Initialization_Done is
       procedure Inform_Monitor (Budget : System.BB.Time.Time_Span)is
       begin
@@ -50,6 +53,6 @@ package body Periodic_Tasks is
    --  Tasks Allocation  --
    ------------------------
 
-   P1 : Periodic_First_CPU (Pri => 10, Budget => 300_000, Period => 1_000_000);
-   
+   P1 : Periodic_First_CPU (Pri => 10, Budget => 5_000_000, Workload => 1_000_000, Period => 1_000_000);
+
 end Periodic_Tasks;

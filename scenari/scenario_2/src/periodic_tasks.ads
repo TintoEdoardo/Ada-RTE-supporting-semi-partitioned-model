@@ -7,9 +7,10 @@ pragma Warnings (On);
 package Periodic_Tasks is
 
   task type Periodic_First_CPU
-   (Pri    : System.Priority;
-    Budget : Natural;
-    Period : Positive) with CPU => 1
+   (Pri      : System.Priority;
+    Budget   : Natural;
+    Workload : Positive;
+    Period   : Positive) with CPU => 1
   is
     pragma Priority (Pri);
   end Periodic_First_CPU;

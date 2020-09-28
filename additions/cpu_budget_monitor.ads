@@ -6,6 +6,7 @@ with Real_Time_No_Elab.Timing_Events_No_Elab;
 use Real_Time_No_Elab.Timing_Events_No_Elab;
 pragma Elaborate (Real_Time_No_Elab.Timing_Events_No_Elab);
 
+with System.Multiprocessors;
 with System.BB.Threads;
 with System.BB.Time;
 with System;
@@ -18,7 +19,8 @@ package CPU_Budget_Monitor is
             Id : System.BB.Threads.Thread_Id; --  @todo it seems useless...
         end record;
 
-   BE_Happened : array (1 .. 1) of CPU_Budget_Exceeded;
+   BE_Happened : array (System.Multiprocessors.CPU)
+                            of CPU_Budget_Exceeded;
     --  A timing event for each CPU.
     --  BE means "Budget Exceeded".
 
