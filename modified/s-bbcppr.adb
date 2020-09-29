@@ -180,7 +180,7 @@ package body System.BB.CPU_Primitives is
       --  Watchout: in our experiments IRQ handler is called in just one case:
       --    1. when a CPU_Budget_Exceeded has expired.
       --  In a real system, this could not be true.
-      CPU_Budget_Monitor.Clear_Monitor (Cancelled);
+      --  CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
       --  Force trap if handler uses floating point
 

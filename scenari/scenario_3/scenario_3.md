@@ -25,21 +25,21 @@ Di seguito, si tratterà il punto $2$.
   end Periodic_Not_Monitored;
   ``` 
 - [X] per questo scenario, un task di tipo `Periodic_Not_Monitored` non deve occupare per troppo tempo la CPU. Il suo corpo sarà come quello di tasks di tipo `Periodic_First_CPU` definito nello **[scenario 0](../scenario_0/scenario_0.md)**
-- [ ] far sì che tasks di questo tipo non siano effettivamente monitorati in questo senso. Questo vuol dire che quando questi tasks eseguono, **non esiste** alcun evento temporale, per quel core, che sia armato.
-  - [ ] ogni qual volta che un task di tipo `Periodic_Not_Monitored` prende il possesso del core, tutti gli eventi temporali (ce ne sarà solo uno in realtà) armati su quest'ultimo devono essere **disarmati**. 
-- [ ] istanziare un task `PNM_1` di tipo `Periodic_Not_Monitored` (oltre a `P1`) tale che $Priority(PNM_1) > Priority(P1)$
+- [X] far sì che tasks di questo tipo non siano effettivamente monitorati in questo senso. Questo vuol dire che quando questi tasks eseguono, **non esiste** alcun evento temporale, per quel core, che sia armato.
+  - [X] ogni qual volta che un task di tipo `Periodic_Not_Monitored` prende il possesso del core, tutti gli eventi temporali (ce ne sarà solo uno in realtà) armati su quest'ultimo devono essere **disarmati**. 
+- [X] istanziare un task `PNM_1` di tipo `Periodic_Not_Monitored` (oltre a `P1`) tale che $Priority(PNM_1) > Priority(P1)$
 
 ```
   P1    : Periodic_First_CPU (Pri => 10, Budget => 200_000, Period => 400_000);
   PNM_1 : Periodic_Not_Monitored (Pri => 11, Period => 1_200_000);
 ```
-- [ ] il corpo di `P1` non dovrà mai causare effettivamente un `CPU_Budget_Exceeded`, quindi il suo tempo di esecuzione deve essere al di sotto di `200_000` microsecondi.
-- [ ] almeno un rilascio di `PNM_1` deve avvenire nel mentre che `P1` sta eseguendo. In seguito:
-  - [ ] l'evento temporale legato all'eventuale `CPU_Budget_Exceeded` di `P1` deve essere **disarmato**
-  - [ ] context switch da `P1` a `PNM_1`;
-  - [ ] nessun evento temporale relativo a `PNM_1` deve essere armato, in quanto il suo budget è $0$. 
-  - [ ] al termine dell'esecuzione di `PNM_1`, `P1` riprende l'esecuzione => context switch da `PNM_1` a `P1`.
-  - [ ] al termine del context switch, un nuovo evento temporale, relativo all'eventuale `CPU_Budget_Exceeded` di `P1`, deve essere armato con scadenza all'istante temporale assoluto `Now + Budget`.
+- [X] il corpo di `P1` non dovrà mai causare effettivamente un `CPU_Budget_Exceeded`, quindi il suo tempo di esecuzione deve essere al di sotto di `200_000` microsecondi.
+- [X] almeno un rilascio di `PNM_1` deve avvenire nel mentre che `P1` sta eseguendo. In seguito:
+  - [X] l'evento temporale legato all'eventuale `CPU_Budget_Exceeded` di `P1` deve essere **disarmato**
+  - [X] context switch da `P1` a `PNM_1`;
+  - [X] nessun evento temporale relativo a `PNM_1` deve essere armato, in quanto il suo budget è $0$. 
+  - [X] al termine dell'esecuzione di `PNM_1`, `P1` riprende l'esecuzione => context switch da `PNM_1` a `P1`.
+  - [X] al termine del context switch, un nuovo evento temporale, relativo all'eventuale `CPU_Budget_Exceeded` di `P1`, deve essere armato con scadenza all'istante temporale assoluto `Now + Budget`.
 
 ## Una preliminare serie di azioni in risposta ad un `CPU_Budget_Exceeded`
 In questo sotto-scenario, i task `P1` e `PNM_1` **non** devono essere istanziati.

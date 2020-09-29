@@ -23,19 +23,18 @@ package body Periodic_Tasks is
       Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Period);
    begin
       STPO.Set_Budget (STPO.Self, System.BB.Time.Microseconds (Budget));
-      Next_Period := Ada.Real_Time.Clock + Period_To_Add;
 
       if System.BB.Time.Microseconds (Budget) = STPO.Get_Thread_Id (STPO.Self).Budget then
          Ada.Text_IO.Put_Line ("Budget correctly setted");
       end if;
 
+      Next_Period := Ada.Real_Time.Clock + Period_To_Add;
+
       Initialization_Done.Inform_Monitor (System.BB.Time.Microseconds (Budget));
 
       loop
-         Production_Workload.Small_Whetstone (500_000);
          delay until Next_Period;
          Production_Workload.Small_Whetstone (Workload);
-         Production_Workload.Small_Whetstone (500_000);
          Next_Period := Next_Period + Period_To_Add;
       end loop;
    end Periodic_First_CPU;
@@ -51,7 +50,6 @@ package body Periodic_Tasks is
       Next_Period := Ada.Real_Time.Clock + Period_To_Add;
       loop
          delay until Next_Period;
-         --  Production_Workload.Small_Whetstone (500_000);
          Next_Period := Next_Period + Period_To_Add;
       end loop;
    end Periodic_Not_Monitored;
@@ -79,6 +77,6 @@ package body Periodic_Tasks is
    end Initialization_Done;
 
    P1    : Periodic_First_CPU (Pri => 10, Budget => 200_000, Workload => 1, Period => 400_000);
-   --  PNM_1 : Periodic_Not_Monitored (Pri => 11, Period => 10_200_000);
+   PNM_1 : Periodic_Not_Monitored (Pri => 11, Period => 1_200_000);
    
 end Periodic_Tasks;

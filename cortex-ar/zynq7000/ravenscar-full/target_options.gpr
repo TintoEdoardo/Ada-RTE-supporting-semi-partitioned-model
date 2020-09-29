@@ -6,7 +6,7 @@
 abstract project Target_Options is
 
   type Build_Type is ("Production", "Debug", "Assert", "Gnatcov");
-  Build : Build_Type := external ("BUILD", "Debug");
+  Build : Build_Type := external ("BUILD", "Production");
 
   package Naming is
      for Spec_Suffix ("Asm_CPP") use ".inc";
