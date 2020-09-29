@@ -1,36 +1,19 @@
-------------------------------------------------------------------------------
---                                                                          --
---                         GNAT RUN-TIME COMPONENTS                         --
---                                                                          --
---          A D A . R E A L _ T I M E . T I M I N G _ E V E N T S           --
---                                                                          --
---                                 B o d y                                  --
---                                                                          --
---           Copyright (C) 2005-2018, Free Software Foundation, Inc.        --
---                                                                          --
--- GNAT is free software;  you can  redistribute it  and/or modify it under --
--- terms of the  GNU General Public License as published  by the Free Soft- --
--- ware  Foundation;  either version 3,  or (at your option) any later ver- --
--- sion.  GNAT is distributed in the hope that it will be useful, but WITH- --
--- OUT ANY WARRANTY;  without even the  implied warranty of MERCHANTABILITY --
--- or FITNESS FOR A PARTICULAR PURPOSE.                                     --
---                                                                          --
---                                                                          --
---                                                                          --
---                                                                          --
---                                                                          --
--- You should have received a copy of the GNU General Public License and    --
--- a copy of the GCC Runtime Library Exception along with this program;     --
--- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
--- GNAT was originally developed  by the GNAT team at  New York University. --
--- Extensive contributions were provided by Ada Core Technologies Inc.      --
---                                                                          --
-------------------------------------------------------------------------------
+---------------
+-- <READ_ME> --
+--  start  ----
+
+--  This package is a copy of Ada.Real_Time.Timing_Events with two
+--  important differences:
+--    1. There's no invokation to any runtime's initialization function.
+--    2. it assumes that each procedure concerning setting/clearing handler
+--       is invoked with the interrupts already disabled.
+--  This package should not be used at application-level.
+
+----------------
+-- </READ_ME> --
+--    end  -----
 
 with System.BB.Time;
-with System.BB.Protection;
 
 package body Real_Time_No_Elab.Timing_Events_No_Elab is
 
@@ -88,15 +71,16 @@ package body Real_Time_No_Elab.Timing_Events_No_Elab is
    begin
       --  The access to the event must be protected and atomic
 
-      System.BB.Protection.Enter_Kernel;
+      --  Interrupts are already disabled.
+      --  System.BB.Protection.Enter_Kernel;
 
       Event.Real_Handler := Handler;
 
       SBTE.Set_Handler (SBTE.Timing_Event (Event),
                         System.BB.Time.Time (At_Time),
                         BB_Handler);
-
-      System.BB.Protection.Leave_Kernel;
+      --  Interrupts are already disabled.
+      --  System.BB.Protection.Leave_Kernel;
    end Set_Handler;
 
    ---------------------
@@ -109,12 +93,12 @@ package body Real_Time_No_Elab.Timing_Events_No_Elab is
       Res : Timing_Event_Handler;
    begin
       --  The access to the event must be protected and atomic
-
-      System.BB.Protection.Enter_Kernel;
+      --  Interrupts are already disabled.
+      --  System.BB.Protection.Enter_Kernel;
 
       Res := Event.Real_Handler;
 
-      System.BB.Protection.Leave_Kernel;
+      --  System.BB.Protection.Leave_Kernel;
 
       return Res;
    end Current_Handler;
@@ -129,13 +113,13 @@ package body Real_Time_No_Elab.Timing_Events_No_Elab is
    is
    begin
       --  The access to the event must be protected and atomic
-
-      System.BB.Protection.Enter_Kernel;
+      --  Interrupts are already disabled.
+      --  System.BB.Protection.Enter_Kernel;
 
       SBTE.Cancel_Handler (SBTE.Timing_Event (Event), Cancelled);
       Event.Real_Handler := null;
 
-      System.BB.Protection.Leave_Kernel;
+      --  System.BB.Protection.Leave_Kernel;
    end Cancel_Handler;
 
    -------------------
@@ -147,11 +131,12 @@ package body Real_Time_No_Elab.Timing_Events_No_Elab is
    begin
       --  The access to the event must be protected and atomic
 
-      System.BB.Protection.Enter_Kernel;
+      --  Interrupts are already disabled.
+      --  System.BB.Protection.Enter_Kernel;
 
       Res := Time (SBTE.Time_Of_Event (SBTE.Timing_Event (Event)));
 
-      System.BB.Protection.Leave_Kernel;
+      --  System.BB.Protection.Leave_Kernel;
 
       return Res;
    end Time_Of_Event;

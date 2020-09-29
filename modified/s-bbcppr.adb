@@ -41,6 +41,9 @@ with System.BB.Board_Support;
 with System.BB.Parameters;
 with System.Machine_Code; use System.Machine_Code;
 
+with CPU_Budget_Monitor;
+with System.Tasking;
+
 package body System.BB.CPU_Primitives is
    use System.BB.Threads;
    use System.BB.Board_Support.Multiprocessors;
@@ -167,9 +170,18 @@ package body System.BB.CPU_Primitives is
                    Board_Support.Multiprocessors.Current_CPU;
       IRQ_Ctxt : aliased VFPU_Context_Buffer;
       Old_Ctxt : constant VFPU_Context_Access :=
-                   Running_Thread_Table (CPU_Id).Context.Running;
+        Running_Thread_Table (CPU_Id).Context.Running;
+      Cancelled : Boolean := False;
+      pragma Unreferenced (Cancelled);
 
    begin
+      --  One between FIQ or IRQ handler is about to be executed,
+      --  so we need to stop budget monitoring for the current thread.
+      --  Watchout: in our experiments IRQ handler is called in just one case:
+      --    1. when a CPU_Budget_Exceeded has expired.
+      --  In a real system, this could not be true.
+      CPU_Budget_Monitor.Clear_Monitor (Cancelled);
+
       --  Force trap if handler uses floating point
 
       Set_FPU_Enabled (False);
@@ -224,6 +236,20 @@ package body System.BB.CPU_Primitives is
          Context_Switch;
 
          --  The pre-empted thread can now resume
+
+         --  Start budget monitoring iff the new running thread
+         --  is NOT the idle thread and it has a budget
+         --  (i.e. Is_Monitored = True).
+         --  Todo: Should Start_Monitor be invoked
+         --  regardless Context_Switch_Needed ? For our experiments,
+         --  it should be the same.
+         if (not (Running_Thread.Base_Priority = System.Tasking.Idle_Priority))
+           and
+             Running_Thread.Is_Monitored
+         then
+            CPU_Budget_Monitor.Start_Monitor (Running_Thread.Budget);
+         end if;
+
       end if;
 
       Asm ("msr   SPSR_cxsf, %0",

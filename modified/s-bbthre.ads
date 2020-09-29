@@ -184,6 +184,8 @@ package System.BB.Threads is
 
       Budget : System.BB.Time.Time_Span;
 
+      Is_Monitored : Boolean := False;
+
    end record;
 
    function Get_Affinity

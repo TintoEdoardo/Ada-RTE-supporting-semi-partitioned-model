@@ -37,6 +37,7 @@
 pragma Restrictions (No_Elaboration_Code);
 with System.IO;
 with System.BB.Time; use System.BB.Time;
+with CPU_Budget_Monitor;
 
 package body System.BB.Threads.Queues is
 
@@ -729,6 +730,8 @@ package body System.BB.Threads.Queues is
       CPU_Id      : constant CPU     := Get_CPU (Thread);
       Prio        : constant Integer := Thread.Active_Priority;
       Aux_Pointer : Thread_Id;
+      Cancelled   : Boolean;
+      pragma Unreferenced (Cancelled);
    --   Now         : System.BB.Time.Time;
    begin
       --  A CPU can only modify its own tasks queues
@@ -742,6 +745,9 @@ package body System.BB.Threads.Queues is
       if Thread.Next /= Null_Thread_Id
         and then Thread.Next.Active_Priority = Prio
       then
+         --  Stop budget monitoring.
+         CPU_Budget_Monitor.Clear_Monitor (Cancelled);
+
          First_Thread_Table (CPU_Id) := Thread.Next;
 
          --  Look for the Aux_Pointer to insert the thread just after it
@@ -816,6 +822,7 @@ package body System.BB.Threads.Queues is
       Budget : System.BB.Time.Time_Span) is
    begin
       Thread.Budget := Budget;
+      Thread.Is_Monitored := True;
    end Set_Budget;
 
 end System.BB.Threads.Queues;

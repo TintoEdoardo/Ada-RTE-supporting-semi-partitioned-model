@@ -1,5 +1,7 @@
 # Scenario 2
 
+Torna all'[indice](../index.md)
+
 Questo scenario, costruito a partire dallo [scenario 1](../scenario_1/scenario_1.md), riguarda il rappresentare il budget di un task e rilevare se il suo tempo di esecuzione sulla CPU **eccede** questo questo budget. Nominiamo quest'ultima eventualità come `CPU_Budget_Exceeded`.
 
 Bisogna:
@@ -32,3 +34,5 @@ Bisogna:
         allora l'evento temporale deve essere **disarmato**. In generale, il disarmo deve avvenire ogni volta che il task perde/cede il core.
 
       - [X] se nel punto temporale assoluto `t+x` il task è ancora in esecuzione sul core, allora vuol dire che che il task sta eseguendo oltre il suo budget => `CPU_Budget_Exceeded`. Nella pratica, visto quanto detto al punto precedente, il `CPU_Budget_Exceeded` si verifica **solo ed esclusivamente** se il disarmo dell'evento temporale non avviene in tempo o non correttamente. "Dimenticare" un disarmo causerebbe la rilevazione di un `CPU_Budget_Exceeded` fasullo, cosa che chiaramente non deve accadere.  Il verificarsi di tale evento temporale corrisponde all'esecuzione dell'handler `CPU_BE_Detected`
+
+Torna all'[indice](../index.md)

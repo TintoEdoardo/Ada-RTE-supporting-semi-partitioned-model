@@ -42,6 +42,9 @@ with System.BB.Threads;
 with System.BB.Time;
 
 with System.BB.Threads.Queues;
+use System.BB.Threads.Queues;
+
+with CPU_Budget_Monitor;
 
 --  The following pragma Elaborate is anomalous. We generally do not like
 --  to use pragma Elaborate, since it disconnects the static elaboration
@@ -52,6 +55,7 @@ with System.BB.Threads.Queues;
 pragma Warnings (Off);
 pragma Elaborate (System.BB.Threads.Queues);
 pragma Warnings (On);
+with System.Tasking;
 
 package body System.BB.Protection is
 
@@ -74,6 +78,7 @@ package body System.BB.Protection is
    procedure Leave_Kernel is
       use System.BB.Time;
       use type System.BB.Threads.Thread_States;
+      Cancelled : Boolean := False;
    begin
       --  Interrupts are always disabled when entering here
 
@@ -92,6 +97,8 @@ package body System.BB.Protection is
 
       if Threads.Queues.Context_Switch_Needed then
 
+         CPU_Budget_Monitor.Clear_Monitor (Cancelled);
+
          --  Perform a context switch because the currently executing thread
          --  is blocked or it is no longer the one with the highest priority.
 
@@ -102,6 +109,17 @@ package body System.BB.Protection is
          end if;
 
          CPU_Primitives.Context_Switch;
+
+         --  Start budget monitoring iff the new running thread
+         --  is NOT the idle thread and it has a budget
+         --  (i.e. Is_Monitored = True).
+         if (not (Running_Thread.Base_Priority = System.Tasking.Idle_Priority))
+           and
+             Running_Thread.Is_Monitored
+         then
+            CPU_Budget_Monitor.Start_Monitor (Running_Thread.Budget);
+         end if;
+
       end if;
 
       --  There is always a running thread (at worst the idle thread)
