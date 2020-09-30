@@ -29,6 +29,7 @@ scenari/scenario_1/obj/scenario_1
 scenari/scenario_2/obj/scenario_2
 scenari/scenario_3/obj/scenario_3
 scenari/scenario_*/obj/resident_sw
+*.s
 
 *.a
 

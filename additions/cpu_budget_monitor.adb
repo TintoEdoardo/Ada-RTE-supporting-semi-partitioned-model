@@ -2,15 +2,30 @@ pragma Warnings (Off);
 with Ada.Text_IO;
 pragma Warnings (On);
 
+with System.BB.Protection;
 with System.BB.Board_Support;
+with System.BB.Threads.Queues;
 
 package body CPU_Budget_Monitor is
    --  package BOSUMU renames System.BB.Board_Support.Multiprocessors;
 
    procedure CPU_BE_Detected (E : in out Timing_Event) is
+      use System.BB.Threads;
+      use System.BB.Threads.Queues;
       pragma Unreferenced (E);
+      Self_Id : constant Thread_Id := Running_Thread;
+      Task_Exceeded : constant Integer := Self_Id.Base_Priority;
    begin
-      Ada.Text_IO.Put_Line ("CPU_Budget_Exceeded DETECTED.");
+      System.BB.Protection.Enter_Kernel;
+
+      Ada.Text_IO.Put_Line (Integer'Image (Task_Exceeded) &
+                                 "CPU_Budget_Exceeded DETECTED.");
+
+      Self_Id.State := Discarded;
+      Extract (Self_Id);
+      Insert_Discarded (Self_Id);
+
+      System.BB.Protection.Leave_Kernel;
    end CPU_BE_Detected;
 
    procedure Start_Monitor (For_Time : System.BB.Time.Time_Span) is

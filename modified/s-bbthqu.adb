@@ -39,6 +39,10 @@ with System.IO;
 with System.BB.Time; use System.BB.Time;
 with CPU_Budget_Monitor;
 
+pragma Warnings (Off);
+with Ada.Text_IO;
+pragma Warnings (On);
+
 package body System.BB.Threads.Queues is
 
    use System.Multiprocessors;
@@ -824,5 +828,34 @@ package body System.BB.Threads.Queues is
       Thread.Budget := Budget;
       Thread.Is_Monitored := True;
    end Set_Budget;
+
+   procedure Insert_Discarded (Thread : Thread_Id) is
+   begin
+      Thread.Next := Discarded_Thread_Table;
+      Discarded_Thread_Table := Thread;
+   end Insert_Discarded;
+
+      --------------------
+   --  Print_Queues  --
+   --------------------
+
+   procedure Print_Queues is
+      Aux_Pointer : Thread_Id := First_Thread_Table (1);
+      --  T : Integer := -100;
+      T2 : Integer := -100;
+   begin
+
+      Aux_Pointer := Discarded_Thread_Table;
+
+      while Aux_Pointer /= Null_Thread_Id
+      loop
+         --  T := Aux_Pointer.Active_Priority;
+         T2 := Aux_Pointer.Base_Priority;
+         if T2 = 10 then
+            Ada.Text_IO.Put_Line ("10 is Discarded");
+         end if;
+         Aux_Pointer := Aux_Pointer.Next;
+      end loop;
+   end Print_Queues;
 
 end System.BB.Threads.Queues;

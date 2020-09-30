@@ -23,8 +23,18 @@ package Periodic_Tasks is
     pragma Priority (Pri);
   end Periodic_Not_Monitored;
 
-   procedure Init;
-   pragma No_Return (Init);
+  --  Periodic task that, sooner or later, will force a CPU_Budget_Exceeded
+  task type BE_First_CPU
+    (Pri     : System.Priority;
+    Budget   : Natural;
+    Workload : Positive;
+    Period   : Positive) with CPU => 1
+  is
+    pragma Priority (Pri);
+  end BE_First_CPU;
+
+  procedure Init;
+  pragma No_Return (Init);
 
 private
 

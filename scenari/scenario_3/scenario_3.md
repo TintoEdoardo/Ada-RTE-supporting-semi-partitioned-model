@@ -43,24 +43,25 @@ Di seguito, si tratterà il punto $2$.
 
 ## Una preliminare serie di azioni in risposta ad un `CPU_Budget_Exceeded`
 In questo sotto-scenario, i task `P1` e `PNM_1` **non** devono essere istanziati.
-- [ ] creare un nuovo *type task* le quali istanze saranno relative a task che, prima o poi, forzeranno un `CPU_Budget_Exceeded`.
+- [X] creare un nuovo *type task* le quali istanze saranno relative a task che, prima o poi, forzeranno un `CPU_Budget_Exceeded`.
 ```
   task type BE_First_CPU
     (Pri     : System.Priority;
-    Budget   : Ada.Real_Time.Microseconds;
+    Budget   : Natural;
     Workload : Positive;
     Period   : Positive) with CPU => 1
   is
     pragma Priority (Pri);
   end BE_First_CPU;
 ``` 
-- [ ] il corpo sarà:
+- [X] il corpo sarà:
 ```
 task body BE_First_CPU is
     Next_Period : Ada.Real_Time.Time;
+    Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Period);
     I : Natural := 1;
 begin
-    Next_Period := Ada.Real_Time.Clock + Period;
+    Next_Period := Ada.Real_Time.Clock + Period_To_Add;
     loop
       delay until Next_Period;
 
@@ -70,16 +71,16 @@ begin
 
       I := I + 1;
 
-      Next_Period := Next_Period + Period;
+      Next_Period := Next_Period + Period_To_Add;
     end loop;
 end BE_First_CPU;
 ```
 - [ ] istanziare un task `BE1` di tipo `BE_First_CPU`. Il valore del parametro `Workload` deve essere modulato in maniera tale da eccedere il budget allocato per `BE1`.
-- [ ] il `CPU_Budget_Exceeded` di `BE1` deve essere forzato ogni 3 iterazioni.
+- [X] il `CPU_Budget_Exceeded` di `BE1` deve essere forzato ogni 3 iterazioni.
   - non c'è un motivo sulla scelta di questo numero e, per ora, non è di interesse.
-- [ ] al verificarsi del `CPU_Budget_Exceeded`:
-  - [ ] `BE1` deve essere forzatamente rimosso dal core, ovvero essere rimosso dalla coda dei pronti di quel core
-  - [ ] essere inserito in una apposita coda che contiene i task che sono stati forzatamente rimossi da quello specifico core. 
+- [X] al verificarsi del `CPU_Budget_Exceeded`:
+  - [X] `BE1` deve essere forzatamente rimosso dal core, ovvero essere rimosso dalla coda dei pronti di quel core
+  - [X] essere inserito in una apposita coda che contiene i task che sono stati forzatamente rimossi da quello specifico core. 
     - per ora, un task inserito in questa coda, non viene mai più re-inserito nella coda dei pronti.
     - la coda dei rimossi deve essere strutturalmente il più simile possibile a quella dei pronti e dei sospesi. In questo modo, sarà più probabile riuscire a riutilizzare le operazioni sulle code che sono già presenti nel runtime Ravenscar.
 

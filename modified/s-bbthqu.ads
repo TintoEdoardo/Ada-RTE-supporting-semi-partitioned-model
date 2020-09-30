@@ -406,8 +406,28 @@ package System.BB.Threads.Queues is
    -- Additions for MCS --
    -----------------------
 
+   --  Whenever both core are in HI-CRIT mode, according to
+   --  MCS model by Xu & Burns, some threads must be discarded
+   --  and resumed as soon as a core switch back to LO-CRIT mode.
+   --  This table contains the discarded threads.
+   Discarded_Thread_Table : Thread_Id := Null_Thread_Id;
+
+   ------------------
+   --  Set_Budget  --
+   ------------------
+
    procedure Set_Budget
      (Thread : Thread_Id;
       Budget : System.BB.Time.Time_Span);
+
+   ------------------------
+   --  Insert_Discarded  --
+   ------------------------
+
+   --  push Thread on top (head) of Discarderd_Thread_Table
+   procedure Insert_Discarded (Thread : Thread_Id);
+
+   --  Just for debugging
+   procedure Print_Queues;
 
 end System.BB.Threads.Queues;

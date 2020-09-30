@@ -68,11 +68,14 @@ package System.BB.Threads is
    Null_Thread_Id : constant Thread_Id := null;
    --  Identifier used to define an invalid value for a thread identifier
 
-   type Thread_States is (Runnable, Suspended, Delayed);
+   type Thread_States is (Runnable, Suspended, Delayed, Discarded);
    --  These are the three possible states for a thread under the Ravenscar
    --  profile restrictions: Runnable (not blocked, and it may also be
    --  executing), Suspended (waiting on an entry call), and Delayed (waiting
    --  on a delay until statement).
+
+   --  Addition for MCS by Xu & Burns: a thread is Discarded when is going to
+   --  be inserted in the discarded queue (Discarded_Thread_Table).
 
    type Thread_Descriptor is record
       Context : aliased System.BB.CPU_Primitives.Context_Buffer;

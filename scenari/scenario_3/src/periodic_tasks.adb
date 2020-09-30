@@ -5,6 +5,7 @@ pragma Warnings (Off);
 with System.BB.Time;
 use System.BB.Time;
 with System.Task_Primitives.Operations;
+with System.BB.Threads.Queues;
 pragma Warnings (On);
 
 with CPU_Budget_Monitor;
@@ -54,6 +55,33 @@ package body Periodic_Tasks is
       end loop;
    end Periodic_Not_Monitored;
 
+   -------------------------
+   --  type BE_First_CPU  --
+   -------------------------
+
+   task body BE_First_CPU is
+      Next_Period : Ada.Real_Time.Time;
+      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Period);
+      I : Natural := 1;
+   begin
+      STPO.Set_Budget (STPO.Self, System.BB.Time.Microseconds (Budget));
+
+      Next_Period := Ada.Real_Time.Clock + Period_To_Add;
+
+      Initialization_Done.Inform_Monitor (System.BB.Time.Microseconds (Budget));
+      loop
+         delay until Next_Period;
+
+         if I rem 2 = 0 then
+            Production_Workload.Small_Whetstone (Workload);
+         end if;
+
+         I := I + 1;
+
+         Next_Period := Next_Period + Period_To_Add;
+      end loop;
+   end BE_First_CPU;
+
    ------------
    --  Init  --
    ------------
@@ -76,7 +104,12 @@ package body Periodic_Tasks is
       end Inform_Monitor;
    end Initialization_Done;
 
-   P1    : Periodic_First_CPU (Pri => 10, Budget => 200_000, Workload => 1, Period => 400_000);
-   PNM_1 : Periodic_Not_Monitored (Pri => 11, Period => 1_200_000);
+   ---------------------------------------------
+   --  Tasks allocation => start experiments  --
+   ---------------------------------------------
+
+   --  P1    : Periodic_First_CPU (Pri => 10, Budget => 200_000, Workload => 1, Period => 400_000);
+   --  PNM_1 : Periodic_Not_Monitored (Pri => 10, Period => 1_200_000);
+   BE : BE_First_CPU (Pri => 10, Budget => 100_000, Workload => 50_000, Period => 700_000);
    
 end Periodic_Tasks;
