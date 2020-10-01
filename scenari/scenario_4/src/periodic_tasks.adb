@@ -35,6 +35,7 @@ package body Periodic_Tasks is
 
       loop
          delay until Next_Period;
+         Ada.Text_IO.Put_Line ("I'm on CPU");
          Production_Workload.Small_Whetstone (Workload);
          Next_Period := Next_Period + Period_To_Add;
       end loop;
@@ -89,7 +90,8 @@ package body Periodic_Tasks is
    procedure Init is
    begin
       loop
-         System.BB.Threads.Queues.Print_Queues;
+         --  System.BB.Threads.Queues.Print_Queues;
+         null;
       end loop;
    end Init;
 
@@ -108,8 +110,8 @@ package body Periodic_Tasks is
    --  Tasks allocation => start experiments  --
    ---------------------------------------------
 
-   --  P1    : Periodic_First_CPU (Pri => 10, Budget => 200_000, Workload => 1, Period => 400_000);
-   --  PNM_1 : Periodic_Not_Monitored (Pri => 10, Period => 1_200_000);
-   BE : BE_First_CPU (Pri => 10, Budget => 100_000, Workload => 50_000, Period => 700_000);
+   P1  : Periodic_First_CPU (Pri => 10, Budget => 200_000, Workload => 1, Period => 300_000);
+   BE1 : BE_First_CPU (Pri => 20, Budget => 100_000, Workload => 50_000, Period => 800_000);
+   BE2 : BE_First_CPU (Pri => 30, Budget => 100_000, Workload => 50_000, Period => 1_000_000);
    
 end Periodic_Tasks;

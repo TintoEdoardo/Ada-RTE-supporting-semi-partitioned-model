@@ -38,7 +38,7 @@ package body Periodic_Tasks is
    procedure Init is
    begin
       loop
-         Ada.Text_IO.Put_Line ("Init");
+         null;
       end loop;
    end Init;
 

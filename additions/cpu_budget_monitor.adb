@@ -7,7 +7,6 @@ with System.BB.Board_Support;
 with System.BB.Threads.Queues;
 
 package body CPU_Budget_Monitor is
-   --  package BOSUMU renames System.BB.Board_Support.Multiprocessors;
 
    procedure CPU_BE_Detected (E : in out Timing_Event) is
       use System.BB.Threads;
@@ -24,8 +23,9 @@ package body CPU_Budget_Monitor is
       Self_Id.State := Discarded;
       Extract (Self_Id);
       Insert_Discarded (Self_Id);
-
+      System.BB.Threads.Queues.Print_Queues;
       System.BB.Protection.Leave_Kernel;
+      Ada.Text_IO.Put_Line ("BE HANDLED");
    end CPU_BE_Detected;
 
    procedure Start_Monitor (For_Time : System.BB.Time.Time_Span) is
@@ -51,7 +51,7 @@ package body CPU_Budget_Monitor is
       Cancel_Handler
             (BE_Happened (Current_CPU), Cancelled);
 
-      Ada.Text_IO.Put_Line ("Budget monitoring");
+      Ada.Text_IO.Put_Line ("Budget monitoring has been CLEARED");
    end Clear_Monitor;
 
 end CPU_Budget_Monitor;

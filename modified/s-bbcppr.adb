@@ -182,6 +182,11 @@ package body System.BB.CPU_Primitives is
       --  In a real system, this could not be true.
       --  CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
+      --  The previous considerations are WRONG!!
+      --  if we are here, it could be because of Timing_Event expiration,
+      --  i.e. CPU_Budget_Exceeded. Clearing monitor means deleting
+      --  CPU_Budget_Exceeded handler.
+
       --  Force trap if handler uses floating point
 
       Set_FPU_Enabled (False);

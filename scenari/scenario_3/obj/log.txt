@@ -1,0 +1,305 @@
+20:23:36.765:
+Budge
+20:23:36.780:
+t monitoring has been CLEARED
+Budget monitoring has been STARTED.
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:37.484:
+Budget monitoring has been STARTED.
+
+20:23:37.500:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:38.204:
+Budget monitoring has been STARTED.
+
+20:23:38.316:
+ 10CPU_Budget_Exceeded DETECTED.
+Budget monitoring has been CLEARED
+
+20:23:38.588:
+Budget monitoring has 
+20:23:38.604:
+been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:38.924:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:40.028:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:40.364:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:41.468:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:41.788:
+Budget monitoring has been CLEARED
+Budget
+20:23:41.804:
+ monitoring has been CLEARED
+
+20:23:42.892:
+Budget monitoring has been CLEARED
+Budget
+20:23:42.908:
+ monitoring has been CLEARED
+
+20:23:43.228:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:44.332:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:44.668:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:45.772:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:46.092:
+Budget monitoring has been CLEARED
+Budget monit
+20:23:46.108:
+oring has been CLEARED
+
+20:23:47.196:
+Budget monitoring has been CLEARED
+Budget monit
+20:23:47.212:
+oring has been CLEARED
+
+20:23:47.532:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:48.636:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:48.972:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:23:50.076:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:11.894:
+Budget monitoring has been CLE
+20:27:11.911:
+ARED
+Budget monitoring has been STARTED.
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:12.614:
+Budget monitoring has been STARTED.
+Budget monitoring has bee
+20:27:12.630:
+n CLEARED
+Budget monitoring has been CLEARED
+
+20:27:13.335:
+Budget monitoring has been STARTED.
+
+20:27:13.431:
+ 10CPU_Budget_Excee
+20:27:13.447:
+ded DETECTED.
+Budget monitoring has been CLEARED
+
+20:27:13.719:
+Budget monitoring has been CLEARED
+Budget moni
+20:27:13.734:
+toring has been CLEARED
+
+20:27:14.055:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:15.158:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:15.479:
+Budg
+20:27:15.495:
+et monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:16.582:
+Budg
+20:27:16.598:
+et monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:16.918:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEA
+20:27:16.934:
+RED
+
+20:27:18.022:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEA
+20:27:18.038:
+RED
+
+20:27:18.358:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:19.462:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:19.782:
+Budget mon
+20:27:19.798:
+itoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:20.886:
+Budget mo
+20:27:20.902:
+nitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:21.222:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:22.326:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:22.662:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:23.766:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:24.086:
+Budget monitori
+20:27:24.102:
+ng has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:25.190:
+Budget monitori
+20:27:25.206:
+ng has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:25.526:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:26.630:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:26.966:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:28.070:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:28.390:
+Budget monitoring has
+20:27:28.406:
+ been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:29.494:
+Budget monitoring ha
+20:27:29.510:
+s been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:29.830:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:30.934:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:31.270:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:32.374:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:32.694:
+Budget monitoring has been 
+20:27:32.710:
+CLEARED
+Budget monitoring has been CLEARED
+
+20:27:33.798:
+Budget monitoring has been
+20:27:33.814:
+ CLEARED
+Budget monitoring has been CLEARED
+
+20:27:34.134:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:35.238:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:35.574:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:36.678:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:36.998:
+Budget monitoring has been CLEAR
+20:27:37.014:
+ED
+Budget monitoring has been CLEARED
+
+20:27:38.102:
+Budget monitoring has been CLEAR
+20:27:38.118:
+ED
+Budget monitoring has been CLEARED
+
+20:27:38.438:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:39.542:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED
+
+20:27:39.878:
+Budget monitoring has been CLEARED
+Budget monitoring has been CLEARED

@@ -45,6 +45,10 @@ with Ada.Unchecked_Conversion;
 with System.OS_Interface;
 with CPU_Budget_Monitor;
 
+pragma Warnings (Off);
+with Ada.Text_IO;
+pragma Warnings (On);
+
 package body System.BB.Time is
 
    use System.Multiprocessors;
@@ -179,7 +183,7 @@ package body System.BB.Time is
       --  Test if the alarm time is in the future
 
       if T + System.BB.Threads.Queues.Global_Interrupt_Delay > Now then
-
+         Ada.Text_IO.Put_Line ("Delay_Until");
          CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
          --  Extract the thread from the ready queue. When a thread wants to

@@ -835,25 +835,19 @@ package body System.BB.Threads.Queues is
       Discarded_Thread_Table := Thread;
    end Insert_Discarded;
 
-      --------------------
+   --------------------
    --  Print_Queues  --
    --------------------
 
    procedure Print_Queues is
-      Aux_Pointer : Thread_Id := First_Thread_Table (1);
-      --  T : Integer := -100;
+      Aux_Pointer : Thread_Id := Discarded_Thread_Table;
       T2 : Integer := -100;
    begin
 
-      Aux_Pointer := Discarded_Thread_Table;
-
       while Aux_Pointer /= Null_Thread_Id
       loop
-         --  T := Aux_Pointer.Active_Priority;
          T2 := Aux_Pointer.Base_Priority;
-         if T2 = 10 then
-            Ada.Text_IO.Put_Line ("10 is Discarded");
-         end if;
+         Ada.Text_IO.Put_Line (Integer'Image (T2) & " is DISCARDED");
          Aux_Pointer := Aux_Pointer.Next;
       end loop;
    end Print_Queues;

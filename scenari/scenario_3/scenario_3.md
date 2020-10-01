@@ -37,7 +37,7 @@ Di seguito, si tratterà il punto $2$.
 - [X] almeno un rilascio di `PNM_1` deve avvenire nel mentre che `P1` sta eseguendo. In seguito:
   - [X] l'evento temporale legato all'eventuale `CPU_Budget_Exceeded` di `P1` deve essere **disarmato**
   - [X] context switch da `P1` a `PNM_1`;
-  - [X] nessun evento temporale relativo a `PNM_1` deve essere armato, in quanto il suo budget è $0$. 
+  - [X] nessun evento temporale relativo a `PNM_1` deve essere armato.
   - [X] al termine dell'esecuzione di `PNM_1`, `P1` riprende l'esecuzione => context switch da `PNM_1` a `P1`.
   - [X] al termine del context switch, un nuovo evento temporale, relativo all'eventuale `CPU_Budget_Exceeded` di `P1`, deve essere armato con scadenza all'istante temporale assoluto `Now + Budget`.
 
