@@ -39,6 +39,10 @@ with System.Storage_Elements;
 with System.Tasking.Debug;
 with System.Task_Info;
 
+pragma Warnings (Off);
+with Ada.Text_IO;
+pragma Warnings (On);
+
 package body System.Task_Primitives.Operations is
 
    use System.OS_Interface;

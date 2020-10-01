@@ -36,8 +36,8 @@ with Interfaces;
 package body System.Text_IO is
    use Interfaces;
 
-   Base : constant := 16#e000_1000#;
-   --  UART-1
+   Base : constant := 16#e000_0000#;
+   --  UART-0
 
    CR : Unsigned_32
      with Address => Base + 16#00#, Import, Volatile;

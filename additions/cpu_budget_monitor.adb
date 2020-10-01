@@ -51,7 +51,7 @@ package body CPU_Budget_Monitor is
       Cancel_Handler
             (BE_Happened (Current_CPU), Cancelled);
 
-      Ada.Text_IO.Put_Line ("Budget monitoring has been CLEARED.");
+      Ada.Text_IO.Put_Line ("Budget monitoring");
    end Clear_Monitor;
 
 end CPU_Budget_Monitor;
