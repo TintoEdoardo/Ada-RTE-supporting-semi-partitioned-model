@@ -79,8 +79,8 @@ end BE_First_CPU;
 - [X] il `CPU_Budget_Exceeded` di `BE1` deve essere forzato ogni 3 iterazioni.
   - non c'è un motivo sulla scelta di questo numero e, per ora, non è di interesse.
 - [X] al verificarsi del `CPU_Budget_Exceeded`:
-  - [X] `BE1` deve essere forzatamente rimosso dal core, ovvero essere rimosso dalla coda dei pronti di quel core
-  - [X] essere inserito in una apposita coda che contiene i task che sono stati forzatamente rimossi da quello specifico core. 
+  - [X] `BE1` deve essere forzatamente rimosso dal core, ovvero essere rimosso dalla coda dei pronti di quel core.
+  - [X] essere inserito in una apposita coda (chiamata `Discarded_Thread_Table`) che contiene i task che sono stati forzatamente rimossi da quello specifico core. 
     - per ora, un task inserito in questa coda, non viene mai più re-inserito nella coda dei pronti.
     - la coda dei rimossi deve essere strutturalmente il più simile possibile a quella dei pronti e dei sospesi. In questo modo, sarà più probabile riuscire a riutilizzare le operazioni sulle code che sono già presenti nel runtime Ravenscar.
 
