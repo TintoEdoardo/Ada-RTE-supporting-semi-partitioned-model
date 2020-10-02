@@ -75,7 +75,7 @@ begin
     end loop;
 end BE_First_CPU;
 ```
-- [ ] istanziare un task `BE1` di tipo `BE_First_CPU`. Il valore del parametro `Workload` deve essere modulato in maniera tale da eccedere il budget allocato per `BE1`.
+- [X] istanziare un task `BE1` di tipo `BE_First_CPU`. Il valore del parametro `Workload` deve essere modulato in maniera tale da eccedere il budget allocato per `BE1`.
 - [X] il `CPU_Budget_Exceeded` di `BE1` deve essere forzato ogni 3 iterazioni.
   - non c'è un motivo sulla scelta di questo numero e, per ora, non è di interesse.
 - [X] al verificarsi del `CPU_Budget_Exceeded`:
