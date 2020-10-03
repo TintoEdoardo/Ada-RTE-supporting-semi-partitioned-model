@@ -430,4 +430,19 @@ package System.BB.Threads.Queues is
    --  Just for debugging
    procedure Print_Queues;
 
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+     (Thread : Thread_Id;
+     Is_Migrable : Boolean);
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+     (Thread : Thread_Id);
+
 end System.BB.Threads.Queues;

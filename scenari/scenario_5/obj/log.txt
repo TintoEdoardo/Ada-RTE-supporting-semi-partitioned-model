@@ -1,0 +1,137 @@
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+Leave_Kernel
+Budget monitoring has been CLEARED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+Budget correctly setted
+End of L_K
+Interr ENABLED
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+Budget correctly setted
+End of L_K
+Interr ENABLED
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+Budget correctly setted
+End of L_K
+Interr ENABLED
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Context Switch done!
+End of L_K
+Interr ENABLED
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+I'm  10
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+I'm  20
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Budget monitoring has been STARTED.
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+I'm  30
+ 30 HI-CRIT CPU_Budget_Exceeded DETECTED.
+ 30 is DISCARDED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+BE HANDLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+In last chance handler
+Unhandled Ada Exception: PROGRAM_ERROR
+Message: System.BB.CPU_Primitives.Undef_Handler: illegal instruction
+Call stack traceback locations:
+
+Leave_Kernel
+Budget monitoring has been CLEARED
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+I'm  20
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED

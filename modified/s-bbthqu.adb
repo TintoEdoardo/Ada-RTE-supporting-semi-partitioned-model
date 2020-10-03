@@ -38,6 +38,7 @@ pragma Restrictions (No_Elaboration_Code);
 with System.IO;
 with System.BB.Time; use System.BB.Time;
 with CPU_Budget_Monitor;
+with Mixed_Criticality_System;
 
 pragma Warnings (Off);
 with Ada.Text_IO;
@@ -851,5 +852,29 @@ package body System.BB.Threads.Queues is
          Aux_Pointer := Aux_Pointer.Next;
       end loop;
    end Print_Queues;
+
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+      (Thread : Thread_Id;
+      Is_Migrable : Boolean) is
+      use Mixed_Criticality_System;
+   begin
+      Thread.Criticality_Level := LOW;
+      Thread.Is_Migrable := Is_Migrable;
+   end Initialize_LO_Crit_Task;
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+      (Thread : Thread_Id) is
+      use Mixed_Criticality_System;
+   begin
+      Thread.Criticality_Level := HIGH;
+   end Initialize_HI_Crit_Task;
 
 end System.BB.Threads.Queues;

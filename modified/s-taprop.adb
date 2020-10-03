@@ -477,4 +477,29 @@ package body System.Task_Primitives.Operations is
       System.OS_Interface.Set_Budget (Budget);
    end Set_Budget;
 
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+       (T : ST.Task_Id;
+       Is_Migrable : Boolean) is
+   begin
+      pragma Assert (T = Self);
+
+      System.OS_Interface.Initialize_LO_Crit_Task (Is_Migrable);
+   end  Initialize_LO_Crit_Task;
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+       (T : ST.Task_Id) is
+   begin
+      pragma Assert (T = Self);
+
+      System.OS_Interface.Initialize_HI_Crit_Task;
+   end  Initialize_HI_Crit_Task;
+
 end System.Task_Primitives.Operations;

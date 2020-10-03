@@ -5,20 +5,29 @@ pragma Warnings (On);
 with System.BB.Protection;
 with System.BB.Board_Support;
 with System.BB.Threads.Queues;
+with Mixed_Criticality_System;
+--  with Core_Execution_Modes;
 
 package body CPU_Budget_Monitor is
 
    procedure CPU_BE_Detected (E : in out Timing_Event) is
       use System.BB.Threads;
       use System.BB.Threads.Queues;
+      use Mixed_Criticality_System;
+      --  use Core_Execution_Modes;
       pragma Unreferenced (E);
       Self_Id : constant Thread_Id := Running_Thread;
       Task_Exceeded : constant Integer := Self_Id.Base_Priority;
    begin
       System.BB.Protection.Enter_Kernel;
 
-      Ada.Text_IO.Put_Line (Integer'Image (Task_Exceeded) &
-                                 "CPU_Budget_Exceeded DETECTED.");
+      if Self_Id.Criticality_Level = HIGH then
+         Ada.Text_IO.Put_Line (Integer'Image (Task_Exceeded) &
+                                 " HI-CRIT CPU_Budget_Exceeded DETECTED.");
+      else
+         Ada.Text_IO.Put_Line (Integer'Image (Task_Exceeded) &
+                                 " LO-CRIT CPU_Budget_Exceeded DETECTED.");
+      end if;
 
       Self_Id.State := Discarded;
       Extract (Self_Id);

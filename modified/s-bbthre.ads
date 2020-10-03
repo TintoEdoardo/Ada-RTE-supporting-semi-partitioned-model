@@ -45,11 +45,13 @@ with System.BB.Time;
 with System.BB.Board_Support;
 with System.Multiprocessors;
 with System.BB.Deadlines;
+with Mixed_Criticality_System;
 
 package System.BB.Threads is
    pragma Preelaborate;
 
    use type System.Multiprocessors.CPU;
+   package MCS renames Mixed_Criticality_System;
 
    --------------------------
    -- Basic thread support --
@@ -188,6 +190,10 @@ package System.BB.Threads is
       Budget : System.BB.Time.Time_Span;
 
       Is_Monitored : Boolean := False;
+
+      Criticality_Level : MCS.Criticality;
+
+      Is_Migrable : Boolean := False;
 
    end record;
 
@@ -371,5 +377,18 @@ package System.BB.Threads is
 
    procedure Set_Budget
        (Budget : System.BB.Time.Time_Span);
+
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+         (Is_Migrable : Boolean);
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task;
 
 end System.BB.Threads;

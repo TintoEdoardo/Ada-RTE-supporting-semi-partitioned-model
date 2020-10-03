@@ -543,4 +543,32 @@ package body System.BB.Threads is
       Protection.Leave_Kernel;
    end Set_Budget;
 
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+         (Is_Migrable : Boolean) is
+   begin
+      Protection.Enter_Kernel;
+
+      Queues.Initialize_LO_Crit_Task
+               (Queues.Running_Thread, Is_Migrable);
+
+      Protection.Leave_Kernel;
+   end Initialize_LO_Crit_Task;
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task is
+   begin
+      Protection.Enter_Kernel;
+
+      Queues.Initialize_HI_Crit_Task (Queues.Running_Thread);
+
+      Protection.Leave_Kernel;
+   end Initialize_HI_Crit_Task;
+
 end System.BB.Threads;

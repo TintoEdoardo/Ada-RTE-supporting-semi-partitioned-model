@@ -36,7 +36,6 @@
 
 pragma Restrictions (No_Elaboration_Code);
 
-with System.BB.CPU_Primitives;
 with System.BB.Parameters;
 with System.BB.Threads;
 with System.BB.Time;
@@ -50,6 +49,11 @@ pragma Warnings (Off);
 with Ada.Text_IO;
 pragma Warnings (On);
 
+with Mixed_Criticality_System;
+with Core_Execution_Modes;
+with System.Multiprocessors;
+
+with System.BB.Threads.Queues;
 --  The following pragma Elaborate is anomalous. We generally do not like
 --  to use pragma Elaborate, since it disconnects the static elaboration
 --  model checking (and generates a warning when using this model). So
@@ -59,6 +63,7 @@ pragma Warnings (On);
 pragma Warnings (Off);
 pragma Elaborate (System.BB.Threads.Queues);
 pragma Warnings (On);
+
 with System.Tasking;
 
 package body System.BB.Protection is
@@ -80,6 +85,7 @@ package body System.BB.Protection is
    ------------------
 
    procedure Leave_Kernel is
+      pragma Warnings (Off);
       use System.BB.Time;
       use type System.BB.Threads.Thread_States;
       Cancelled : Boolean := False;
@@ -123,7 +129,6 @@ package body System.BB.Protection is
          then
             CPU_Budget_Monitor.Start_Monitor (Running_Thread.Budget);
          end if;
-
       end if;
 
       --  There is always a running thread (at worst the idle thread)

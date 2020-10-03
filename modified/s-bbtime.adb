@@ -43,6 +43,7 @@ with System.BB.Threads.Queues;
 with System.BB.Timing_Events;
 with Ada.Unchecked_Conversion;
 with System.OS_Interface;
+
 with CPU_Budget_Monitor;
 
 pragma Warnings (Off);
@@ -137,7 +138,6 @@ package body System.BB.Time is
       Temp2             : Time;
       Cancelled         : Boolean;
       pragma Unreferenced (Cancelled);
-
    begin
       --  First mask interrupts, this is necessary to handle thread queues
 

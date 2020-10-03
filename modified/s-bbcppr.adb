@@ -173,7 +173,6 @@ package body System.BB.CPU_Primitives is
         Running_Thread_Table (CPU_Id).Context.Running;
       Cancelled : Boolean := False;
       pragma Unreferenced (Cancelled);
-
    begin
       --  One between FIQ or IRQ handler is about to be executed,
       --  so we need to stop budget monitoring for the current thread.

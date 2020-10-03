@@ -138,8 +138,27 @@ package System.Task_Primitives.Operations is
    -- Additions for MCS --
    -----------------------
 
+   ------------------
+   --  Set_Budget  --
+   ------------------
+
    procedure Set_Budget
        (T : ST.Task_Id;
        Budget : System.BB.Time.Time_Span);
+
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+         (T : ST.Task_Id;
+         Is_Migrable : Boolean);
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+         (T : ST.Task_Id);
 
 end System.Task_Primitives.Operations;

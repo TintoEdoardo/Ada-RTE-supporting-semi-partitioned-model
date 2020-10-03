@@ -235,4 +235,19 @@ package System.OS_Interface is
        (Budget : System.BB.Time.Time_Span)
         renames System.BB.Threads.Set_Budget;
 
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+         (Is_Migrable : Boolean)
+         renames System.BB.Threads.Initialize_LO_Crit_Task;
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+         renames System.BB.Threads.Initialize_HI_Crit_Task;
+
 end System.OS_Interface;
