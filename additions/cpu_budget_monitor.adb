@@ -6,7 +6,7 @@ with System.BB.Protection;
 with System.BB.Board_Support;
 with System.BB.Threads.Queues;
 with Mixed_Criticality_System;
---  with Core_Execution_Modes;
+with Core_Execution_Modes;
 
 package body CPU_Budget_Monitor is
 
@@ -14,8 +14,10 @@ package body CPU_Budget_Monitor is
       use System.BB.Threads;
       use System.BB.Threads.Queues;
       use Mixed_Criticality_System;
-      --  use Core_Execution_Modes;
+      use Core_Execution_Modes;
+      use System.BB.Board_Support.Multiprocessors;
       pragma Unreferenced (E);
+      CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
       Self_Id : constant Thread_Id := Running_Thread;
       Task_Exceeded : constant Integer := Self_Id.Base_Priority;
    begin
@@ -24,14 +26,17 @@ package body CPU_Budget_Monitor is
       if Self_Id.Criticality_Level = HIGH then
          Ada.Text_IO.Put_Line (Integer'Image (Task_Exceeded) &
                                  " HI-CRIT CPU_Budget_Exceeded DETECTED.");
+
+         Set_Core_Mode (HIGH, CPU_Id);
+         Discard_Tasks;
       else
          Ada.Text_IO.Put_Line (Integer'Image (Task_Exceeded) &
                                  " LO-CRIT CPU_Budget_Exceeded DETECTED.");
       end if;
 
-      Self_Id.State := Discarded;
-      Extract (Self_Id);
-      Insert_Discarded (Self_Id);
+      --  Self_Id.State := Discarded;
+      --  Extract (Self_Id);
+      --  Insert_Discarded (Self_Id);
       System.BB.Threads.Queues.Print_Queues;
       System.BB.Protection.Leave_Kernel;
       Ada.Text_IO.Put_Line ("BE HANDLED");

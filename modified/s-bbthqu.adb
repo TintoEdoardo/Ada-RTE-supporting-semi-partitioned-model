@@ -877,4 +877,60 @@ package body System.BB.Threads.Queues is
       Thread.Criticality_Level := HIGH;
    end Initialize_HI_Crit_Task;
 
+   ---------------------
+   --  Discard_Tasks  --
+   ---------------------
+
+   procedure Discard_Tasks is
+      CPU_Id       : constant CPU := Current_CPU;
+      Aux_Pointer  : Thread_Id    := First_Thread_Table (CPU_Id);
+      Curr_Pointer : Thread_Id    := First_Thread_Table (CPU_Id);
+      Prev_Pointer : Thread_Id    := Null_Thread_Id;
+   begin
+
+      --  First extract from READY queue
+      while Curr_Pointer /= Null_Thread_Id
+      loop
+            null;
+            if Curr_Pointer.Is_Migrable then
+
+               if Curr_Pointer = First_Thread_Table (CPU_Id) then
+                  --  The first thread is migrable, so it must be removed.
+                  --  This means that the second thread in the queue,
+                  --  i.e. Curr_Pointer.Next, must be set
+                  --  as the first thread in the queue.
+                  First_Thread_Table (CPU_Id) := Curr_Pointer.Next;
+               else
+                  --  We have to remove a thread between two others
+                  --  (the last one could be the Null thread).
+                  --  This means that the previous thread in the queue
+                  --  must be linked to the last one.
+                  Prev_Pointer.Next := Curr_Pointer.Next;
+               end if;
+
+               --  Go ahead with the aux pointer.
+               Aux_Pointer := Aux_Pointer.Next;
+
+               --  Isolate the current thread.
+               Curr_Pointer.Next := Null_Thread_Id;
+
+               --  Insert in the Discarded queue.
+               Curr_Pointer.State := Discarded;
+               Insert_Discarded (Curr_Pointer);
+
+               Print_Queues;
+
+               --  Go ahead with the current pointer.
+               Curr_Pointer := Aux_Pointer;
+
+            else --  Current thread is NOT migrable
+               --  then go ahead normally
+               Prev_Pointer := Curr_Pointer;
+               Aux_Pointer := Aux_Pointer.Next;
+               Curr_Pointer := Aux_Pointer;
+            end if;
+      end loop;
+
+   end Discard_Tasks;
+
 end System.BB.Threads.Queues;

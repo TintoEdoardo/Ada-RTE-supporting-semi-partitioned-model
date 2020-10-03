@@ -35,7 +35,7 @@
 ------------------------------------------------------------------------------
 
 pragma Restrictions (No_Elaboration_Code);
-
+with System.BB.CPU_Primitives;
 with System.BB.Parameters;
 with System.BB.Threads;
 with System.BB.Time;
@@ -48,12 +48,6 @@ with CPU_Budget_Monitor;
 pragma Warnings (Off);
 with Ada.Text_IO;
 pragma Warnings (On);
-
-with Mixed_Criticality_System;
-with Core_Execution_Modes;
-with System.Multiprocessors;
-
-with System.BB.Threads.Queues;
 --  The following pragma Elaborate is anomalous. We generally do not like
 --  to use pragma Elaborate, since it disconnects the static elaboration
 --  model checking (and generates a warning when using this model). So

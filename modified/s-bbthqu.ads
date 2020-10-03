@@ -445,4 +445,9 @@ package System.BB.Threads.Queues is
    procedure Initialize_HI_Crit_Task
      (Thread : Thread_Id);
 
+   ---------------------
+   --  Discard_Tasks  --
+   ---------------------
+
+   procedure Discard_Tasks;
 end System.BB.Threads.Queues;

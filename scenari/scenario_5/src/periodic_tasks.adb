@@ -41,7 +41,7 @@ package body Periodic_Tasks is
 
       loop
          delay until Next_Period;
-         Ada.Text_IO.Put_Line ("I'm " & Integer'Image (Pri));
+         Ada.Text_IO.Put_Line (Integer'Image (Pri) & " = " & Integer'Image (System.BB.Threads.Queues.Running_Thread.Base_Priority));
          Production_Workload.Small_Whetstone (Workload);
          Next_Period := Next_Period + Period_To_Add;
       end loop;
@@ -84,7 +84,7 @@ package body Periodic_Tasks is
       Initialization_Done.Inform_Monitor (System.BB.Time.Microseconds (Budget));
       loop
          delay until Next_Period;
-         Ada.Text_IO.Put_Line ("I'm " & Integer'Image (Pri));
+         Ada.Text_IO.Put_Line (Integer'Image (Pri) & " = " & Integer'Image (System.BB.Threads.Queues.Running_Thread.Base_Priority));
          if I rem 2 = 0 then
             Production_Workload.Small_Whetstone (Workload);
          end if;
@@ -124,11 +124,11 @@ package body Periodic_Tasks is
 
 P1 : Periodic_First_CPU
     (Pri => 10, Budget => 200_000, Criticality_Level => LOW,
-     Is_Migrable => True, Workload => 100_000, Period => 300_000);
+     Is_Migrable => True, Workload => 1, Period => 300_000);
 
 P2 : Periodic_First_CPU
     (Pri => 20, Budget => 200_000, Criticality_Level => LOW,
-     Is_Migrable => False, Workload => 1, Period => 500_000);
+     Is_Migrable => True, Workload => 1, Period => 500_000);
 
 P3 : Periodic_First_CPU
     (Pri => 30, Budget => 200_000, Criticality_Level => HIGH,
