@@ -232,7 +232,8 @@ package System.OS_Interface is
    ----------------
 
    procedure Set_Budget
-       (Budget : System.BB.Time.Time_Span)
+       (Budget : System.BB.Time.Time_Span;
+       Period : Natural)
         renames System.BB.Threads.Set_Budget;
 
    -------------------------------

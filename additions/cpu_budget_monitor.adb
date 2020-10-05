@@ -22,16 +22,17 @@ package body CPU_Budget_Monitor is
       Task_Exceeded : constant Integer := Self_Id.Base_Priority;
    begin
       System.BB.Protection.Enter_Kernel;
+      Ada.Text_IO.Put (Integer'Image (Task_Exceeded));
 
-      if Self_Id.Criticality_Level = HIGH then
-         Ada.Text_IO.Put_Line (Integer'Image (Task_Exceeded) &
-                                 " HI-CRIT CPU_Budget_Exceeded DETECTED.");
+      if Get_Core_Mode (CPU_Id) = LOW then
+         if Self_Id.Criticality_Level = HIGH then
+            Ada.Text_IO.Put_Line (" HI-CRIT CPU_Budget_Exceeded DETECTED.");
 
-         Set_Core_Mode (HIGH, CPU_Id);
-         Discard_Tasks;
-      else
-         Ada.Text_IO.Put_Line (Integer'Image (Task_Exceeded) &
-                                 " LO-CRIT CPU_Budget_Exceeded DETECTED.");
+            Set_Core_Mode (HIGH, CPU_Id);
+            Discard_Tasks;
+         else
+            Ada.Text_IO.Put_Line (" LO-CRIT CPU_Budget_Exceeded DETECTED.");
+         end if;
       end if;
 
       --  Self_Id.State := Discarded;

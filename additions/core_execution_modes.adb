@@ -8,8 +8,9 @@ package body Core_Execution_Modes is
       pragma Unreferenced (CPU_Id);
    begin
       --  Interrupts must be disabled
+      Ada.Text_IO.Put_Line (Mode'Image (Mode_Core_1)
+                        & " => " & Mode'Image (Core_Mode));
       Mode_Core_1 := Core_Mode;
-      Ada.Text_IO.Put_Line ("FIRST CORE IS " & Mode'Image (Mode_Core_1));
    end Set_Core_Mode;
 
    function Get_Core_Mode (CPU_Id : CPU) return Mode is

@@ -39,8 +39,14 @@ with System.IO;
 with System.BB.Time; use System.BB.Time;
 with CPU_Budget_Monitor;
 with Mixed_Criticality_System;
-
+--  with System.Task_Primitives.Operations;
+--  Watchout!
+--  It's ok to depend on Experiments package despite it is NOT preelaborated.
+--  That's because its variables are used during application execution, i.e.
+--  after the whole runtime initialization. This implies that, on reading,
+--  those variables are correctly initialized.
 pragma Warnings (Off);
+with Experiments_Data;
 with Ada.Text_IO;
 pragma Warnings (On);
 
@@ -48,6 +54,7 @@ package body System.BB.Threads.Queues is
 
    use System.Multiprocessors;
    use System.BB.Board_Support.Multiprocessors;
+   --  package STPO renames System.Task_Primitives.Operations;
 
    ----------------
    -- Local data --
@@ -818,17 +825,37 @@ package body System.BB.Threads.Queues is
       end loop;
    end Queue_Ordered;
 
+--     function Time_Conversion (Time_in  : Ada.Real_Time.Time)
+--                                return System.BB.Time.Time_Span;
+--
+--     function Time_Conversion (Time_in  : Ada.Real_Time.Time)
+--                                return System.BB.Time.Time_Span is
+--        Time_in_to_Time_Span : Ada.Real_Time.Time_Span;
+--        Time_out : System.BB.Time.Time_Span;
+--     begin
+--        Time_in_to_Time_Span := Time_in - Ada.Real_Time.Time_First;
+--        Time_out := System.BB.Time.To_Time_Span
+--           (Ada.Real_Time.To_Duration (Time_in_to_Time_Span));
+--        return Time_out;
+--     end Time_Conversion;
+
    ------------------
    --  Set_Budget  --
    ------------------
 
    procedure Set_Budget
      (Thread : Thread_Id;
-      Budget : System.BB.Time.Time_Span) is
+      Budget : System.BB.Time.Time_Span;
+      Period : Natural) is
    begin
       Thread.Budget := Budget;
+      Thread.Period := System.BB.Time.Microseconds (Period);
       Thread.Is_Monitored := True;
    end Set_Budget;
+
+   ------------------------
+   --  Insert_Discarded  --
+   ------------------------
 
    procedure Insert_Discarded (Thread : Thread_Id) is
    begin
@@ -836,14 +863,46 @@ package body System.BB.Threads.Queues is
       Discarded_Thread_Table := Thread;
    end Insert_Discarded;
 
+   -------------------------
+   --  Extract_Discarded  --
+   -------------------------
+
+   function Extract_Discarded return Thread_Id is
+      Aux_Pointer : constant Thread_Id := Discarded_Thread_Table;
+   begin
+      if Discarded_Thread_Table /= Null_Thread_Id then
+         Discarded_Thread_Table := Discarded_Thread_Table.Next;
+         Aux_Pointer.Next := Null_Thread_Id;
+      end if;
+
+      return Aux_Pointer;
+   end Extract_Discarded;
+
    --------------------
    --  Print_Queues  --
    --------------------
 
    procedure Print_Queues is
-      Aux_Pointer : Thread_Id := Discarded_Thread_Table;
+      Aux_Pointer : Thread_Id := First_Thread_Table (1);
       T2 : Integer := -100;
    begin
+      while Aux_Pointer /= Null_Thread_Id
+      loop
+         T2 := Aux_Pointer.Base_Priority;
+         Ada.Text_IO.Put_Line (Integer'Image (T2) & " is READY 1");
+         Aux_Pointer := Aux_Pointer.Next;
+      end loop;
+
+      Aux_Pointer := Alarms_Table (1);
+
+      while Aux_Pointer /= Null_Thread_Id
+      loop
+         T2 := Aux_Pointer.Base_Priority;
+         Ada.Text_IO.Put_Line (Integer'Image (T2) & " is ALARM 1");
+         Aux_Pointer := Aux_Pointer.Next;
+      end loop;
+
+      Aux_Pointer := Discarded_Thread_Table;
 
       while Aux_Pointer /= Null_Thread_Id
       loop
@@ -891,7 +950,8 @@ package body System.BB.Threads.Queues is
       --  First extract from READY queue
       while Curr_Pointer /= Null_Thread_Id
       loop
-            null;
+            Ada.Text_IO.Put_Line ("Ready "
+                  & Integer'Image (Curr_Pointer.Base_Priority));
             if Curr_Pointer.Is_Migrable then
 
                if Curr_Pointer = First_Thread_Table (CPU_Id) then
@@ -915,10 +975,10 @@ package body System.BB.Threads.Queues is
                Curr_Pointer.Next := Null_Thread_Id;
 
                --  Insert in the Discarded queue.
+               Ada.Text_IO.Put_Line ("Discarding "
+                  & Integer'Image (Curr_Pointer.Base_Priority));
                Curr_Pointer.State := Discarded;
                Insert_Discarded (Curr_Pointer);
-
-               Print_Queues;
 
                --  Go ahead with the current pointer.
                Curr_Pointer := Aux_Pointer;
@@ -931,6 +991,119 @@ package body System.BB.Threads.Queues is
             end if;
       end loop;
 
+      --  Then extract from SUSPENDED queue
+      pragma Warnings (Off);
+      Aux_Pointer  := Alarms_Table (CPU_Id);
+      Curr_Pointer := Alarms_Table (CPU_Id);
+      Prev_Pointer := Null_Thread_Id;
+      pragma Warnings (On);
+      while Curr_Pointer /= Null_Thread_Id
+      loop
+            Ada.Text_IO.Put_Line ("Sleeping "
+                  & Integer'Image (Curr_Pointer.Base_Priority));
+            if Curr_Pointer.Is_Migrable then
+
+               if Curr_Pointer = Alarms_Table (CPU_Id) then
+                  --  The first thread is migrable, so it must be removed.
+                  --  This means that the second thread in the queue,
+                  --  i.e. Curr_Pointer.Next, must be set
+                  --  as the first thread in the queue.
+                  Alarms_Table (CPU_Id) := Curr_Pointer.Next;
+               else
+                  --  We have to remove a thread between two others
+                  --  (the last one could be the Null thread).
+                  --  This means that the previous thread in the queue
+                  --  must be linked to the last one.
+                  Prev_Pointer.Next := Curr_Pointer.Next;
+               end if;
+
+               --  Go ahead with the aux pointer.
+               Aux_Pointer := Aux_Pointer.Next;
+
+               --  Isolate the current thread.
+               Curr_Pointer.Next := Null_Thread_Id;
+
+               --  Insert in the Discarded queue.
+               Ada.Text_IO.Put_Line ("Discarding "
+                  & Integer'Image (Curr_Pointer.Base_Priority));
+               Curr_Pointer.State := Discarded;
+               Insert_Discarded (Curr_Pointer);
+
+               --  Go ahead with the current pointer.
+               Curr_Pointer := Aux_Pointer;
+
+            else --  Current thread is NOT migrable
+               --  then go ahead normally
+               Prev_Pointer := Curr_Pointer;
+               Aux_Pointer := Aux_Pointer.Next;
+               Curr_Pointer := Aux_Pointer;
+            end if;
+      end loop;
+
+      Print_Queues;
+
    end Discard_Tasks;
+
+   ----------------------------
+   --  Back_To_LO_Crit_Mode  --
+   ----------------------------
+
+   procedure Back_To_LO_Crit_Mode is
+      use Experiments_Data;
+      CPU_Id       : constant CPU := Current_CPU;
+      Curr_Pointer : Thread_Id := Extract_Discarded;
+      Logic_Zero   : constant Time_Span := Microseconds (Delay_Time);
+      --  NRT is Next Release Time
+      NRT : System.BB.Time.Time;
+      Now : constant System.BB.Time.Time := Clock;
+      Inserted_As_First : Boolean;
+
+      --  Time elapsed since the beginning of the experiment
+      TEE : constant Time_Span := (Now - Logic_Zero) - Time_First;
+
+      --  How many Curr_Pointer's jobs would have been released
+      --  if HI-crit mode had not been activated?
+      Release_Skipped : Integer := 0;
+   begin
+      Ada.Text_IO.Put_Line (CPU'Image (CPU_Id)
+            & " is GOING BACK to LO-crit mode.");
+      while Curr_Pointer /= Null_Thread_Id
+      loop
+         --  For each discarded task, we must:
+         --    1. compute its next release time;
+         --    2. insert it in the Alarms_Thread_Table;
+
+         --  1. compute next release time.
+         --  "Time_First" is used just to please the type system.
+         Release_Skipped := TEE / Curr_Pointer.Period;
+
+         NRT :=
+            ((Release_Skipped + 1) * Curr_Pointer.Period)
+                                 +
+                     (Logic_Zero + Time_First);
+
+         Ada.Text_IO.Put_Line (Integer'Image (Release_Skipped) &
+            " Release skipped");
+         Ada.Text_IO.Put ("NRT " & Integer'Image (Curr_Pointer.Base_Priority));
+         Ada.Text_IO.Put_Line (Duration'Image (To_Duration
+            (Now - Time_First)) & " < " & Duration'Image
+            (To_Duration (NRT - Time_First)));
+
+         if NRT > Now then
+            Ada.Text_IO.Put_Line ("NRT > Now");
+         end if;
+
+         --  2. insert it in the Alarms_Thread_Table;
+         --  See Insert_Alarm's precondition.
+         Curr_Pointer.State := Delayed;
+         Insert_Alarm (NRT, Curr_Pointer, Inserted_As_First);
+
+         if Inserted_As_First then
+            Update_Alarm (Get_Next_Timeout (CPU_Id));
+         end if;
+         --  Go ahead.
+         Curr_Pointer := Extract_Discarded;
+      end loop;
+   end Back_To_LO_Crit_Mode;
 
 end System.BB.Threads.Queues;

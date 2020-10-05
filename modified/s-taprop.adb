@@ -39,6 +39,10 @@ with System.Storage_Elements;
 with System.Tasking.Debug;
 with System.Task_Info;
 
+with Core_Execution_Modes;
+with System.BB.Protection;
+with System.BB.Threads.Queues;
+
 pragma Warnings (Off);
 with Ada.Text_IO;
 pragma Warnings (On);
@@ -276,12 +280,27 @@ package body System.Task_Primitives.Operations is
 
    procedure Idle (Param : Address)
    is
+      use Core_Execution_Modes;
+      use System.BB.Protection;
+      use System.BB.Threads.Queues;
       pragma Unreferenced (Param);
       T : constant Tasking.Task_Id := Self;
+      CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
    begin
       Enter_Task (T);
 
       loop
+         Ada.Text_IO.Put_Line ("IDLE!");
+         Enter_Kernel;
+
+         if Get_Core_Mode (CPU_Id) = HIGH then
+            --  An idle tick during HI-crit mode has beed detected
+            --  => go back to LO-crit mode.
+            Set_Core_Mode (LOW, CPU_Id);
+            Back_To_LO_Crit_Mode;
+         end if;
+
+         Leave_Kernel;
          OS_Interface.Power_Down;
       end loop;
    end Idle;
@@ -470,11 +489,12 @@ package body System.Task_Primitives.Operations is
 
    procedure Set_Budget
        (T : ST.Task_Id;
-       Budget : System.BB.Time.Time_Span) is
+       Budget : System.BB.Time.Time_Span;
+       Period : Natural) is
    begin
       pragma Assert (T = Self);
 
-      System.OS_Interface.Set_Budget (Budget);
+      System.OS_Interface.Set_Budget (Budget, Period);
    end Set_Budget;
 
    -------------------------------

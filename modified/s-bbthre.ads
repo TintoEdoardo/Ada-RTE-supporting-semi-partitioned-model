@@ -187,6 +187,8 @@ package System.BB.Threads is
 
       --  Additions for MCS by Xu & Burns
 
+      Period : System.BB.Time.Time_Span;
+
       Budget : System.BB.Time.Time_Span;
 
       Is_Monitored : Boolean := False;
@@ -376,7 +378,8 @@ package System.BB.Threads is
    -----------------------
 
    procedure Set_Budget
-       (Budget : System.BB.Time.Time_Span);
+       (Budget : System.BB.Time.Time_Span;
+       Period  : Natural);
 
    -------------------------------
    --  Initialize_LO_Crit_Task  --

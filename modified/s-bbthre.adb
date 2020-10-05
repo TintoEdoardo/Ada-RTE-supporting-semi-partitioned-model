@@ -533,12 +533,13 @@ package body System.BB.Threads is
    --------------------------
 
    procedure Set_Budget
-       (Budget : System.BB.Time.Time_Span) is
+       (Budget : System.BB.Time.Time_Span;
+       Period  : Natural) is
    begin
       Protection.Enter_Kernel;
 
       Queues.Set_Budget
-               (Queues.Running_Thread, Budget);
+               (Queues.Running_Thread, Budget, Period);
 
       Protection.Leave_Kernel;
    end Set_Budget;

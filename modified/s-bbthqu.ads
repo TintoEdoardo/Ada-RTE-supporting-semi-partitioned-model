@@ -418,7 +418,8 @@ package System.BB.Threads.Queues is
 
    procedure Set_Budget
      (Thread : Thread_Id;
-      Budget : System.BB.Time.Time_Span);
+      Budget : System.BB.Time.Time_Span;
+      Period : Natural);
 
    ------------------------
    --  Insert_Discarded  --
@@ -426,6 +427,13 @@ package System.BB.Threads.Queues is
 
    --  push Thread on top (head) of Discarderd_Thread_Table
    procedure Insert_Discarded (Thread : Thread_Id);
+
+   -------------------------
+   --  Extract_Discarded  --
+   -------------------------
+
+   --  Pop operation on Discarded_Thread_Table
+   function Extract_Discarded return Thread_Id;
 
    --  Just for debugging
    procedure Print_Queues;
@@ -450,4 +458,12 @@ package System.BB.Threads.Queues is
    ---------------------
 
    procedure Discard_Tasks;
+
+   ----------------------------
+   --  Back_To_LO_Crit_Mode  --
+   ----------------------------
+
+   --  it brings back the current CPU to the low critical mode.
+   procedure Back_To_LO_Crit_Mode;
+
 end System.BB.Threads.Queues;

@@ -144,7 +144,8 @@ package System.Task_Primitives.Operations is
 
    procedure Set_Budget
        (T : ST.Task_Id;
-       Budget : System.BB.Time.Time_Span);
+       Budget : System.BB.Time.Time_Span;
+       Period : Natural);
 
    -------------------------------
    --  Initialize_LO_Crit_Task  --
