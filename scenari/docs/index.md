@@ -9,5 +9,5 @@ From bottom to MCS by Xu & Burns
 - [X] [Scenario 4](scenario_4/scenario_4.md)
 - [X] [Scenario 5](scenario_5/scenario_5.md)
 - [X] [Scenario 6](scenario_6/scenario_6.md)
-- [ ] [Scenario 7](scenario_7/scenario_7.md)
-- [ ] [Scenario 8](scenario_8/scenario_8.md)
+- [X] [Scenario 7](scenario_7/scenario_7.md)
+- [X] [Scenario 8](scenario_8/scenario_8.md)

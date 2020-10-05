@@ -13,6 +13,6 @@ Alla rilevazione di un *idle tick*, bisogna:
     - [X] sia per i tasks `Low_Crit_First_CPU` che per quelli `High_Crit_First_CPU`, il monitoraggio del consumo del budget deve essere relativo al loro `Low_Critical_Budget`
       - [X] sono esattamente le condizionalità esposte nello [scenario 7](../scenario_7/scenario_7.md) nel caso che il core stia eseguendo in modalità `LOW`. 
 
-**Questo scenario è stato incluso nello [scenario](../scenario_8/scenario_8.md)**
+**Questo scenario è stato incluso nello [scenario 7](../scenario_7/scenario_7.md)**
 
 Torna all'[indice](../index.md)

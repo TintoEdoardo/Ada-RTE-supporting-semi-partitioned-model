@@ -261,6 +261,9 @@ package body System.BB.Threads is
       CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
 
    begin
+      Board_Support.Initialize_Board;
+      Initialize_Timers;
+
       Initialize_Thread
         (Idle_Thread, Null_Address, Null_Address,
          Idle_Priority, CPU_Id,
