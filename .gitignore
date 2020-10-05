@@ -31,6 +31,8 @@ scenari/scenario_3/obj/scenario_3
 scenari/scenario_4/obj/scenario_4
 scenari/scenario_5/obj/scenario_5
 scenari/scenario_6/obj/scenario_6
+scenari/scenario_7/obj/scenario_7
+scenari/scenario_8/obj/scenario_8
 scenari/scenario_*/obj/resident_sw
 *.s
 

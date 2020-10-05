@@ -29,15 +29,32 @@ package body CPU_Budget_Monitor is
             Ada.Text_IO.Put_Line (" HI-CRIT CPU_Budget_Exceeded DETECTED.");
 
             Set_Core_Mode (HIGH, CPU_Id);
-            Discard_Tasks;
+            Enter_In_HI_Crit_Mode;
          else
-            Ada.Text_IO.Put_Line (" LO-CRIT CPU_Budget_Exceeded DETECTED.");
+            Ada.Text_IO.Put_Line ("");
+            Ada.Text_IO.Put_Line
+                     ("-------------------------------------------------");
+            Ada.Text_IO.Put_Line
+                     ("--  LO-crit task exceeding its LO-crit budget  --");
+            Ada.Text_IO.Put_Line
+                     ("--        !!!  INVALID EXPERIMENTS  !!!        --");
+            Ada.Text_IO.Put_Line
+                     ("-------------------------------------------------");
          end if;
+      else
+            Ada.Text_IO.Put_Line ("");
+            Ada.Text_IO.Put_Line
+               ("----------------------------------------------------------");
+            Ada.Text_IO.Put_Line
+               ("--        A task has exceeded its current budget        --");
+            Ada.Text_IO.Put_Line
+               ("--      Unpredictable overload during HI-crit mode      --");
+            Ada.Text_IO.Put_Line
+               ("--             !!!  INVALID EXPERIMENTS  !!!            --");
+            Ada.Text_IO.Put_Line
+               ("----------------------------------------------------------");
       end if;
 
-      --  Self_Id.State := Discarded;
-      --  Extract (Self_Id);
-      --  Insert_Discarded (Self_Id);
       System.BB.Threads.Queues.Print_Queues;
       System.BB.Protection.Leave_Kernel;
       Ada.Text_IO.Put_Line ("BE HANDLED");

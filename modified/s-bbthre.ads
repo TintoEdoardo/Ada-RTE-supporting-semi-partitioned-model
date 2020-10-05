@@ -189,11 +189,23 @@ package System.BB.Threads is
 
       Period : System.BB.Time.Time_Span;
 
-      Budget : System.BB.Time.Time_Span;
+      --  Statically-assigned budget
+      Low_Critical_Budget  : System.BB.Time.Time_Span;
+      High_Critical_Budget : System.BB.Time.Time_Span;
+
+      --  Run-time budget based on core criticality mode.
+      --    1. If criticality mode is LOW, then Budget := Low_Critical_Budget.
+      --    2. If criticality mode is HIGH  && Task.Criticality_Level is HIGH,
+      --         then Budget := High_Critical_Budget.
+      Active_Budget : System.BB.Time.Time_Span;
 
       Is_Monitored : Boolean := False;
 
       Criticality_Level : MCS.Criticality;
+
+      --  Next thread in HI-crit queue.
+      --  This fields is set iff Thread.Criticality_Level is HIGH.
+      Next_HI_Crit : Thread_Id;
 
       Is_Migrable : Boolean := False;
 
@@ -377,21 +389,22 @@ package System.BB.Threads is
    -- Additions for MCS --
    -----------------------
 
-   procedure Set_Budget
-       (Budget : System.BB.Time.Time_Span;
-       Period  : Natural);
-
    -------------------------------
    --  Initialize_LO_Crit_Task  --
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-         (Is_Migrable : Boolean);
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural;
+         Is_Migrable : Boolean);
 
    -------------------------------
    --  Initialize_HI_Crit_Task  --
    -------------------------------
 
-   procedure Initialize_HI_Crit_Task;
+   procedure Initialize_HI_Crit_Task
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         HI_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural);
 
 end System.BB.Threads;

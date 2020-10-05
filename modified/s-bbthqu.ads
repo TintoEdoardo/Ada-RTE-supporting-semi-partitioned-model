@@ -412,15 +412,6 @@ package System.BB.Threads.Queues is
    --  This table contains the discarded threads.
    Discarded_Thread_Table : Thread_Id := Null_Thread_Id;
 
-   ------------------
-   --  Set_Budget  --
-   ------------------
-
-   procedure Set_Budget
-     (Thread : Thread_Id;
-      Budget : System.BB.Time.Time_Span;
-      Period : Natural);
-
    ------------------------
    --  Insert_Discarded  --
    ------------------------
@@ -444,6 +435,8 @@ package System.BB.Threads.Queues is
 
    procedure Initialize_LO_Crit_Task
      (Thread : Thread_Id;
+     LO_Crit_Budget : System.BB.Time.Time_Span;
+     Period : Natural;
      Is_Migrable : Boolean);
 
    -------------------------------
@@ -451,7 +444,10 @@ package System.BB.Threads.Queues is
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
-     (Thread : Thread_Id);
+     (Thread : Thread_Id;
+     LO_Crit_Budget : System.BB.Time.Time_Span;
+     HI_Crit_Budget : System.BB.Time.Time_Span;
+     Period : Natural);
 
    ---------------------
    --  Discard_Tasks  --
@@ -465,5 +461,11 @@ package System.BB.Threads.Queues is
 
    --  it brings back the current CPU to the low critical mode.
    procedure Back_To_LO_Crit_Mode;
+
+   -----------------------------
+   --  Enter_In_HI_Crit_Mode  --
+   -----------------------------
+
+   procedure Enter_In_HI_Crit_Mode;
 
 end System.BB.Threads.Queues;

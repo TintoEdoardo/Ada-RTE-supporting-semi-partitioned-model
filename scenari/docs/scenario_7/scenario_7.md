@@ -7,12 +7,12 @@ Questo scenario, costruito a partire dallo [scenario 6](../scenario_6/scenario_6
 - adattare il monitoraggio dell'esaurimento questi budget a seconda delle modalità di esecuzione del core (`HIGH` e `LOW`).
   
 Bisogna:
-- [ ] Modificare il descrittore di un task in maniera tale che comprenda i due budget *high critical* e *low critical*
+- [X] Modificare il descrittore di un task in maniera tale che comprenda i due budget *high critical* e *low critical*
 ```
 Low_Critical_Budget  : Time_Span;
 High_Critical_Budget : Time_Span;
 ```
-- [ ] Creare due nuovi tipi task per differenziare i task *HI-CRIT* da quelli *LO-CRIT*
+- [X] Creare due nuovi tipi task per differenziare i task *HI-CRIT* da quelli *LO-CRIT*
 ```
 --  Periodic LO-CRIT task
 task type Low_Crit_First_CPU
@@ -40,23 +40,23 @@ end High_First_CPU;
 
    Distinguere i tasks *HI-CRIT* da quelli *LO-CRIT* a livello di tipi è utile perchè, come si vede dalla specifica, presentano differenze sostanziali: quelli *LO-CRIT* hanno un solo budget e possono essere migrabili, mentre quelli *HI-CRIT* hanno due budget e non sono mai migrabili.
 
-- [ ] Se il core sta eseguendo in modalità `LOW`
-  - [ ] le azioni di reazione (`CPU_BE_Detected`) ad un `CPU_Budget_Exceeded`, per i tasks **sia** di tipo `Low_Crit_First_CPU` che `High_Crit_First_CPU`, avvengono all'esaurirsi del proprio `Low_Critical_Budget`;
-    - [ ] Se ad esaurire il proprio `Low_Critical_Budget` è un task `Low_Crit_First_CPU`:
-      - [ ] esso deve essere tolto dal core;
-      - [ ] e messo dove? Nella coda dei sospesi fino al suo prossimo rilascio? È lo stesso dubbio dello [scenario 5](../scenario_5/scenario_5.md) nel caso venga rilevato un `CPU_Budget_Exceeded` causato da un task *LO-CRIT*.
-    - [ ] Se ad esaurire il proprio `Low_Critical_Budget` è un task `High_Crit_First_CPU`: 
-      - [ ] la modalità di esecuzione del core deve essere portata ad `HIGH`;
-      - [ ] i `Low_Crit_First_CPU` che **sono migrabili** devono essere inseriti nella `Discarded_Thread_Table`;
-      - [ ] per i tasks `High_Crit_First_CPU`, il monitoraggio del consumo del loro budget sarà relativo al loro `High_Critical_Budget` e **non più** al loro `Low_Critical_Budget`;
-      - [ ] per i tasks `Low_Crit_First_CPU`, il monitoraggio del consumo del loro budget rimane relativo all'unico che possiedono, ovvero il `Low_Critical_Budget`;
-      - [ ] i tasks che possono potenzialmente prendere il core (*ready* e *suspended*) sono **tutti non migrabili**. 
-      - [ ] i tasks nella `Discarded_Thread_Table` sono **tutti migrabili**.
+- [X] Se il core sta eseguendo in modalità `LOW`
+  - [X] le azioni di reazione (`CPU_BE_Detected`) ad un `CPU_Budget_Exceeded`, per i tasks **sia** di tipo `Low_Crit_First_CPU` che `High_Crit_First_CPU`, avvengono all'esaurirsi del proprio `Low_Critical_Budget`;
+    - [X] Se ad esaurire il proprio `Low_Critical_Budget` è un task `Low_Crit_First_CPU`:
+      - [X] **L'esperimento non è valido**. Proprio per questo è necessario saper rilevare comunque questa eventualità.
+    - [X] Se ad esaurire il proprio `Low_Critical_Budget` è un task `High_Crit_First_CPU`: 
+      - [X] la modalità di esecuzione del core deve essere portata ad `HIGH`;
+      - [X] i `Low_Crit_First_CPU` che **sono migrabili** devono essere inseriti nella `Discarded_Thread_Table`;
+      - [X] per i tasks `High_Crit_First_CPU`, il monitoraggio del consumo del loro budget sarà relativo al loro `High_Critical_Budget` e **non più** al loro `Low_Critical_Budget`;
+      - [X] per i tasks `Low_Crit_First_CPU`, il monitoraggio del consumo del loro budget rimane relativo all'unico che possiedono, ovvero il `Low_Critical_Budget`;
+      - [X] i tasks che possono potenzialmente prendere il core (*ready* e *suspended*) sono **tutti non migrabili**. 
+      - [X] i tasks nella `Discarded_Thread_Table` sono **tutti migrabili**.
   
-- [ ] Se il core sta eseguendo in modalità `HIGH`
-  - [ ] per i tasks `Low_Crit_First_CPU`, le azioni di reazione (`CPU_BE_Detected`) ad un `CPU_Budget_Exceeded` avvengono ad esaurirsi del proprio `Low_Critical_Budget` e sono le stesse relative alla modalità d'esecuzione `LOW` del core.
-  - [ ] per i tasks `High_Crit_First_CPU`, le azioni di reazione (`CPU_BE_Detected`) ad un `CPU_Budget_Exceeded` avvengono ad esaurirsi del proprio `High_Critical_Budget`:
-    - [ ]  Che succede? È lo stesso discorso dei task *LO-CRIT* che esauriscono il loro `Low_Crit_Budget` durante la modalità di esecuzione `LOW`.
+
+- [X] Se il core sta eseguendo in modalità `HIGH`
+  - [X] per i tasks `Low_Crit_First_CPU`, le azioni di reazione (`CPU_BE_Detected`) ad un `CPU_Budget_Exceeded` avvengono ad esaurirsi del proprio `Low_Critical_Budget` e sono le stesse relative alla modalità d'esecuzione `LOW` del core.
+  - [X] per i tasks `High_Crit_First_CPU`, le azioni di reazione (`CPU_BE_Detected`) ad un `CPU_Budget_Exceeded` avvengono ad esaurirsi del proprio `High_Critical_Budget`:
+    - [X] **L'esperimento non è valido**. Proprio per questo è necessario saper rilevare comunque questa eventualità.
 
 ## Una considerazione sul come realizzare la logica appena esposta
 

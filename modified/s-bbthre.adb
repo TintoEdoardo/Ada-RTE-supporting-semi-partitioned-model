@@ -528,33 +528,19 @@ package body System.BB.Threads is
       Protection.Leave_Kernel;
    end Wakeup;
 
-   --------------------------
-   --  Set_LO_Crit_Budget  --
-   --------------------------
-
-   procedure Set_Budget
-       (Budget : System.BB.Time.Time_Span;
-       Period  : Natural) is
-   begin
-      Protection.Enter_Kernel;
-
-      Queues.Set_Budget
-               (Queues.Running_Thread, Budget, Period);
-
-      Protection.Leave_Kernel;
-   end Set_Budget;
-
    -------------------------------
    --  Initialize_LO_Crit_Task  --
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-         (Is_Migrable : Boolean) is
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural;
+         Is_Migrable : Boolean) is
    begin
       Protection.Enter_Kernel;
 
       Queues.Initialize_LO_Crit_Task
-               (Queues.Running_Thread, Is_Migrable);
+               (Queues.Running_Thread, LO_Crit_Budget, Period, Is_Migrable);
 
       Protection.Leave_Kernel;
    end Initialize_LO_Crit_Task;
@@ -563,11 +549,15 @@ package body System.BB.Threads is
    --  Initialize_HI_Crit_Task  --
    -------------------------------
 
-   procedure Initialize_HI_Crit_Task is
+   procedure Initialize_HI_Crit_Task
+             (LO_Crit_Budget : System.BB.Time.Time_Span;
+             HI_Crit_Budget : System.BB.Time.Time_Span;
+             Period : Natural) is
    begin
       Protection.Enter_Kernel;
 
-      Queues.Initialize_HI_Crit_Task (Queues.Running_Thread);
+      Queues.Initialize_HI_Crit_Task
+               (Queues.Running_Thread, LO_Crit_Budget, HI_Crit_Budget, Period);
 
       Protection.Leave_Kernel;
    end Initialize_HI_Crit_Task;

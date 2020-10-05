@@ -1,0 +1,288 @@
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+Leave_Kernel
+Budget monitoring has been CLEARED
+End of L_K
+Interr ENABLED
+CRIT INSERT  40
+End of L_K
+Interr ENABLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+End of L_K
+Interr ENABLED
+CRIT INSERT  30
+End of L_K
+Interr ENABLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+End of L_K
+Interr ENABLED
+End of L_K
+Interr ENABLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Context Switch done!
+End of L_K
+Interr ENABLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+End of L_K
+Interr ENABLED
+IDLE!
+End of L_K
+Interr ENABLED
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 40 =  40
+ 40 is READY 1
+ 30 is READY 1
+ 20 is READY 1
+ 10 is READY 1
+-1 is READY 1
+ 0 is ALARM 1
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+ 40 HI-CRIT CPU_Budget_Exceeded DETECTED.
+LOW => HIGH
+ 1 is ENTERING in HI-crit mode.
+Ready  40
+Ready  30
+Ready  20
+Discarding  20
+Ready  10
+Discarding  10
+Ready -1
+Sleeping  0
+ 40 is READY 1
+ 30 is READY 1
+-1 is READY 1
+ 0 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+ 40 is READY 1
+ 30 is READY 1
+-1 is READY 1
+ 0 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+End of L_K
+Interr ENABLED
+BE HANDLED
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 30 =  30
+ 30 is READY 1
+-1 is READY 1
+ 40 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 40 =  40
+ 40 is READY 1
+ 30 is READY 1
+-1 is READY 1
+ 0 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Budget monitoring has been STARTED.
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 40 =  40
+ 40 is READY 1
+ 30 is READY 1
+-1 is READY 1
+ 0 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Budget monitoring has been STARTED.
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 40 =  40
+ 40 is READY 1
+ 30 is READY 1
+-1 is READY 1
+ 0 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 30 =  30
+ 30 is READY 1
+-1 is READY 1
+ 40 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 40 =  40
+ 40 is READY 1
+ 30 is READY 1
+-1 is READY 1
+ 0 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Budget monitoring has been STARTED.
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 40 =  40
+ 40 is READY 1
+ 30 is READY 1
+-1 is READY 1
+ 0 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Budget monitoring has been STARTED.
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 40 =  40
+ 40 is READY 1
+ 30 is READY 1
+ 0 is READY 1
+-1 is READY 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 30 =  30
+ 30 is READY 1
+ 0 is READY 1
+-1 is READY 1
+ 40 is ALARM 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 40 =  40
+ 40 is READY 1
+ 30 is READY 1
+ 0 is READY 1
+-1 is READY 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Budget monitoring has been STARTED.
+Context Switch done!
+Budget monitoring has been STARTED.
+End of L_K
+Interr ENABLED
+ 40 =  40
+ 40 is READY 1
+ 30 is READY 1
+ 0 is READY 1
+-1 is READY 1
+ 10 is DISCARDED
+ 20 is DISCARDED
+ 30 is HI-CRIT
+ 40 is HI-CRIT
+Delay_Until
+Budget monitoring has been CLEARED
+Leave_Kernel
+Budget monitoring has been CLEARED
+Budget monitoring has been STARTED.

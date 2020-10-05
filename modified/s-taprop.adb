@@ -483,31 +483,20 @@ package body System.Task_Primitives.Operations is
       return System.OS_Interface.Current_Interrupt = No_Interrupt;
    end Is_Task_Context;
 
-   ----------------
-   -- Set_Budget --
-   ----------------
-
-   procedure Set_Budget
-       (T : ST.Task_Id;
-       Budget : System.BB.Time.Time_Span;
-       Period : Natural) is
-   begin
-      pragma Assert (T = Self);
-
-      System.OS_Interface.Set_Budget (Budget, Period);
-   end Set_Budget;
-
    -------------------------------
    --  Initialize_LO_Crit_Task  --
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
        (T : ST.Task_Id;
+       LO_Crit_Budget : System.BB.Time.Time_Span;
+       Period : Natural;
        Is_Migrable : Boolean) is
    begin
       pragma Assert (T = Self);
 
-      System.OS_Interface.Initialize_LO_Crit_Task (Is_Migrable);
+      System.OS_Interface.Initialize_LO_Crit_Task
+                                       (LO_Crit_Budget, Period, Is_Migrable);
    end  Initialize_LO_Crit_Task;
 
    -------------------------------
@@ -515,11 +504,15 @@ package body System.Task_Primitives.Operations is
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
-       (T : ST.Task_Id) is
+       (T : ST.Task_Id;
+       LO_Crit_Budget : System.BB.Time.Time_Span;
+       HI_Crit_Budget : System.BB.Time.Time_Span;
+       Period : Natural) is
    begin
       pragma Assert (T = Self);
 
-      System.OS_Interface.Initialize_HI_Crit_Task;
+      System.OS_Interface.Initialize_HI_Crit_Task
+                                    (LO_Crit_Budget, HI_Crit_Budget, Period);
    end  Initialize_HI_Crit_Task;
 
 end System.Task_Primitives.Operations;

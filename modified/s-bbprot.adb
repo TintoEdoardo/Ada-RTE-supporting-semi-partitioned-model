@@ -121,7 +121,7 @@ package body System.BB.Protection is
            and
              Running_Thread.Is_Monitored
          then
-            CPU_Budget_Monitor.Start_Monitor (Running_Thread.Budget);
+            CPU_Budget_Monitor.Start_Monitor (Running_Thread.Active_Budget);
          end if;
       end if;
 

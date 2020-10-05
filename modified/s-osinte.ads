@@ -227,21 +227,14 @@ package System.OS_Interface is
    -- Additions for MCS --
    -----------------------
 
-   ----------------
-   -- Set_Budget --
-   ----------------
-
-   procedure Set_Budget
-       (Budget : System.BB.Time.Time_Span;
-       Period : Natural)
-        renames System.BB.Threads.Set_Budget;
-
    -------------------------------
    --  Initialize_LO_Crit_Task  --
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-         (Is_Migrable : Boolean)
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural;
+         Is_Migrable : Boolean)
          renames System.BB.Threads.Initialize_LO_Crit_Task;
 
    -------------------------------
@@ -249,6 +242,9 @@ package System.OS_Interface is
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         HI_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural)
          renames System.BB.Threads.Initialize_HI_Crit_Task;
 
 end System.OS_Interface;

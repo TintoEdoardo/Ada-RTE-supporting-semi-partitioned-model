@@ -39,16 +39,11 @@ with System.IO;
 with System.BB.Time; use System.BB.Time;
 with CPU_Budget_Monitor;
 with Mixed_Criticality_System;
---  with System.Task_Primitives.Operations;
---  Watchout!
---  It's ok to depend on Experiments package despite it is NOT preelaborated.
---  That's because its variables are used during application execution, i.e.
---  after the whole runtime initialization. This implies that, on reading,
---  those variables are correctly initialized.
-pragma Warnings (Off);
 with Experiments_Data;
+
+pragma Warnings (Off);
 with Ada.Text_IO;
-pragma Warnings (On);
+--  pragma Warnings (On);
 
 package body System.BB.Threads.Queues is
 
@@ -63,6 +58,9 @@ package body System.BB.Threads.Queues is
    Alarms_Table : array (CPU) of Thread_Id := (others => Null_Thread_Id);
    pragma Volatile_Components (Alarms_Table);
    --  Identifier of the thread that is in the first place of the alarm queue
+
+   HI_Crit_Table : array (CPU) of Thread_Id := (others => Null_Thread_Id);
+   --  It contains the whole set of HI-crit tasks.
 
    type Log_Record is
       record
@@ -825,34 +823,6 @@ package body System.BB.Threads.Queues is
       end loop;
    end Queue_Ordered;
 
---     function Time_Conversion (Time_in  : Ada.Real_Time.Time)
---                                return System.BB.Time.Time_Span;
---
---     function Time_Conversion (Time_in  : Ada.Real_Time.Time)
---                                return System.BB.Time.Time_Span is
---        Time_in_to_Time_Span : Ada.Real_Time.Time_Span;
---        Time_out : System.BB.Time.Time_Span;
---     begin
---        Time_in_to_Time_Span := Time_in - Ada.Real_Time.Time_First;
---        Time_out := System.BB.Time.To_Time_Span
---           (Ada.Real_Time.To_Duration (Time_in_to_Time_Span));
---        return Time_out;
---     end Time_Conversion;
-
-   ------------------
-   --  Set_Budget  --
-   ------------------
-
-   procedure Set_Budget
-     (Thread : Thread_Id;
-      Budget : System.BB.Time.Time_Span;
-      Period : Natural) is
-   begin
-      Thread.Budget := Budget;
-      Thread.Period := System.BB.Time.Microseconds (Period);
-      Thread.Is_Monitored := True;
-   end Set_Budget;
-
    ------------------------
    --  Insert_Discarded  --
    ------------------------
@@ -877,6 +847,20 @@ package body System.BB.Threads.Queues is
 
       return Aux_Pointer;
    end Extract_Discarded;
+
+   ------------------------
+   --  Insert_High_Crit  --
+   ------------------------
+   procedure Insert_High_Crit (Thread : Thread_Id);
+
+   procedure Insert_High_Crit (Thread : Thread_Id) is
+      CPU_Id : constant CPU := Current_CPU;
+   begin
+      Ada.Text_IO.Put_Line
+         ("CRIT INSERT " & Integer'Image (Thread.Base_Priority));
+      Thread.Next_HI_Crit := HI_Crit_Table (CPU_Id);
+      HI_Crit_Table (CPU_Id) := Thread;
+   end Insert_High_Crit;
 
    --------------------
    --  Print_Queues  --
@@ -910,6 +894,15 @@ package body System.BB.Threads.Queues is
          Ada.Text_IO.Put_Line (Integer'Image (T2) & " is DISCARDED");
          Aux_Pointer := Aux_Pointer.Next;
       end loop;
+
+      Aux_Pointer := HI_Crit_Table (1);
+      while Aux_Pointer /= Null_Thread_Id
+      loop
+         T2 := Aux_Pointer.Base_Priority;
+         Ada.Text_IO.Put_Line (Integer'Image (T2) & " is HI-CRIT");
+         Aux_Pointer := Aux_Pointer.Next_HI_Crit;
+      end loop;
+
    end Print_Queues;
 
    -------------------------------
@@ -918,10 +911,19 @@ package body System.BB.Threads.Queues is
 
    procedure Initialize_LO_Crit_Task
       (Thread : Thread_Id;
+      LO_Crit_Budget : System.BB.Time.Time_Span;
+      Period : Natural;
       Is_Migrable : Boolean) is
       use Mixed_Criticality_System;
    begin
+      Thread.Low_Critical_Budget := LO_Crit_Budget;
+      Thread.High_Critical_Budget := LO_Crit_Budget;
+      Thread.Active_Budget := Thread.Low_Critical_Budget;
+      Thread.Is_Monitored := True;
+
+      Thread.Period := System.BB.Time.Microseconds (Period);
       Thread.Criticality_Level := LOW;
+
       Thread.Is_Migrable := Is_Migrable;
    end Initialize_LO_Crit_Task;
 
@@ -930,10 +932,21 @@ package body System.BB.Threads.Queues is
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
-      (Thread : Thread_Id) is
+     (Thread : Thread_Id;
+     LO_Crit_Budget : System.BB.Time.Time_Span;
+     HI_Crit_Budget : System.BB.Time.Time_Span;
+     Period : Natural) is
       use Mixed_Criticality_System;
    begin
+      Thread.Low_Critical_Budget := LO_Crit_Budget;
+      Thread.High_Critical_Budget := HI_Crit_Budget;
+      Thread.Active_Budget := Thread.Low_Critical_Budget;
+      Thread.Is_Monitored := True;
+
+      Thread.Period := System.BB.Time.Microseconds (Period);
       Thread.Criticality_Level := HIGH;
+
+      Insert_High_Crit (Thread);
    end Initialize_HI_Crit_Task;
 
    ---------------------
@@ -1104,6 +1117,36 @@ package body System.BB.Threads.Queues is
          --  Go ahead.
          Curr_Pointer := Extract_Discarded;
       end loop;
+
+      --  For each HI-crit task, set its Active_Budget to the LO-crit one.
+      Curr_Pointer := HI_Crit_Table (CPU_Id);
+      while Curr_Pointer /= Null_Thread_Id
+      loop
+         Curr_Pointer.Active_Budget := Curr_Pointer.Low_Critical_Budget;
+         Curr_Pointer := Curr_Pointer.Next_HI_Crit;
+      end loop;
+
    end Back_To_LO_Crit_Mode;
+
+   -----------------------------
+   --  Enter_In_HI_Crit_Mode  --
+   -----------------------------
+
+   procedure Enter_In_HI_Crit_Mode is
+      CPU_Id       : constant CPU := Current_CPU;
+      Curr_Pointer : Thread_Id := HI_Crit_Table (CPU_Id);
+   begin
+      Ada.Text_IO.Put_Line (CPU'Image (CPU_Id)
+               & " is ENTERING in HI-crit mode.");
+      --  For each HI-crit task, set its Active_Budget to the HI-crit one.
+      while Curr_Pointer /= Null_Thread_Id
+      loop
+         Curr_Pointer.Active_Budget := Curr_Pointer.High_Critical_Budget;
+         Curr_Pointer := Curr_Pointer.Next_HI_Crit;
+      end loop;
+
+      --  Discard migrable tasks.
+      Discard_Tasks;
+   end Enter_In_HI_Crit_Mode;
 
 end System.BB.Threads.Queues;
