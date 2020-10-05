@@ -52,7 +52,7 @@ BE1 : BE_First_CPU
      Criticality => HIGH, Workload => 100_000, Period => 2_000_000);
 ```
 
-- [ ] Dopo che il `CPU_Budget_Exceeded` causato da `BE1` è stato rilevato è gestito, `P1` deve trovarsi nella `Discarded_Thread_Table`. `P2` e `P3`, essendo rispettivamente non migrabile e *HI-CRIT*, non devono essere scartati.
+- [X] Dopo che il `CPU_Budget_Exceeded` causato da `BE1` è stato rilevato è gestito, `P1` deve trovarsi nella `Discarded_Thread_Table`. `P2` e `P3`, essendo rispettivamente non migrabile e *HI-CRIT*, non devono essere scartati.
 
 ### Task set 2
 
@@ -73,6 +73,6 @@ BE1 : BE_First_CPU
     (Pri => 10, Budget => 200_000,
      Criticality => HIGH, Workload => 100_000, Period => 2_000_000);
 ```
-- [ ] Questa volta, alla rilevazione e gestione del `CPU_Budget_Exceeded` causato da `BE1`, i tasks `P1` e `P2` devono trovarsi nella `Discarded_Thread_Table`.
+- [X] Questa volta, alla rilevazione e gestione del `CPU_Budget_Exceeded` causato da `BE1`, i tasks `P1` e `P2` devono trovarsi nella `Discarded_Thread_Table`.
 
 Torna all'[indice](../index.md)
