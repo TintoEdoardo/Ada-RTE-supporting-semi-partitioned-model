@@ -856,8 +856,6 @@ package body System.BB.Threads.Queues is
    procedure Insert_High_Crit (Thread : Thread_Id) is
       CPU_Id : constant CPU := Current_CPU;
    begin
-      Ada.Text_IO.Put_Line
-         ("CRIT INSERT " & Integer'Image (Thread.Base_Priority));
       Thread.Next_HI_Crit := HI_Crit_Table (CPU_Id);
       HI_Crit_Table (CPU_Id) := Thread;
    end Insert_High_Crit;

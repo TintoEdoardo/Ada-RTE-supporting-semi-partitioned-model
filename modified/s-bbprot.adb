@@ -100,7 +100,7 @@ package body System.BB.Protection is
       --  We need to check whether a context switch is needed
 
       if Threads.Queues.Context_Switch_Needed then
-         Ada.Text_IO.Put_Line ("Leave_Kernel");
+         --  Ada.Text_IO.Put_Line ("Leave_Kernel");
          CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
          --  Perform a context switch because the currently executing thread
@@ -113,7 +113,7 @@ package body System.BB.Protection is
          end if;
 
          CPU_Primitives.Context_Switch;
-         Ada.Text_IO.Put_Line ("Context Switch done!");
+         --  Ada.Text_IO.Put_Line ("Context Switch done!");
          --  Start budget monitoring iff the new running thread
          --  is NOT the idle thread and it has a budget
          --  (i.e. Is_Monitored = True).
@@ -133,11 +133,11 @@ package body System.BB.Protection is
 
       --  Now we need to set the hardware interrupt masking level equal to the
       --  software priority of the task that is executing.
-      Ada.Text_IO.Put_Line ("End of L_K");
+      --  Ada.Text_IO.Put_Line ("End of L_K");
 
       CPU_Primitives.Enable_Interrupts
         (Threads.Queues.Running_Thread.Active_Priority);
-      Ada.Text_IO.Put_Line ("Interr ENABLED");
+      --  Ada.Text_IO.Put_Line ("Interr ENABLED");
 
    end Leave_Kernel;
 
