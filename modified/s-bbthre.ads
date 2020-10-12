@@ -209,6 +209,13 @@ package System.BB.Threads is
 
       Is_Migrable : Boolean := False;
 
+      --  The following two fields are needed by monitored (Is_Monitored) tasks
+      --  Last time that this threads takes the CPU.
+      T_Start : System.BB.Time.Time;
+
+      --  Last time that this threads loses/yields the CPU.
+      T_Clear : System.BB.Time.Time;
+
    end record;
 
    function Get_Affinity

@@ -15,4 +15,5 @@ Alla rilevazione di un *idle tick*, bisogna:
 
 **Questo scenario è stato incluso nello [scenario 7](../scenario_7/scenario_7.md)**
 
+Vai al [prossimo scenario](../scenario_9/scenario_9.md).\
 Torna all'[indice](../index.md)

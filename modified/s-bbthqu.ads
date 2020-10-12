@@ -468,4 +468,10 @@ package System.BB.Threads.Queues is
 
    procedure Enter_In_HI_Crit_Mode;
 
+   --------------------
+   --  Print_BE_Log  --
+   --------------------
+
+   procedure Print_BE_Log;
+
 end System.BB.Threads.Queues;

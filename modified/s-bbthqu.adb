@@ -40,15 +40,20 @@ with System.BB.Time; use System.BB.Time;
 with CPU_Budget_Monitor;
 with Mixed_Criticality_System;
 with Experiments_Data;
+with System.Multiprocessors.Fair_Locks;
+with System.Multiprocessors.Spin_Locks;
 
 pragma Warnings (Off);
 with Ada.Text_IO;
---  pragma Warnings (On);
+with System.BB.Execution_Time;
+pragma Warnings (On);
 
 package body System.BB.Threads.Queues is
 
    use System.Multiprocessors;
    use System.BB.Board_Support.Multiprocessors;
+   use System.Multiprocessors.Fair_Locks;
+   use System.Multiprocessors.Spin_Locks;
    --  package STPO renames System.Task_Primitives.Operations;
 
    ----------------
@@ -60,7 +65,11 @@ package body System.BB.Threads.Queues is
    --  Identifier of the thread that is in the first place of the alarm queue
 
    HI_Crit_Table : array (CPU) of Thread_Id := (others => Null_Thread_Id);
-   --  It contains the whole set of HI-crit tasks.
+   --  for each CPU, it contains the whole set of HI-crit tasks.
+
+   Discarded_Table_Lock : Fair_Lock := (Spinning => (others => False),
+                                       Lock     => (Flag   => Unlocked));
+   --  Protect access to Discarded_Thread_Table on multiprocessor systems
 
    type Log_Record is
       record
@@ -646,7 +655,7 @@ package body System.BB.Threads.Queues is
    begin
       --  A CPU can only insert alarm in its own queue
 
-      pragma Assert (CPU_Id = Current_CPU);
+      --  pragma Assert (CPU_Id = Current_CPU);
 
       --  Set the Alarm_Time within the thread descriptor
 
@@ -829,8 +838,12 @@ package body System.BB.Threads.Queues is
 
    procedure Insert_Discarded (Thread : Thread_Id) is
    begin
+      Lock (Discarded_Table_Lock);
+
       Thread.Next := Discarded_Thread_Table;
       Discarded_Thread_Table := Thread;
+
+      Unlock (Discarded_Table_Lock);
    end Insert_Discarded;
 
    -------------------------
@@ -840,10 +853,14 @@ package body System.BB.Threads.Queues is
    function Extract_Discarded return Thread_Id is
       Aux_Pointer : constant Thread_Id := Discarded_Thread_Table;
    begin
+      Lock (Discarded_Table_Lock);
+
       if Discarded_Thread_Table /= Null_Thread_Id then
          Discarded_Thread_Table := Discarded_Thread_Table.Next;
          Aux_Pointer.Next := Null_Thread_Id;
       end if;
+
+      Unlock (Discarded_Table_Lock);
 
       return Aux_Pointer;
    end Extract_Discarded;
@@ -865,41 +882,91 @@ package body System.BB.Threads.Queues is
    --------------------
 
    procedure Print_Queues is
-      Aux_Pointer : Thread_Id := First_Thread_Table (1);
+      Aux_Pointer : Thread_Id := First_Thread_Table (CPU'First);
       T2 : Integer := -100;
    begin
+      Ada.Text_IO.Put_Line ("--  PRINT QUEUES  --");
+
+      Ada.Text_IO.Put_Line ("Queues on CPU 1");
+      Ada.Text_IO.Put_Line ("Ready");
       while Aux_Pointer /= Null_Thread_Id
       loop
          T2 := Aux_Pointer.Base_Priority;
-         Ada.Text_IO.Put_Line (Integer'Image (T2) & " is READY 1");
+         Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
          Aux_Pointer := Aux_Pointer.Next;
       end loop;
 
-      Aux_Pointer := Alarms_Table (1);
+      Aux_Pointer := Alarms_Table (CPU'First);
+      Ada.Text_IO.Put_Line ("");
+      Ada.Text_IO.Put_Line ("Alarms");
 
       while Aux_Pointer /= Null_Thread_Id
       loop
          T2 := Aux_Pointer.Base_Priority;
-         Ada.Text_IO.Put_Line (Integer'Image (T2) & " is ALARM 1");
+         Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
          Aux_Pointer := Aux_Pointer.Next;
       end loop;
 
-      Aux_Pointer := Discarded_Thread_Table;
+      Aux_Pointer := HI_Crit_Table (CPU'First);
+      Ada.Text_IO.Put_Line ("");
+      Ada.Text_IO.Put_Line ("HI-CRIT");
 
       while Aux_Pointer /= Null_Thread_Id
       loop
          T2 := Aux_Pointer.Base_Priority;
-         Ada.Text_IO.Put_Line (Integer'Image (T2) & " is DISCARDED");
-         Aux_Pointer := Aux_Pointer.Next;
-      end loop;
-
-      Aux_Pointer := HI_Crit_Table (1);
-      while Aux_Pointer /= Null_Thread_Id
-      loop
-         T2 := Aux_Pointer.Base_Priority;
-         Ada.Text_IO.Put_Line (Integer'Image (T2) & " is HI-CRIT");
+         Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
          Aux_Pointer := Aux_Pointer.Next_HI_Crit;
       end loop;
+
+      Aux_Pointer := First_Thread_Table (CPU'Last);
+      Ada.Text_IO.Put_Line ("");
+      Ada.Text_IO.Put_Line ("Queues on CPU 2");
+      Ada.Text_IO.Put_Line ("Ready");
+
+      while Aux_Pointer /= Null_Thread_Id
+      loop
+         T2 := Aux_Pointer.Base_Priority;
+         Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
+         Aux_Pointer := Aux_Pointer.Next;
+      end loop;
+
+      Aux_Pointer := Alarms_Table (CPU'Last);
+      Ada.Text_IO.Put_Line ("");
+      Ada.Text_IO.Put_Line ("Alarms");
+
+      while Aux_Pointer /= Null_Thread_Id
+      loop
+         T2 := Aux_Pointer.Base_Priority;
+         Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
+         Aux_Pointer := Aux_Pointer.Next;
+      end loop;
+
+      Aux_Pointer := HI_Crit_Table (CPU'Last);
+      Ada.Text_IO.Put_Line ("");
+      Ada.Text_IO.Put_Line ("HI-CRIT");
+
+      while Aux_Pointer /= Null_Thread_Id
+      loop
+         T2 := Aux_Pointer.Base_Priority;
+         Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
+         Aux_Pointer := Aux_Pointer.Next_HI_Crit;
+      end loop;
+
+      Lock (Discarded_Table_Lock);
+      Aux_Pointer := Discarded_Thread_Table;
+      Ada.Text_IO.Put_Line ("");
+      Ada.Text_IO.Put_Line ("Discarded");
+
+      while Aux_Pointer /= Null_Thread_Id
+      loop
+         T2 := Aux_Pointer.Base_Priority;
+         Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
+         Aux_Pointer := Aux_Pointer.Next;
+      end loop;
+
+      Unlock (Discarded_Table_Lock);
+
+      Ada.Text_IO.Put_Line ("--  END QUEUES  --");
 
    end Print_Queues;
 
@@ -957,12 +1024,9 @@ package body System.BB.Threads.Queues is
       Curr_Pointer : Thread_Id    := First_Thread_Table (CPU_Id);
       Prev_Pointer : Thread_Id    := Null_Thread_Id;
    begin
-
       --  First extract from READY queue
       while Curr_Pointer /= Null_Thread_Id
       loop
-            Ada.Text_IO.Put_Line ("Ready "
-                  & Integer'Image (Curr_Pointer.Base_Priority));
             if Curr_Pointer.Is_Migrable then
 
                if Curr_Pointer = First_Thread_Table (CPU_Id) then
@@ -986,8 +1050,6 @@ package body System.BB.Threads.Queues is
                Curr_Pointer.Next := Null_Thread_Id;
 
                --  Insert in the Discarded queue.
-               Ada.Text_IO.Put_Line ("Discarding "
-                  & Integer'Image (Curr_Pointer.Base_Priority));
                Curr_Pointer.State := Discarded;
                Insert_Discarded (Curr_Pointer);
 
@@ -1003,15 +1065,12 @@ package body System.BB.Threads.Queues is
       end loop;
 
       --  Then extract from SUSPENDED queue
-      pragma Warnings (Off);
       Aux_Pointer  := Alarms_Table (CPU_Id);
       Curr_Pointer := Alarms_Table (CPU_Id);
       Prev_Pointer := Null_Thread_Id;
-      pragma Warnings (On);
+
       while Curr_Pointer /= Null_Thread_Id
       loop
-            Ada.Text_IO.Put_Line ("Sleeping "
-                  & Integer'Image (Curr_Pointer.Base_Priority));
             if Curr_Pointer.Is_Migrable then
 
                if Curr_Pointer = Alarms_Table (CPU_Id) then
@@ -1035,8 +1094,6 @@ package body System.BB.Threads.Queues is
                Curr_Pointer.Next := Null_Thread_Id;
 
                --  Insert in the Discarded queue.
-               Ada.Text_IO.Put_Line ("Discarding "
-                  & Integer'Image (Curr_Pointer.Base_Priority));
                Curr_Pointer.State := Discarded;
                Insert_Discarded (Curr_Pointer);
 
@@ -1050,8 +1107,6 @@ package body System.BB.Threads.Queues is
                Curr_Pointer := Aux_Pointer;
             end if;
       end loop;
-
-      Print_Queues;
 
    end Discard_Tasks;
 
@@ -1076,8 +1131,8 @@ package body System.BB.Threads.Queues is
       --  if HI-crit mode had not been activated?
       Release_Skipped : Integer := 0;
    begin
-      Ada.Text_IO.Put_Line (CPU'Image (CPU_Id)
-            & " is GOING BACK to LO-crit mode.");
+      --  Ada.Text_IO.Put_Line (CPU'Image (CPU_Id)
+      --      & " is GOING BACK to LO-crit mode.");
       while Curr_Pointer /= Null_Thread_Id
       loop
          --  For each discarded task, we must:
@@ -1093,16 +1148,17 @@ package body System.BB.Threads.Queues is
                                  +
                      (Logic_Zero + Time_First);
 
-         Ada.Text_IO.Put_Line (Integer'Image (Release_Skipped) &
-            " Release skipped");
-         Ada.Text_IO.Put ("NRT " & Integer'Image (Curr_Pointer.Base_Priority));
-         Ada.Text_IO.Put_Line (Duration'Image (To_Duration
-            (Now - Time_First)) & " < " & Duration'Image
-            (To_Duration (NRT - Time_First)));
+         --  Ada.Text_IO.Put_Line (Integer'Image (Release_Skipped) &
+         --     " Release skipped");
+         --  Ada.Text_IO.Put ("NRT "
+         --      & Integer'Image (Curr_Pointer.Base_Priority));
+         --  Ada.Text_IO.Put_Line (Duration'Image (To_Duration
+         --     (Now - Time_First)) & " < " & Duration'Image
+         --     (To_Duration (NRT - Time_First)));
 
-         if NRT > Now then
-            Ada.Text_IO.Put_Line ("NRT > Now");
-         end if;
+         --  if NRT > Now then
+         --     Ada.Text_IO.Put_Line ("NRT > Now");
+         --  end if;
 
          --  2. insert it in the Alarms_Thread_Table;
          --  See Insert_Alarm's precondition.
@@ -1134,8 +1190,8 @@ package body System.BB.Threads.Queues is
       CPU_Id       : constant CPU := Current_CPU;
       Curr_Pointer : Thread_Id := HI_Crit_Table (CPU_Id);
    begin
-      Ada.Text_IO.Put_Line (CPU'Image (CPU_Id)
-               & " is ENTERING in HI-crit mode.");
+      --  Ada.Text_IO.Put_Line (CPU'Image (CPU_Id)
+      --         & " is ENTERING in HI-crit mode.");
       --  For each HI-crit task, set its Active_Budget to the HI-crit one.
       while Curr_Pointer /= Null_Thread_Id
       loop
@@ -1146,5 +1202,19 @@ package body System.BB.Threads.Queues is
       --  Discard migrable tasks.
       Discard_Tasks;
    end Enter_In_HI_Crit_Mode;
+
+   --------------------
+   --  Print_BE_Log  --
+   --------------------
+
+   procedure Print_BE_Log is
+   begin
+      for I in CPU_Budget_Monitor.BE_Detected'Range loop
+         if CPU_Budget_Monitor.BE_Detected (I) > 0 then
+            Ada.Text_IO.Put_Line ("Task " & Integer'Image (I) & " BE_Exceeded"
+            & Natural'Image (CPU_Budget_Monitor.BE_Detected (I)) & " times.");
+         end if;
+      end loop;
+   end Print_BE_Log;
 
 end System.BB.Threads.Queues;

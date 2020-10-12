@@ -1,0 +1,1024 @@
+ 239 restored budget to  0.000000000
+ 0.099922282
+ 45 restored bud238 tost0.ed00ud000 t   0980002000
+ 
+0 .0st76ed94udg35 tes 0re00bu00et
+o  13100000802  r09to44d 4dg30 ro to.1d 00dg00 to0.2.1480070002  r12to24d b
+ge5 tost0.ed00udg00 to  0.140000000
+ 0.283804790
+ 10 restored budget to  0.300000000
+----    PPRRIINNTT  QQUUEEUUEESS    ----
+
+QQuueeuueess  oonn  CCU  1
+RRedyy
+ 455][40][  2][ 220[[1]]Allars
+ 223]
+HHICRRI
+
+[ 0]][455
+ueuue oonCPPU2
+eaad
+[[ 5][  3][ 115[[100][-]
+
+Aarrm
+
+[ 23]
+I-CCRT
+[ 0][  3]
+Discarded
+- isNDrdUE
+S   -
+ QUEUES  --
+CPCUP_U _2 :1 :t atsaks k  3 545-0.0-000.0000800080184
+5 0HI
+- RIT RIU_CPdgBu_Eeteedce DedECETD.TED.
+CPU_ 1: LOW => HIGH
+ 0.857231135
+ 35 restored budget to  1.000000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[ 45][ 0.8[ 2548-1
+
+Al rmsto[ 23bu
+Ht CR  
+[000][ 00]
+-  ueINonQUPUES
+--adQue[ s ][ 1PU[-1
+R
+Aly
+s40 [5]5
+HI-]
+Tar 3
+[ 35]
+Di-CarTd
+4020 [5]
+Q-  esD n EUU   -Re
+dy
+[ 30][ 15][-1]
+Alarms
+[ 35]
+HI-CRIT
+[ 30][ 35]
+Discarded
+[ 20][ 10]--  END QUEUES  --
+ 0.356182468
+ 30 restored budget to  0.600000000
+ 0.139961246
+ 15 restored budget to  0.140000000
+ 0.255479291
+ 40 restored budget to  0.500000000
+ 0.139960309
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0.13998 607.01639
+985823
+ 15 res t2o5r erde sbtuodrgeedt  btuoge0.to000.000000000
+ 0. 103.919389698835286
+8
+ 15  r2e5s troersetdo rbeudd gbeutd gtt  0  40140000
+0
+ 0.1 309.9183790908963
+87
+ 15 re s2t5o rreeds tbourdegde tb utdge0.to 00.100000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 40]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[ 40][-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 2: task  30-0.000007135
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+CPU_ 1: task  40-0.000007129
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+CPU_ 1: LOW => HIGH
+ 0.463075135
+ 30 restored budget to  0.600000000
+ 0.139990456
+ 15 restored budget to  0.140000000
+ 0.139987438
+ 15 restored budget to  0.140000000
+ 0.362651574
+ 40 restored budget to  0.500000000
+ 0.139980087
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0.139 908.616319398
+6018
+ 15 re s2t5o rreeds tbourdegde tb utdg 0.1o 00.100000000
+-- - -P R IPNRTI NQTU EQUUEESU E S- - -
+-Qu
+eQuueesu eosn  oCnPCPU
+
+adady[ 4 4[-1-1
+Alalass 2525
+HI-I-ITIT[ 4 4[ [5]
+
+eueueononPUPU
+
+adad
+[ [ ][-[-1]lalas
+[
+[ ]
+
+-CRCR
+
+303[][ 3]Discarded
+-
+DiENarQUdES   -D QUEUES  --
+CPUC_P U2_:  1t:a stka s k3 5 45-0.-000.000000701067830
+9 H
+I -CRCR C C_B_BgetetxcxcdedeDEDECTCTE
+
+CPU_ 1: LOW => HIGH
+ 0.860031177
+ 35 restored budget to  1.000000000
+ 0.139980529
+ 15 restored budget to  0.140000000
+0.858885508
+ 45 restored budget to  1.000000000
+ 0.139980312
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0 .01.31939989686621286
+
+ 15  2r5e srteosrteodr ebdu dbguedtg t     141400000
+
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.139986249
+ 25 restored budget to  0.140000000
+CPU_ 2: t-a-s k  P R3I0NT QUEUES  --
+Queues -o0n. 0C0P0U0 0168
+8ea H
+CR40 C-1_B
+Alat_sce 2ed
+HTECRED
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][ 15][-1]
+Alarms
+[ 35]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: task  40-0.000006931
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+CPU_ 1: LOW => HIGH
+ 0.463077658
+ 30 restored budget to  0.600000000
+ 0.139980444
+ 15 restored budget to  0.140000000
+ 0.360028090
+ 40 restored budget to  0.500000000
+ 0.139989619
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0.139 908.616309498
+6508
+ 15 re s2t5o rreeds tbourdegde tb utdget.1o 00.100000000
+ 0 .01.31939989686658889
+
+ 25  1r5e srteosrteodr ebdu dbguedtg et  0  401400000
+0
+  00..113399998867828262
+
+ 2 51 5r ersetsotroerde db ubdugdegte  t   0144000000
+
+  00..113399998866895790
+
+  2155  rreessttoorreedd  bbuuddggeet to  0.140000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.139986715
+ 25 restored budget to  0.140000000
+ 0.-0-0 0 0P0R0I2N7T6 Q
+UEUES  --
+Queues on -C-P U  P1RI
+NRTe QU
+ES45---1Qu
+Ala osCP 41
+HadCR
+[ 
+[]4-1[ 45la
+Que
+[s 0]CPI-2ITea[ 4
+[  45] 
+Que 15]o-1]
+ 2rmea
+y
+3835
+HI30][T5][30][ Al]rmsis[ 23ed
+H- CRID 
+[EU0][ --]
+
+Discarded
+--  END QUEUES  --
+CPU_ 1: task  45CP-U0_. 020:0 0t0a6s1k4 1 3
+5 HI-CRIT CPU_Budget-Ex00ed07 D2ECTI-.ITPUPU1:udOWt_> HeeHd DETECTED.
+ 0.859728042
+ 45 restored budget to  1.000000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[ 40][ 25][-1]8
+Ala30s
+ 45 r
+HIorRI b
+[ et][ 4 1
+Q00ue00on
+CPU 2
+Ready
+[ 35]
+Alarms
+[ 35]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.463079111
+ 30 restored budget to  0.600000000
+ 0.139970489
+ 15 restored budget to  0.140000000
+ 0.139987207
+ 15 restored budget to  0.140000000
+ 0.258299898
+ 40 restored budget to  0.500000000
+ 0.139970793
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0 .01.31939989685652346
+
+ 1 52 5r ersetsotroerde db ubdugdegtettoo 0..100000000
+ 0.13998 609.61439
+985910
+ 15 resto r2e5d  rbeusdtgoerte dt ob  0.t 00  0014
+000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[ 25][-1]
+Alarms
+ 0.1]
+86-C7
+ 25 4est 45dbuueets o  C.1 2000ea0
+[ 30][ 15][-1]
+Alarms
+[ 35]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 2: task  30-0.000006940
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+ 0.139986841
+ 25 restored budget to  0.140000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[ 40][-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][ 15][-1]
+Alarms
+[ 35]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.462241925
+ 30 restored budget to  0.600000000
+ 0.139980069
+ 15 restored budget to  0.140000000
+CPU_ 1: task  40-0.000006955
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+CPU_ 1: LOW => HIGH
+ 0.139986595
+ 15 restored budget to  0.140000000
+ 0.362230640
+ 40 restored budget to  0.500000000
+ 0.139989916
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0.13 909.81637979285
+919
+ 1 52 5r ersetsotroerde db ubdugdegtetoto0.0.00000000
+
+  00..113399998866941890
+
+ 1 52 5r ersetsotroerde db ubdugdegte  to 00.40000000
+
+--- -  P RPIRNITN TQ UQEUUEEUSE S  - ---
+Q
+uQeuueeuse so no nC C 1 1ReRey
+
+45][]1-1
+AlAlmsms[ 2 2
+H
+HCRCR
+[
+[0][ 4 45
+Q
+Ques s  C C 2 2ReRea
+
+[ ]5-1-1]lalass 1515
+HI-I-ITIT[ [ 3[ [5]5]Discarded
+
+  scD deEU
+-   E
+ QUEUES  --
+CPUC_P U1_:  2t:a stka s k4 5 35-0-.00.00000000703794998
+ 
+H IHCRITIT U_U_dgdg_E_Eeeeed d DECECD.D.CPU_ 1: LOW => HIGH
+ 0.858930742
+ 35 restored budget to  1.000000000
+ 0.139990345
+ 15 rest.8ed98udg7 t45 0es40re00bu
+et to  1.000000000
+ 0.139990042
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0.13 909.81731909286
+390
+ 15  r2e5s troersetdo rbeudd gbeutd got 0.  00140000
+00
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 2: task  30-0.000006805
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+ 0.139986246
+ 25 restored budget to  0.140000000
+ 0.463075294
+ 30 restored budget to  0.600000000
+ 0.139990237
+ 15 restored budget to  0.140000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[ 40][-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.139987087
+ 15 restored budget to  0.140000000
+CPU_ 1: task  40-0.000007039
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+CPU_ 1: LOW => HIGH
+ 0.139987441
+ 15 restored budget to  0.140000000
+ 0.363081351
+ 40 restored budget to  0.500000000
+ 0.139979988
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0. 103.919389696826544
+4
+ 15  r2e5s troersetdo rbeudd gbeutd get 0o 40.140000
+00
+ 0.139 908.711359698
+6204
+ 15 re s2t5o rreeds tbourdegde tb utd  t 14  0014000000
+ 0.1 309.9183791918464
+95
+ 15  r2e5s troersetdo rbeudd gbeutd get  o 14.10000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.139986228
+ 25 restored budget to  0.140000000
+CPU_ 2: task  30-0.000007021
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+--  PRINT QUEUES  --
+Queues  o0n. 5C0P0U4 3125
+6R2ea
+dy
+[ 45][- ]
+INarQU
+ES25--
+HIueuIT o[ CP][ 4
+R
+Qyue 45n[CP]
+
+arad
+[[ 3]
+ 3-CR 15
+[-1]
+ 45rm
+Que 23 o
+HPUCR
+
+[dy0][ 35] 3is[ 15ed-1]  laD s
+UE23 -
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: task  45-0.000005826
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+CPU_ 1: LOW => HIGH
+ 0.860481871
+ 45 restored budget to  1.000000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Rea56
+3740[ 35][es]
+edarud
+[ t5] 
+HI-00IT00[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][ 15][-1]
+Alarms
+[ 35]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.463070348
+ 30 restored budget to  0.600000000
+ 0.139971712
+ 15 restored budget to  0.140000000
+ 0.139987087
+ 15 restored budget to  0.140000000
+ 0.257537438
+ 40 restored budget to  0.500000000
+ 0.139971033
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0.139986 909.413
+9986321
+ 15 resto r2e5d  rbeusdtgoerte dt ob  ge14to000.00000000
+ 0.1 309.9183698968562
+43
+ 15  2r5e srteosrteodr ebdu dbguedtg t t 0 0404000000
+
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.139986616
+ 25 restored budget to  0.140000000
+CPU_ 2: task  30-0.000006934
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+ 0.139987090
+ 25 restored budget to  0.140000000
+ 0.463079372
+ 30 restored budget to  0.600000000
+ 0.139980114
+ 15 restored budget to  0.140000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[ 40][-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUE 0.--9986967
+ 15 restored budget to  0.140000000
+CPU_ 1: task  40-0.000006940
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+CPU_ 1: LOW => HIGH
+ 0.139987264
+ 15 restored budget to  0.140000000
+ 0.363086057
+ 40 restored budget to  0.500000000
+ 0.139980291
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0 .01.31939989689642049
+
+ 15  2r5e srteosrteodr ebdu dbguedtg eo to.10.000000000
+-- - -P R IPNRTI NQTU EQUUEESU E S- - -
+-Qu
+eQuueesu eosn  oCnPCP11eaea
+
+[ ]5-1-1
+Alalass 2525
+HI-I-ITIT[ 4 40 4545
+Queues s  C C 2 2ReRey
+
+[5]5-[]]
+Armrm
+[ 1 1
+H
+HCRCR
+[
+[0][ [ 35
+Discarded
+- isND deEU
+S   E
+ QUEUES  --
+CPU_C P2U:_  t1a:s kt a s3k5  45-0.0-000.0000609010371
+2 6HI
+- HIITRIPU_PUdgud_Et_eeced edTECTED.ED.
+CPU_ 1: LOW => HIGH
+ 0.860024559
+ 35 restored budget to  1.000000000
+ 0.139990093
+ 15 restored budget to  0.140000000
+ 0.858877462
+ 45 restored budget to  1.00000--00PR NT 399UE64 -
+25ueess re Cbu 1t ea  
+1405]
+00ar s
+[ i0].I-- ITRI[ 4QU[ 45  
+Qu
+Qus es Cn  2U Re
+Rydy30-[]
+][-rm
+A[ rm]
+[ -CR
+
+[CR0][ [ ]
+[ 35es
+Dn caU ed
+Re-  
+[ Q0][ S ][-
+
+Alarms
+[ 35]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+CPU_ 2: task  30-0.000007018
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+ 0.139985988
+ 25 restored budget to  0.140000000
+ 0.457083087
+ 30 restored budget to  0.600000000
+ 0.139979940
+ 15 restored budget to  0.140000000
+ 0.139 908.617399998
+6294
+ 15 re s2t5o rreeds tbourdegde tb utdo t .1  0004000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[ 40][-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.139986814
+ 15 restored budget to  0.140000000
+CPU_ 1: task  40-0.000007240
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+CPU_ 1: LOW => HIGH
+ 0.363074616
+ 40 restored budget to  0.500000000
+ 0.139990054
+ 25 restore0.bu998t 86   .14res00re
+bu.1et98o 03.1 25 00st
+ed budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0.1 309.9183696948062
+79
+ 15 r e2s5t orreesdt obrueddg ebtu dtet 0.  00140000
+00
+ 0.1399 806.7193099
+86375
+ 15 resto r2e5d  rbeusdtgoerte dt ob dge14to000.00000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[ 30][-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 2: task  30-0.000006922
+ HI-CRIT CPU_Budget_Exceeded DETECTED.
+ 0.139986676
+ 25 restored budget to  0.140000000
+ 0.463072892
+ 30 restored budget to  0.600000000
+ 0.139989967
+ 15 restored budget to  0.140000000
+  00..113399998866555335
+
+  2155  rreessttoorreedd  bbuuddggeet to  0.140000000
+-- - -P R IPNRTI NQTU EQUUEESU E S- - -
+-Qu
+eQuueesu eosn  oCnPUCP
+1adea
+[
+[ [-1[-1Al
+Alsms 25]2
+HI-HIITRI[ 4[ [ 45 45]u
+Que os CP C2 2eadea
+[
+[][5]]
+Al
+Alsm[
+[]5]-CI-TI[
+[][ ][ 35Discarded
+
+D EcarQUdES- --ND QUEUES  --
+CPUC_P U2_:  1t:a stka s k3 5 45--00..000000000077231297
+
+  HHI-CRIT CPU_Budget_Exceeded DETECTED.
+CPU_ 1: LOW => HIGH
+ 0.860024802
+ 35 restored budget to  1.000000000
+ 0.139989703
+ 15 restored budget to  0.14000000 0
+858870153
+ 45 restored budget to  1.000000000
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[ 40][ 25][-1]
+Alarms
+[ 239]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+ 0.139987069
+ 15 restored budget to  0.140000000
+ 0.139987279
+ 15 restored budget to  0.140000000
+ 0.257088994
+ 40 restored budget to  0.500000000
+ 0.139970505
+ 25 restored budget to  0.140000000
+ 1 is idle.
+--  PRINT QUEUES  --
+Queues on CPU 1
+Ready
+[-1]
+Alarms
+[ 25]
+HI-CRIT
+[ 40][ 45]
+Queues on CPU 2
+Ready
+[-1]
+Alarms
+[ 15]
+HI-CRIT
+[ 30][ 35]
+Discarded
+--  END QUEUES  --
+CPU_ 1: HIGH => LOW
+ 0.13998 700.31939
+986390
+ 15 res t2o5r erde sbtuodrgeedt  btuod 0. t00 00040
+00000
+----------------------
+--  END EXPERIMENT  --
+----------------------
+Task  30 BE_Exceeded 8 times.
+Task  35 BE_Exceeded 6 times.
+Task  40 BE_Exceeded 6 times.
+Task  45 BE_Exceeded 7 times.

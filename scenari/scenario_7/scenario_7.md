@@ -105,4 +105,5 @@ L'iterare sulle liste, però, è temporalmente costoso. Si potrebbe mitigare la 
 
 Sperabilmente, in un sistema reale, il numero di tasks non dovrebbe essere alto. Gli esperimenti degli autori, infatti, considerano taskset di dimensione al più 35 con una percentuale di *HI-crit* tasks che varia dal 10% al al 90%.
 
+Vai al [prossimo scenario](../scenario_8/scenario_8.md).\
 Torna all'[indice](../index.md)

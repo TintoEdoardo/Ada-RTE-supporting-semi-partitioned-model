@@ -44,6 +44,11 @@ with System.Machine_Code; use System.Machine_Code;
 with CPU_Budget_Monitor;
 with System.Tasking;
 
+pragma Warnings (Off);
+with Ada.Text_IO;
+with System.BB.Execution_Time;
+pragma Warnings (On);
+
 package body System.BB.CPU_Primitives is
    use System.BB.Threads;
    use System.BB.Board_Support.Multiprocessors;
@@ -228,6 +233,7 @@ package body System.BB.CPU_Primitives is
       --  switches, we need to do that here.
 
       if Threads.Queues.Context_Switch_Needed then
+         CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
          --  The interrupt handler caused pre-emption of the thread that
          --  was executing. This means we need to switch context. We do not

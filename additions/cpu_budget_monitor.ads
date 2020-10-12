@@ -32,7 +32,6 @@ package CPU_Budget_Monitor is
    type BE_Log is array (System.Priority) of Natural;
 
    BE_Detected : BE_Log := (others => 0);
-    --  BE_Detected (0) is the main task.
     --  BE_Detected (Pri) is the number of time the thread with priority "Pri"
     --  has exceeded its budget. Therefore, the threads must have
     --  different priorities between them.

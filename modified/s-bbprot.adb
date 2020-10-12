@@ -38,6 +38,7 @@ pragma Restrictions (No_Elaboration_Code);
 with System.BB.CPU_Primitives;
 with System.BB.Parameters;
 with System.BB.Threads;
+use System.BB.Threads;
 with System.BB.Time;
 
 with System.BB.Threads.Queues;
@@ -56,6 +57,7 @@ pragma Warnings (On);
 
 pragma Warnings (Off);
 pragma Elaborate (System.BB.Threads.Queues);
+with System.BB.Execution_Time;
 pragma Warnings (On);
 
 with System.Tasking;

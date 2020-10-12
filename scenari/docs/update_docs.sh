@@ -10,6 +10,8 @@ cp ../scenario_7/scenario_7.md ./scenario_7
 cp ../scenario_8/scenario_8.md ./scenario_8
 cp ../scenario_9/scenario_9.md ./scenario_9
 cp ../scenario_10/scenario_10.md ./scenario_10
+cp ../scenario_11/scenario_11.md ./scenario_11
+cp ../scenario_12/scenario_12.md ./scenario_12
 
 cp -r ./scenario_* ../../../reports_on_Thesis/
 cp index.md ../../../reports_on_Thesis/

@@ -35,6 +35,6 @@ package Core_Execution_Modes is
 
 private
 
-   Mode_Core_1 : Mode := LOW;
+   Mode_Cores : array (CPU) of Mode := (others => LOW);
 
 end Core_Execution_Modes;

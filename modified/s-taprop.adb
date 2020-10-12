@@ -285,17 +285,21 @@ package body System.Task_Primitives.Operations is
       use System.BB.Threads.Queues;
       pragma Unreferenced (Param);
       T : constant Tasking.Task_Id := Self;
-      CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
+      CPU_Id : System.Multiprocessors.CPU;
    begin
       Enter_Task (T);
 
       loop
-         Ada.Text_IO.Put_Line ("IDLE!");
+         --  Ada.Text_IO.Put_Line ("IDLE!");
          Enter_Kernel;
-
+         CPU_Id := Current_CPU;
          if Get_Core_Mode (CPU_Id) = HIGH then
             --  An idle tick during HI-crit mode has beed detected
             --  => go back to LO-crit mode.
+            if CPU_Id = 1 then
+               Ada.Text_IO.Put_Line (CPU'Image (CPU_Id) & " is idle.");
+               Print_Queues;
+            end if;
             Set_Core_Mode (LOW, CPU_Id);
             Back_To_LO_Crit_Mode;
          end if;
