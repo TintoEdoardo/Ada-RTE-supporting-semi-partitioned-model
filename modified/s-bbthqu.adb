@@ -675,7 +675,6 @@ package body System.BB.Threads.Queues is
 
       else
          --  Find the minimum greater than T alarm within the alarm queue
-
          Alarm_Id_Aux := Alarms_Table (CPU_Id);
          while Alarm_Id_Aux.Next_Alarm /= Null_Thread_Id and then
            Alarm_Id_Aux.Next_Alarm.Alarm_Time < T
@@ -844,6 +843,7 @@ package body System.BB.Threads.Queues is
       Discarded_Thread_Table := Thread;
 
       Unlock (Discarded_Table_Lock);
+      --  Print_Queues;
    end Insert_Discarded;
 
    -------------------------
@@ -904,7 +904,7 @@ package body System.BB.Threads.Queues is
       loop
          T2 := Aux_Pointer.Base_Priority;
          Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
-         Aux_Pointer := Aux_Pointer.Next;
+         Aux_Pointer := Aux_Pointer.Next_Alarm;
       end loop;
 
       Aux_Pointer := HI_Crit_Table (CPU'First);
@@ -938,7 +938,7 @@ package body System.BB.Threads.Queues is
       loop
          T2 := Aux_Pointer.Base_Priority;
          Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
-         Aux_Pointer := Aux_Pointer.Next;
+         Aux_Pointer := Aux_Pointer.Next_Alarm;
       end loop;
 
       Aux_Pointer := HI_Crit_Table (CPU'Last);
@@ -965,7 +965,7 @@ package body System.BB.Threads.Queues is
       end loop;
 
       Unlock (Discarded_Table_Lock);
-
+      Ada.Text_IO.Put_Line ("");
       Ada.Text_IO.Put_Line ("--  END QUEUES  --");
 
    end Print_Queues;
@@ -1049,8 +1049,10 @@ package body System.BB.Threads.Queues is
                --  Isolate the current thread.
                Curr_Pointer.Next := Null_Thread_Id;
 
-               --  Insert in the Discarded queue.
+               --  Log discarding and insert in the Discarded queue.
                Curr_Pointer.State := Discarded;
+               Curr_Pointer.Log_Table.Times_Discarded
+                                 := Curr_Pointer.Log_Table.Times_Discarded + 1;
                Insert_Discarded (Curr_Pointer);
 
                --  Go ahead with the current pointer.
@@ -1076,25 +1078,27 @@ package body System.BB.Threads.Queues is
                if Curr_Pointer = Alarms_Table (CPU_Id) then
                   --  The first thread is migrable, so it must be removed.
                   --  This means that the second thread in the queue,
-                  --  i.e. Curr_Pointer.Next, must be set
+                  --  i.e. Curr_Pointer.Next_Alarm, must be set
                   --  as the first thread in the queue.
-                  Alarms_Table (CPU_Id) := Curr_Pointer.Next;
+                  Alarms_Table (CPU_Id) := Curr_Pointer.Next_Alarm;
                else
                   --  We have to remove a thread between two others
                   --  (the last one could be the Null thread).
                   --  This means that the previous thread in the queue
                   --  must be linked to the last one.
-                  Prev_Pointer.Next := Curr_Pointer.Next;
+                  Prev_Pointer.Next_Alarm := Curr_Pointer.Next_Alarm;
                end if;
 
                --  Go ahead with the aux pointer.
-               Aux_Pointer := Aux_Pointer.Next;
+               Aux_Pointer := Aux_Pointer.Next_Alarm;
 
                --  Isolate the current thread.
-               Curr_Pointer.Next := Null_Thread_Id;
+               Curr_Pointer.Next_Alarm := Null_Thread_Id;
 
-               --  Insert in the Discarded queue.
+               --  Log discarding and insert in the Discarded queue.
                Curr_Pointer.State := Discarded;
+               Curr_Pointer.Log_Table.Times_Discarded
+                                 := Curr_Pointer.Log_Table.Times_Discarded + 1;
                Insert_Discarded (Curr_Pointer);
 
                --  Go ahead with the current pointer.
@@ -1103,7 +1107,7 @@ package body System.BB.Threads.Queues is
             else --  Current thread is NOT migrable
                --  then go ahead normally
                Prev_Pointer := Curr_Pointer;
-               Aux_Pointer := Aux_Pointer.Next;
+               Aux_Pointer := Aux_Pointer.Next_Alarm;
                Curr_Pointer := Aux_Pointer;
             end if;
       end loop;
@@ -1164,6 +1168,9 @@ package body System.BB.Threads.Queues is
          --  See Insert_Alarm's precondition.
          Curr_Pointer.State := Delayed;
          Insert_Alarm (NRT, Curr_Pointer, Inserted_As_First);
+         --  Log task restoring.
+         Curr_Pointer.Log_Table.Times_Restored
+                                 := Curr_Pointer.Log_Table.Times_Restored + 1;
 
          if Inserted_As_First then
             Update_Alarm (Get_Next_Timeout (CPU_Id));
@@ -1207,14 +1214,42 @@ package body System.BB.Threads.Queues is
    --  Print_BE_Log  --
    --------------------
 
-   procedure Print_BE_Log is
+   procedure Print_Tasks_Log is
+      Curr_Pointer : Thread_Id := Global_List;
+      use Mixed_Criticality_System;
    begin
-      for I in CPU_Budget_Monitor.BE_Detected'Range loop
-         if CPU_Budget_Monitor.BE_Detected (I) > 0 then
-            Ada.Text_IO.Put_Line ("Task " & Integer'Image (I) & " BE_Exceeded"
-            & Natural'Image (CPU_Budget_Monitor.BE_Detected (I)) & " times.");
+      Ada.Text_IO.Put_Line ("--  Tasks log  --");
+
+      while Curr_Pointer /= Null_Thread_Id loop
+         if Curr_Pointer.Base_Priority in
+                              System.Priority'First .. System.Priority'Last - 2
+         then
+            Ada.Text_IO.Put_Line ("Task " &
+                                 Integer'Image (Curr_Pointer.Base_Priority));
+            if Curr_Pointer.Criticality_Level = LOW then
+               Ada.Text_IO.Put ("LO-Crit & ");
+               if Curr_Pointer.Is_Migrable then
+                  Ada.Text_IO.Put_Line ("Migrable");
+               else
+                  Ada.Text_IO.Put_Line ("NOT Migrable");
+               end if;
+            else
+               Ada.Text_IO.Put_Line ("HI-Crit");
+            end if;
+            Ada.Text_IO.Put_Line ("BE Detected: " &
+                              Natural'Image (Curr_Pointer.Log_Table.Times_BE));
+            Ada.Text_IO.Put_Line ("Times Discarded: " &
+                     Natural'Image (Curr_Pointer.Log_Table.Times_Discarded));
+            Ada.Text_IO.Put_Line ("Times Restored: " &
+                        Natural'Image (Curr_Pointer.Log_Table.Times_Restored));
+            Ada.Text_IO.Put_Line ("Locked Time: " &
+                              Duration'Image (To_Duration
+                                       (Curr_Pointer.Log_Table.Locked_Time)));
+            Ada.Text_IO.Put_Line ("");
          end if;
+
+         Curr_Pointer := Curr_Pointer.Global_List;
       end loop;
-   end Print_BE_Log;
+   end Print_Tasks_Log;
 
 end System.BB.Threads.Queues;

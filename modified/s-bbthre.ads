@@ -79,6 +79,16 @@ package System.BB.Threads is
    --  Addition for MCS by Xu & Burns: a thread is Discarded when is going to
    --  be inserted in the discarded queue (Discarded_Thread_Table).
 
+   type Task_Data_Log is record
+      --  BE is Budget_Exceeded
+      Times_BE         : Natural      := 0;
+      Times_Discarded  : Natural      := 0;
+      Times_Restored   : Natural      := 0;
+      Locked_Time      : System.BB.Time.Time_Span
+                                            := System.BB.Time.Time_Span_First;
+      Last_Time_Locked : System.BB.Time.Time      := 0;
+   end record;
+
    type Thread_Descriptor is record
       Context : aliased System.BB.CPU_Primitives.Context_Buffer;
       --  Location where the hardware registers (stack pointer, program
@@ -215,6 +225,8 @@ package System.BB.Threads is
 
       --  Last time that this threads loses/yields the CPU.
       T_Clear : System.BB.Time.Time;
+
+      Log_Table : Task_Data_Log;
 
    end record;
 

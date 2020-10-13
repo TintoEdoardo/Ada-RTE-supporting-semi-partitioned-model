@@ -293,13 +293,14 @@ package body System.Task_Primitives.Operations is
          --  Ada.Text_IO.Put_Line ("IDLE!");
          Enter_Kernel;
          CPU_Id := Current_CPU;
+         CPU_Log_Table (CPU_Id).Is_Idle := True;
+
+         --  Start logging idle time.
+         CPU_Log_Table (CPU_Id).Last_Time_Idle := Clock;
+
          if Get_Core_Mode (CPU_Id) = HIGH then
             --  An idle tick during HI-crit mode has beed detected
             --  => go back to LO-crit mode.
-            if CPU_Id = 1 then
-               Ada.Text_IO.Put_Line (CPU'Image (CPU_Id) & " is idle.");
-               Print_Queues;
-            end if;
             Set_Core_Mode (LOW, CPU_Id);
             Back_To_LO_Crit_Mode;
          end if;

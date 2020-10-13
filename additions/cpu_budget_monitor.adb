@@ -26,15 +26,18 @@ package body CPU_Budget_Monitor is
       Cancelled : Boolean;
    begin
       System.BB.Protection.Enter_Kernel;
-      Ada.Text_IO.Put ("CPU_" & System.Multiprocessors.CPU'Image (CPU_Id)
-                               & ": task " & Integer'Image (Task_Exceeded));
+
+      --  Log CPU_Budget_Exceeded
+      Self_Id.Log_Table.Times_BE := Self_Id.Log_Table.Times_BE + 1;
+      --  Ada.Text_IO.Put ("CPU_" & System.Multiprocessors.CPU'Image (CPU_Id)
+      --                         & ": task " & Integer'Image (Task_Exceeded));
 
       if Get_Core_Mode (CPU_Id) = LOW then
          if Self_Id.Criticality_Level = HIGH then
             Clear_Monitor (Cancelled);
 
-            Ada.Text_IO.Put_Line
-               (" HI-CRIT CPU_Budget_Exceeded DETECTED.");
+            --  Ada.Text_IO.Put_Line
+            --   (" HI-CRIT CPU_Budget_Exceeded DETECTED.");
             BE_Detected (Task_Exceeded) := (BE_Detected (Task_Exceeded) + 1);
             Set_Core_Mode (HIGH, CPU_Id);
             Enter_In_HI_Crit_Mode;
@@ -87,6 +90,7 @@ package body CPU_Budget_Monitor is
       use System.BB.Board_Support.Multiprocessors;
       use System.BB.Threads;
       use System.BB.Threads.Queues;
+      use Core_Execution_Modes;
       CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
       Self_Id : constant Thread_Id := Running_Thread;
       --  Task_Exceeded : constant System.Priority := Self_Id.Base_Priority;
@@ -100,6 +104,15 @@ package body CPU_Budget_Monitor is
                 CPU_BE_Detected'Access);
       --  Ada.Text_IO.Put_Line (Integer'Image (Task_Exceeded) & " armed with"
       --                    & Duration'Image (To_Duration (For_Time)));
+
+      --  Log that CPU_Id is no longer idle.
+      if CPU_Log_Table (CPU_Id).Is_Idle then
+         CPU_Log_Table (CPU_Id).Is_Idle := False;
+
+         CPU_Log_Table (CPU_Id).Idle_Time :=
+                     CPU_Log_Table (CPU_Id).Idle_Time +
+                              (Clock - CPU_Log_Table (CPU_Id).Last_Time_Idle);
+      end if;
 
       Self_Id.T_Start := System.BB.Time.Clock;
    end Start_Monitor;
@@ -125,8 +138,8 @@ package body CPU_Budget_Monitor is
          Self_Id.Active_Budget :=
                   Self_Id.Active_Budget - (Self_Id.T_Clear - Self_Id.T_Start);
 
-         Ada.Text_IO.Put_Line (Duration'Image (System.BB.Time.To_Duration
-                                             (Self_Id.Active_Budget)));
+         --  Ada.Text_IO.Put_Line (Duration'Image (System.BB.Time.To_Duration
+         --                                    (Self_Id.Active_Budget)));
       end if;
    end Clear_Monitor;
 

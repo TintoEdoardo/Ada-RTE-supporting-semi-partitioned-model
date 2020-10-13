@@ -472,6 +472,6 @@ package System.BB.Threads.Queues is
    --  Print_BE_Log  --
    --------------------
 
-   procedure Print_BE_Log;
+   procedure Print_Tasks_Log;
 
 end System.BB.Threads.Queues;

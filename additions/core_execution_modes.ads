@@ -4,6 +4,7 @@
 
 with Mixed_Criticality_System;
 with System.Multiprocessors; use System.Multiprocessors;
+with System.BB.Time;
 
 package Core_Execution_Modes is
    pragma Preelaborate;
@@ -18,6 +19,19 @@ package Core_Execution_Modes is
    procedure Set_Core_Mode (Core_Mode : Mode; CPU_Id : CPU);
 
    function Get_Core_Mode (CPU_Id : CPU) return Mode;
+
+   procedure Print_CPUs_Log;
+
+   type CPU_Data_Log is record
+      Low_To_High        : Natural      := 0;
+      High_To_Low        : Natural      := 0;
+
+      Idle_Time          : System.BB.Time.Time_Span    := 0;
+      Last_Time_Idle     : System.BB.Time.Time         := 0;
+      Is_Idle            : Boolean := False;
+   end record;
+
+   CPU_Log_Table : array (CPU) of CPU_Data_Log;
 
     --  Remember: high-critical tasks are statically allocated to the cores.
     --  Mode type objects must be modified by only high-critical tasks.

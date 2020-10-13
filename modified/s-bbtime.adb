@@ -196,9 +196,9 @@ package body System.BB.Time is
             Self.Active_Budget := Self.High_Critical_Budget;
          end if;
 
-         Ada.Text_IO.Put_Line (Integer'Image (Self.Base_Priority) &
-            " restored budget to " & Duration'Image
-                  (System.BB.Time.To_Duration (Self.Active_Budget)));
+         --  Ada.Text_IO.Put_Line (Integer'Image (Self.Base_Priority) &
+         --   " restored budget to " & Duration'Image
+         --         (System.BB.Time.To_Duration (Self.Active_Budget)));
 
          --  Extract the thread from the ready queue. When a thread wants to
          --  wait for an alarm it becomes blocked.
