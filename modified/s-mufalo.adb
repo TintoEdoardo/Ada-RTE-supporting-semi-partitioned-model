@@ -80,7 +80,7 @@ package body System.Multiprocessors.Fair_Locks is
             Flock.Spinning (CPU_Id) := False;
 
             --  Log locked time.
-            if Self_ID.Log_Table.Last_Time_Locked = 0 then
+            if Self_ID.Log_Table.Last_Time_Locked /= 0 then
                Self_ID.Log_Table.Locked_Time := Self_ID.Log_Table.Locked_Time
                                + (Clock - Self_ID.Log_Table.Last_Time_Locked);
 
@@ -99,7 +99,7 @@ package body System.Multiprocessors.Fair_Locks is
 
                   --  Lock's owner gives us the lock
                   --  Log locked time.
-                  if Self_ID.Log_Table.Last_Time_Locked = 0 then
+                  if Self_ID.Log_Table.Last_Time_Locked /= 0 then
                      Self_ID.Log_Table.Locked_Time :=
                               Self_ID.Log_Table.Locked_Time +
                               (Clock - Self_ID.Log_Table.Last_Time_Locked);
@@ -113,7 +113,7 @@ package body System.Multiprocessors.Fair_Locks is
                --  Lock's owner left but didn't wake us up, retry to get lock
                if not Locked (Flock.Lock) then
                   --  Log locked time.
-                  if Self_ID.Log_Table.Last_Time_Locked = 0 then
+                  if Self_ID.Log_Table.Last_Time_Locked /= 0 then
                      Self_ID.Log_Table.Locked_Time :=
                               Self_ID.Log_Table.Locked_Time +
                               (Clock - Self_ID.Log_Table.Last_Time_Locked);

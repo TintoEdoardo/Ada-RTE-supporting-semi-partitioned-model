@@ -84,8 +84,7 @@ package System.BB.Threads is
       Times_BE         : Natural      := 0;
       Times_Discarded  : Natural      := 0;
       Times_Restored   : Natural      := 0;
-      Locked_Time      : System.BB.Time.Time_Span
-                                            := System.BB.Time.Time_Span_First;
+      Locked_Time      : System.BB.Time.Time_Span := 0;
       Last_Time_Locked : System.BB.Time.Time      := 0;
    end record;
 

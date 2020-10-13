@@ -31,8 +31,6 @@ package body Periodic_Tasks is
          delay until Next_Period;
          Production_Workload.Small_Whetstone (Workload);
          Next_Period := Next_Period + Period_To_Add;
-         --  Core_Execution_Modes.Print_CPUs_Log;
-         --  System.BB.Threads.Queues.Print_Tasks_Log;
       end loop;
    end Low_Crit;
 
@@ -48,8 +46,6 @@ package body Periodic_Tasks is
 
       loop
          delay until Next_Period;
-         --  Ada.Text_IO.Put_Line (Integer'Image (Pri) & " = " & Integer'Image (System.BB.Threads.Queues.Running_Thread.Base_Priority));
-         --  System.BB.Threads.Queues.Print_Queues;
          Production_Workload.Small_Whetstone (Workload);
          Next_Period := Next_Period + Period_To_Add;
       end loop;
@@ -60,8 +56,8 @@ package body Periodic_Tasks is
    ------------
 
    procedure Init is
-      Next_Period : Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Experiments_Data.Delay_Time);
-      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (5_000_000);
+      Next_Period   : constant Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Experiments_Data.Delay_Time);
+      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (10_000_000);
    begin
       delay until Next_Period + Period_To_Add;
       Ada.Text_IO.Put_Line ("----------------------");
@@ -88,7 +84,7 @@ package body Periodic_Tasks is
 
    LC_1_1 : Low_Crit (Pri => 20, Low_Critical_Budget => 300_000, Is_Migrable => True, Workload => 1, Period => 100_000, CPU_Id => CPU'First);
 
-   LC_1_2 : Low_Crit (Pri => 25, Low_Critical_Budget => 140_000, Is_Migrable => False, Workload => 1, Period => 160_000, CPU_Id => CPU'First);
+   LC_1_2 : Low_Crit (Pri => 25, Low_Critical_Budget => 1_440_000, Is_Migrable => False, Workload => 1, Period => 160_000, CPU_Id => CPU'First);
 
    -------------
    --  CPU 2  --

@@ -2,69 +2,69 @@
 --  END EXPERIMENT  --
 ----------------------
 --  CPU 1  --
-LOW => HIGH  7 Times
-HIGH => LOW  7 Times
-Idle time:  4.921627411
+LOW => HIGH  13 Times
+HIGH => LOW  13 Times
+Idle time:  6.069871733
 
 --  CPU 2  --
-LOW => HIGH  7 Times
-HIGH => LOW  7 Times
-Idle time:  4.961709562
+LOW => HIGH  13 Times
+HIGH => LOW  13 Times
+Idle time:  6.069938874
 
 --  Tasks log  --
 Task  40
 HI-Crit
-BE Detected:  3
+BE Detected:  6
 Times Discarded:  0
 Times Restored:  0
-Locked Time:  6.100016955
+Locked Time:  0.000001652
 
 Task  45
 HI-Crit
-BE Detected:  4
+BE Detected:  7
 Times Discarded:  0
 Times Restored:  0
-Locked Time:  4.000027300
+Locked Time:  0.000002309
 
 Task  20
 LO-Crit & Migrable
 BE Detected:  0
-Times Discarded:  7
-Times Restored:  7
-Locked Time:  0.000000000
+Times Discarded:  13
+Times Restored:  13
+Locked Time:  0.000000165
 
 Task  25
 LO-Crit & NOT Migrable
 BE Detected:  0
 Times Discarded:  0
 Times Restored:  0
-Locked Time:  185.920335129
+Locked Time:  0.000000000
 
 Task  30
 HI-Crit
-BE Detected:  3
+BE Detected:  6
 Times Discarded:  0
 Times Restored:  0
-Locked Time:  37.280066637
+Locked Time:  0.000002970
 
 Task  35
 HI-Crit
-BE Detected:  4
+BE Detected:  7
 Times Discarded:  0
 Times Restored:  0
-Locked Time:  0.000000000
+Locked Time:  0.000003814
 
 Task  10
 LO-Crit & Migrable
 BE Detected:  0
-Times Discarded:  7
-Times Restored:  7
-Locked Time:  5.000017601
+Times Discarded:  13
+Times Restored:  13
+Locked Time:  0.000003607
 
 Task  15
 LO-Crit & Migrable
 BE Detected:  0
-Times Discarded:  7
-Times Restored:  7
-Locked Time:  0.000000000
+Times Discarded:  13
+Times Restored:  13
+Locked Time:  0.000002931
 

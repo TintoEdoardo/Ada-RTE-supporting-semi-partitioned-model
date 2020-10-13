@@ -43,6 +43,8 @@ with Core_Execution_Modes;
 with System.BB.Protection;
 with System.BB.Threads.Queues;
 
+with Experiments_Data;
+
 pragma Warnings (Off);
 with Ada.Text_IO;
 pragma Warnings (On);
@@ -283,9 +285,11 @@ package body System.Task_Primitives.Operations is
       use Core_Execution_Modes;
       use System.BB.Protection;
       use System.BB.Threads.Queues;
+      use Experiments_Data;
       pragma Unreferenced (Param);
       T : constant Tasking.Task_Id := Self;
       CPU_Id : System.Multiprocessors.CPU;
+      First_Execution : Boolean := True;
    begin
       Enter_Task (T);
 
@@ -295,8 +299,17 @@ package body System.Task_Primitives.Operations is
          CPU_Id := Current_CPU;
          CPU_Log_Table (CPU_Id).Is_Idle := True;
 
-         --  Start logging idle time.
-         CPU_Log_Table (CPU_Id).Last_Time_Idle := Clock;
+         if not First_Execution then
+            --  Start logging idle time.
+            CPU_Log_Table (CPU_Id).Last_Time_Idle := Clock;
+         else
+            CPU_Log_Table (CPU_Id).Last_Time_Idle :=
+               System.BB.Time."+"
+                  (System.BB.Time.Time_First,
+                  System.BB.Time.Microseconds (Experiments_Data.Delay_Time));
+         end if;
+
+         First_Execution := False;
 
          if Get_Core_Mode (CPU_Id) = HIGH then
             --  An idle tick during HI-crit mode has beed detected

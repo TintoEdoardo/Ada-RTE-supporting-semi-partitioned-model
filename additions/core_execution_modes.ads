@@ -27,7 +27,7 @@ package Core_Execution_Modes is
       High_To_Low        : Natural      := 0;
 
       Idle_Time          : System.BB.Time.Time_Span    := 0;
-      Last_Time_Idle     : System.BB.Time.Time         := 0;
+      Last_Time_Idle     : System.BB.Time.Time := 0;
       Is_Idle            : Boolean := False;
    end record;
 
