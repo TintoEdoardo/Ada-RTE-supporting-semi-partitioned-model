@@ -76,14 +76,18 @@ package System.BB.Threads is
    --  executing), Suspended (waiting on an entry call), and Delayed (waiting
    --  on a delay until statement).
 
+   type Array_CPUs is array (System.Multiprocessors.CPU) of Natural;
+
    --  Addition for MCS by Xu & Burns: a thread is Discarded when is going to
    --  be inserted in the discarded queue (Discarded_Thread_Table).
 
    type Task_Data_Log is record
       --  BE is Budget_Exceeded
-      Times_BE         : Natural      := 0;
-      Times_Discarded  : Natural      := 0;
-      Times_Restored   : Natural      := 0;
+      Times_BE         : Natural                  := 0;
+      Times_Discarded  : Natural                  := 0;
+      Times_Migrated   : Natural                  := 0;
+      Times_Restored   : Natural                  := 0;
+      --  Times_On_CPUs    : Array_CPUs               := (others => 0);
       Locked_Time      : System.BB.Time.Time_Span := 0;
       Last_Time_Locked : System.BB.Time.Time      := 0;
    end record;
@@ -195,6 +199,9 @@ package System.BB.Threads is
       First_Execution : Boolean := False;
 
       --  Additions for MCS by Xu & Burns
+
+      --  CPU runtime (if migrations have been made).
+      Active_CPU : System.Multiprocessors.CPU_Range;
 
       Period : System.BB.Time.Time_Span;
 

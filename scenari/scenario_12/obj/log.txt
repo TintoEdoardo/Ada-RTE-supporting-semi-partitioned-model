@@ -1,0 +1,54 @@
+----------------------
+--  END EXPERIMENT  --
+----------------------
+--  CPU 1  --
+LOW => HIGH  0 Times
+HIGH => LOW  0 Times
+Idle time:  19.636917396
+
+--  CPU 2  --
+LOW => HIGH  5 Times
+HIGH => LOW  5 Times
+Idle time:  12.411454814
+
+--  Tasks log  --
+Task  40
+HI-Crit
+BE Detected:  5
+Times Discarded:  0
+Times Migrated:  0
+Times Restored:  0
+Times on CPU 1:  0
+Times on CPU 2:  28
+Locked Time:  0.000001459
+
+Task  45
+HI-Crit
+BE Detected:  0
+Times Discarded:  0
+Times Migrated:  0
+Times Restored:  0
+Times on CPU 1:  0
+Times on CPU 2:  37
+Locked Time:  0.000000309
+
+Task  25
+LO-Crit & Migrable
+BE Detected:  0
+Times Discarded:  0
+Times Migrated:  5
+Times Restored:  5
+Times on CPU 1:  70
+Times on CPU 2:  120
+Locked Time:  0.000002411
+
+Task  15
+LO-Crit & NOT Migrable
+BE Detected:  0
+Times Discarded:  0
+Times Migrated:  0
+Times Restored:  0
+Times on CPU 1:  125
+Times on CPU 2:  0
+Locked Time:  0.000000000
+

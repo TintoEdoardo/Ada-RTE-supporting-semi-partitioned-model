@@ -19,7 +19,7 @@ Prima di tutto, è necessario:
 - avere un modo, per ogni task. di tracciare la loro migrazione e il loro "rientro" alla CPU di partenza.
 
 Bisogna:
-- [ ] modificare il descrittore del task
+- [X] modificare il descrittore del task
 ```
 --  Statically allocated
 Base_CPU   : CPU;
@@ -27,9 +27,9 @@ Base_CPU   : CPU;
 --  Run-time
 Active_CPU : CPU
 ```
-- [ ] all'inizio, i due campi dovranno essere uguali.
+- [X] all'inizio, i due campi dovranno essere uguali.
 
-- [ ] modificare `Task_Data_Log`
+- [X] modificare `Task_Data_Log`
 ```
 Task_Data_Log is
 record
@@ -49,47 +49,69 @@ Questo sottoscenario si basa sullo stato $`S`$ e riguarda l'evento `LOW => HIGH`
 - si forza un `CPU_Budget_Exceeded` su di una CPU;
 - i task migrabili di quella CPU vengono spostati sull'altra.
 
-Questo deve essere fatto sia nel caso che a forzare un `CPU_Budget_Exceeded` sia la CPU1, sia nel caso che lo sia dalla CPU2.\
+Questo deve essere fatto sia nel caso che a forzare un `CPU_Budget_Exceeded` sia la CPU1, sia nel caso che lo sia dalla CPU2.
 
 Bisogna:
-- [ ] far sì che una CPU, che chiamiamo CPU A, forzi un `CPU_Budget_Exceeded`;
-  - [ ] in questo sottoscenario, **solo ed esclusivamente una delle due CPU deve forzarlo**, quindi la CPU B **non** deve mai causare un  `CPU_Budget_Exceeded`;
+- [X] far sì che una CPU, che chiamiamo CPU A, forzi un `CPU_Budget_Exceeded`;
+  - [X] in questo sottoscenario, **solo ed esclusivamente una delle due CPU deve forzarlo**, quindi la CPU B **non** deve mai causare un  `CPU_Budget_Exceeded`;
 - [ ] alla sua rilevazione:
-  - [ ] incrementare `Task_Data_Log.Times_BE`;
-  - [ ] alzare il livello di criticità del core in oggetto (`LOW => HIGH`);
-  - [ ] tracciare `LOW => HIGH` incrementando `CPU_Data_Log.Low_To_High`;
-  - [ ] i task migrabili nella coda dei **pronti** della CPU A devono essere inseriti nella coda dei **pronti** della CPU B
-    - [ ] `Active_CPU := Target_CPU;` 
+  - [X] incrementare `Task_Data_Log.Times_BE`;
+  - [X] alzare il livello di criticità del core in oggetto (`LOW => HIGH`);
+  - [X] tracciare `LOW => HIGH` incrementando `CPU_Data_Log.Low_To_High`;
+  - [X] i task migrabili nella coda dei **pronti** della CPU A devono essere inseriti nella coda dei **pronti** della CPU B
+    - [X] `Active_CPU := Target_CPU;` 
     - servirà un lock per ogni coda. Serve definire un protocollo di acquisizione dei lock in maniera tale da assicurare l'assenza di deadlock;
-  - [ ] incrementare, per tutti questi task, `Task_Data_Log.Times_Migrated`; 
-  - [ ] i task migrabili nella coda dei **sospesi** della CPU A devono essere inseriti nella coda dei **sospesi** della CPU B
+  - [X] incrementare, per tutti questi task, `Task_Data_Log.Times_Migrated`; 
+  - [X] i task migrabili nella coda dei **sospesi** della CPU A devono essere inseriti nella coda dei **sospesi** della CPU B
     - ha senso? si rifletta sul fatto che forse è meglio migrare un task quando questo effettivamente viene risvegliato. Migrare un task sospeso dalla coda dei sospesi di A in quella di B, per poi riportarlo in quella di A, sarebbe inutile e forse troppo costoso;
     - in tal caso, si potrebbe fare che:
       1. se un task viene risvegliato;
       2. è migrabile;
-      3. è sulla sua `Base_CPU` ed essa sta eseguendo in *HI-crit* mode
+      3. è sulla sua `Base_CPU`, cioè `Base_CPU = Active_CPU`
+      4. la sua `Base_CPU` sta eseguendo in ***HI-crit*** mode; 
    
         allora quel task deve essere inserito nella coda dei pronti dell'altro core;
-- [ ] verificare il tutto facendo sì che la CPU A sia la CPU**1**. Allora, a questo punto, lo stato dell'esecuzione sarà:\
+    - [X] incrementare, per tutti questi task, `Task_Data_Log.Times_Migrated`;
+- [X] verificare il tutto facendo sì che la CPU A sia la CPU**1**. Allora, a questo punto, lo stato dell'esecuzione sarà:\
 $`Y(1)_1 = LO_1 \cup HI_1`$\
 $`Y(1)_2 = LO_2 \cup HI_2 \cup MIG_2 \cup MIG_1`$\
 $`S_1' = Y(1)_1 \cup Y(1)_2`$\
 Si è quindi osservata la transazione $`S \rightarrow S_1'`$ 
 
-- [ ] verificare il tutto facendo sì che la CPU A sia la CPU**2**. Allora, a questo punto, lo stato dell'esecuzione sarà:\
+- [X] verificare il tutto facendo sì che la CPU A sia la CPU**2**. Allora, a questo punto, lo stato dell'esecuzione sarà:\
 $`Y(2)_1 = LO_1 \cup HI_1 \cup MIG_1 \cup MIG_2`$\
 $`Y(2)_2 = LO_2 \cup HI_2`$\
 $`S_2' = Y(2)_1 \cup Y(2)_2`$\
 Si è quindi osservata la transazione $`S \rightarrow S_2'`$ 
 
-**Attenzione: da qui in poi lo scenario non è stato ancora definito in maniera precisa**
-- [ ] alla rilevazione di un *idle tick* sulla CPU A
-  - [ ] i tasks con `Base_CPU = A` che sono nella coda dei pronti della CPU B devono essere spostati nella coda dei pronti della CPU A
-    - [ ] incrementare `Task_Data_Log.Times_Restored`
+## Scenario 12.2
+- [X] alla rilevazione di un *idle tick* sulla CPU A
+  - [X] i tasks con `Base_CPU = A` che sono nella coda dei pronti della CPU B devono essere spostati nella coda dei pronti della CPU A
+    - [X] incrementare `Task_Data_Log.Times_Restored`
     - come comportarsi se uno dei tasks con `Base_CPU = A` sta eseguendo sulla CPU B? In teoria, questo task dovrebbe essere fermato per poi essere messo nella coda dei pronti della CPU A.
-  - [ ] i tasks con `Base_CPU = A` che sono nella coda dei **sospesi** della CPU B devono essere spostati nella coda dei **pronti** della CPU A
-    - [ ] per tali tasks, bisogna:
-      - [ ] cancellare il timer relativo al loro risveglio sulla CPU B
-      - [ ] impostarlo sulla CPU A 
+      - sarà sufficiente spostarlo da una coda all'altra. Questo perchè, nel runtime, al termina delle operazioni di modifica delle code, viene controllato se è necessario o meno un context switch. Un context switch è necessario se e solo se la testa della coda dei pronti è stata aggiornata, che è ciò che succede in questo caso specifico. 
+  - [X] i tasks con `Base_CPU = A` che sono nella coda dei **sospesi** della CPU B devono essere spostati nella coda dei **pronti** della CPU A
+    -  come prima: ha senso? forse è meglio ripristinare un task solo quando esso viene effettivamente svegliato.
+    -  in tal caso, si potrebbe fare che:
+       1. se un task viene risvegliato;
+       2. è migrabile;
+       3. **non** è sulla sua `Base_CPU`, cioè `Base_CPU /= Active_CPU`;
+       4. la sua `Base_CPU` sta eseguendo in ***LO-crit*** mode;
 
+        allora quel task deve essere inserito nella coda dei pronti della sua `Base_CPU`, ovvero essere ripristinato alla sua CPU originale;
+    - [X] incrementare, per tutti questi task, `Task_Data_Log.Times_Migrated`; 
+
+- [X] verificare il tutto facendo sì che la CPU A sia la CPU**1**. Allora, a questo punto, lo stato dell'esecuzione sarà:\
+$`X_1 = LO_1 \cup HI_1 \cup MIG_1`$\
+$`X_2 = LO_2 \cup HI_2 \cup MIG_2`$\
+$`S = X_1 \cup X_2`$\
+Si è quindi osservata la transazione $`S_1' \rightarrow S`$
+
+- [X] verificare il tutto facendo sì che la CPU A sia la CPU**2**. Allora, a questo punto, lo stato dell'esecuzione sarà:\
+$`X_1 = LO_1 \cup HI_1 \cup MIG_1`$\
+$`X_2 = LO_2 \cup HI_2 \cup MIG_2`$\
+$`S = X_1 \cup X_2`$\
+Si è quindi osservata la transazione $`S_2' \rightarrow S`$
+
+Vai al [prossimo scenario](../scenario_13/scenario_13.md).\
 Torna all'[indice](../index.md).

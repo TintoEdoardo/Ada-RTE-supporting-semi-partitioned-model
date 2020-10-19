@@ -32,6 +32,11 @@
 --  instruction set. It is not suitable for ARMv7-M targets, which use
 --  Thumb2.
 
+pragma Warnings (Off);
+with Ada.Text_IO;
+with System.BB.Execution_Time;
+--  pragma Warnings (On);
+
 with Interfaces; use Interfaces;
 
 with System.Multiprocessors;
@@ -43,11 +48,8 @@ with System.Machine_Code; use System.Machine_Code;
 
 with CPU_Budget_Monitor;
 with System.Tasking;
-
-pragma Warnings (Off);
-with Ada.Text_IO;
-with System.BB.Execution_Time;
-pragma Warnings (On);
+with System.Multiprocessors.Fair_Locks;
+use System.Multiprocessors.Fair_Locks;
 
 package body System.BB.CPU_Primitives is
    use System.BB.Threads;
@@ -295,8 +297,7 @@ package body System.BB.CPU_Primitives is
 
       CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
 
-      New_Priority : constant Integer :=
-                       First_Thread_Table (CPU_Id).Active_Priority;
+      New_Priority : Integer;
    begin
       --  Whenever switching to a new context, disable the FPU, so we don't
       --  have to worry about its state. It is much more efficient to lazily
@@ -309,6 +310,8 @@ package body System.BB.CPU_Primitives is
       --  the caller is responsible for saving the (banked) SPSR register.
       --  This register is only visible in banked modes, so can't be saved
       --  here.
+
+      New_Priority := First_Thread_Table (CPU_Id).Active_Priority;
 
       if Current_FPU_Context (CPU_Id) /=
         First_Thread_Table (CPU_Id).Context.Running

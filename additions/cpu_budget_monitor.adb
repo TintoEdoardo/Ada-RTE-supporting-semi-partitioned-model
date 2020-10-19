@@ -38,7 +38,6 @@ package body CPU_Budget_Monitor is
 
             --  Ada.Text_IO.Put_Line
             --   (" HI-CRIT CPU_Budget_Exceeded DETECTED.");
-            BE_Detected (Task_Exceeded) := (BE_Detected (Task_Exceeded) + 1);
             Set_Core_Mode (HIGH, CPU_Id);
             Enter_In_HI_Crit_Mode;
 
@@ -91,7 +90,8 @@ package body CPU_Budget_Monitor is
       use System.BB.Threads;
       use System.BB.Threads.Queues;
       use Core_Execution_Modes;
-      CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
+      use System.Multiprocessors;
+      CPU_Id : constant CPU := Current_CPU;
       Self_Id : constant Thread_Id := Running_Thread;
       --  Task_Exceeded : constant System.Priority := Self_Id.Base_Priority;
    begin
@@ -112,6 +112,15 @@ package body CPU_Budget_Monitor is
          CPU_Log_Table (CPU_Id).Idle_Time :=
                      CPU_Log_Table (CPU_Id).Idle_Time +
                               (Clock - CPU_Log_Table (CPU_Id).Last_Time_Idle);
+      end if;
+
+      --  Log that thread is (again) on this CPU
+      if CPU_Id = 1 then
+         Executions (Self_Id.Base_Priority).Times_On_First_CPU :=
+                     Executions (Self_Id.Base_Priority).Times_On_First_CPU + 1;
+      else
+         Executions (Self_Id.Base_Priority).Times_On_Second_CPU :=
+                  Executions (Self_Id.Base_Priority).Times_On_Second_CPU + 1;
       end if;
 
       Self_Id.T_Start := System.BB.Time.Clock;

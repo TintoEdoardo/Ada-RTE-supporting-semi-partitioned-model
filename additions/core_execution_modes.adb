@@ -3,15 +3,27 @@ with Ada.Text_IO;
 pragma Warnings (On);
 
 with System.BB.Board_Support;
+with System.Multiprocessors.Fair_Locks;
+with System.Multiprocessors.Spin_Locks;
+use System.Multiprocessors.Fair_Locks;
+use System.Multiprocessors.Spin_Locks;
 
 package body Core_Execution_Modes is
 
+   Change_Mode_Lock : Fair_Lock := (Spinning => (others => False),
+                                    Lock     => (Flag   => Unlocked));
+
    procedure Set_Core_Mode (Core_Mode : Mode; CPU_Id : CPU) is
       use System.BB.Board_Support.Multiprocessors;
+      CPU_Target : CPU := CPU'First;
    begin
       --  Interrupts must be disabled
       --  A CPU can only change its own criticality mode
       pragma Assert (CPU_Id = Current_CPU);
+
+      if CPU_Target = CPU_Id then
+         CPU_Target := CPU'Last;
+      end if;
 
       --  Log change mode.
       if Mode_Cores (CPU_Id) /= Core_Mode then
@@ -24,7 +36,25 @@ package body Core_Execution_Modes is
          end if;
       end if;
 
-      Mode_Cores (CPU_Id) := Core_Mode;
+      Lock (Change_Mode_Lock);
+      if Core_Mode = HIGH and Get_Core_Mode (CPU_Target) = HIGH then
+         --  Both CPU are in HI-crit mode. Dangerous situation.
+         Ada.Text_IO.Put_Line
+                  ("-----------------------------------------------------");
+         Ada.Text_IO.Put_Line
+                  ("--  BOTH CPU in HI-crit mode: DANGEROUS SITUATION  --");
+         Ada.Text_IO.Put_Line
+                  ("--          !!!  INVALID EXPERIMENTS  !!!          --");
+         Ada.Text_IO.Put_Line
+                  ("-----------------------------------------------------");
+         loop
+            null;
+         end loop;
+      else
+         Mode_Cores (CPU_Id) := Core_Mode;
+      end if;
+      Unlock (Change_Mode_Lock);
+
    end Set_Core_Mode;
 
    function Get_Core_Mode (CPU_Id : CPU) return Mode is

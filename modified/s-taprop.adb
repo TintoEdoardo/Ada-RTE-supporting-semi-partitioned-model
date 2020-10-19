@@ -294,7 +294,6 @@ package body System.Task_Primitives.Operations is
       Enter_Task (T);
 
       loop
-         --  Ada.Text_IO.Put_Line ("IDLE!");
          Enter_Kernel;
          CPU_Id := Current_CPU;
          CPU_Log_Table (CPU_Id).Is_Idle := True;

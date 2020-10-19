@@ -33,6 +33,10 @@ with System.BB.Time;
 with System.BB.Threads;
 with System.BB.Threads.Queues;
 
+pragma Warnings (Off);
+with Ada.Text_IO;
+pragma Warnings (On);
+
 package body System.Multiprocessors.Fair_Locks is
 
    use System.Multiprocessors.Spin_Locks;
@@ -76,6 +80,8 @@ package body System.Multiprocessors.Fair_Locks is
          if Succeeded then
 
             --  We have the lock
+            --  Ada.Text_IO.Put_Line (Integer'Image (Self_ID.Base_Priority)
+            --                     & " LOCK");
 
             Flock.Spinning (CPU_Id) := False;
 
@@ -98,6 +104,7 @@ package body System.Multiprocessors.Fair_Locks is
                if not Flock.Spinning (CPU_Id) then
 
                   --  Lock's owner gives us the lock
+
                   --  Log locked time.
                   if Self_ID.Log_Table.Last_Time_Locked /= 0 then
                      Self_ID.Log_Table.Locked_Time :=
@@ -112,6 +119,7 @@ package body System.Multiprocessors.Fair_Locks is
 
                --  Lock's owner left but didn't wake us up, retry to get lock
                if not Locked (Flock.Lock) then
+
                   --  Log locked time.
                   if Self_ID.Log_Table.Last_Time_Locked /= 0 then
                      Self_ID.Log_Table.Locked_Time :=
@@ -180,8 +188,10 @@ package body System.Multiprocessors.Fair_Locks is
    ------------
 
    procedure Unlock (Flock : in out Fair_Lock) is
+      --  use System.BB.Threads.Queues;
+      --  use System.BB.Threads;
       CPU_Id : constant CPU := Next_Spinning (Flock);
-
+      --  Self_ID   : constant Thread_Id := Running_Thread;
    begin
       if CPU_Id /= System.OS_Interface.Current_CPU then
 
@@ -194,6 +204,8 @@ package body System.Multiprocessors.Fair_Locks is
 
          Unlock (Flock.Lock);
       end if;
+      --  Ada.Text_IO.Put_Line (Integer'Image (Self_ID.Base_Priority)
+      --                           & " UNlock");
    end Unlock;
 
 end System.Multiprocessors.Fair_Locks;

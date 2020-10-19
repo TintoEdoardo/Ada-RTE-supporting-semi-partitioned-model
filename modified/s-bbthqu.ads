@@ -37,6 +37,8 @@
 with System.BB.Time;
 with System.BB.Board_Support;
 with System.Multiprocessors;
+with System.Multiprocessors.Fair_Locks;
+with System.Multiprocessors.Spin_Locks;
 
 package System.BB.Threads.Queues is
    pragma Preelaborate;
@@ -47,6 +49,32 @@ package System.BB.Threads.Queues is
    ----------------
    -- Ready list --
    ----------------
+
+   Ready_Table_Core_1_Lock :
+      aliased System.Multiprocessors.Fair_Locks.Fair_Lock :=
+         (Spinning => (others => False),
+            Lock => (Flag => System.Multiprocessors.Spin_Locks.Unlocked));
+
+   Ready_Table_Core_2_Lock :
+      aliased System.Multiprocessors.Fair_Locks.Fair_Lock :=
+         (Spinning => (others => False),
+            Lock => (Flag => System.Multiprocessors.Spin_Locks.Unlocked));
+
+   Ready_Tables_Locks : constant array (System.Multiprocessors.CPU) of
+      access System.Multiprocessors.Fair_Locks.Fair_Lock :=
+         (System.Multiprocessors.CPU'First => Ready_Table_Core_1_Lock'Access,
+          System.Multiprocessors.CPU'Last => Ready_Table_Core_2_Lock'Access);
+   --  Two locks in order to protect access to ready queues
+   --  on multiprocessor systems.
+
+   type Log_Exec_Tasks is record
+      Times_On_First_CPU : Natural := 0;
+      Times_On_Second_CPU : Natural := 0;
+   end record;
+
+   type Array_Log_Tasks is array (System.Priority) of Log_Exec_Tasks;
+
+   Executions : Array_Log_Tasks;
 
    procedure Initialize_Log_Table (ID : Integer);
    procedure Add_DM (ID : Integer);
@@ -448,12 +476,6 @@ package System.BB.Threads.Queues is
      LO_Crit_Budget : System.BB.Time.Time_Span;
      HI_Crit_Budget : System.BB.Time.Time_Span;
      Period : Natural);
-
-   ---------------------
-   --  Discard_Tasks  --
-   ---------------------
-
-   procedure Discard_Tasks;
 
    ----------------------------
    --  Back_To_LO_Crit_Mode  --

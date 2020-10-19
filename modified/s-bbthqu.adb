@@ -37,11 +37,9 @@
 pragma Restrictions (No_Elaboration_Code);
 with System.IO;
 with System.BB.Time; use System.BB.Time;
+with Core_Execution_Modes;
 with CPU_Budget_Monitor;
 with Mixed_Criticality_System;
-with Experiments_Data;
-with System.Multiprocessors.Fair_Locks;
-with System.Multiprocessors.Spin_Locks;
 
 pragma Warnings (Off);
 with Ada.Text_IO;
@@ -70,6 +68,8 @@ package body System.BB.Threads.Queues is
    Discarded_Table_Lock : Fair_Lock := (Spinning => (others => False),
                                        Lock     => (Flag   => Unlocked));
    --  Protect access to Discarded_Thread_Table on multiprocessor systems
+
+   type Action is (Migrate, Discard);
 
    type Log_Record is
       record
@@ -587,20 +587,16 @@ package body System.BB.Threads.Queues is
       --  whether it is in the correct place.
 
       --  No insertion if the task is already at the head of the queue
-
       if First_Thread_Table (CPU_Id) = Thread then
          null;
-
       --  Insert at the head of queue if there is no other thread with a higher
       --  priority.
-
       elsif First_Thread_Table (CPU_Id) = Null_Thread_Id
         or else
           Thread.Active_Priority > First_Thread_Table (CPU_Id).Active_Priority
       then
          Thread.Next := First_Thread_Table (CPU_Id);
          First_Thread_Table (CPU_Id) := Thread;
-
       --  Middle or tail insertion
 
       else
@@ -638,6 +634,7 @@ package body System.BB.Threads.Queues is
          Thread.Next := Aux_Pointer.Next;
          Aux_Pointer.Next := Thread;
       end if;
+
    end Insert;
 
    ------------------
@@ -698,17 +695,77 @@ package body System.BB.Threads.Queues is
       return Running_Thread_Table (Current_CPU);
    end Running_Thread;
 
+   ------------------------------------
+   --  Wakeup_Thread_Has_To_Migrate  --
+   ------------------------------------
+
+   function Wakeup_Thread_Has_To_Migrate
+      (Wakeup_Thread : Thread_Id)
+      return Boolean;
+
+   function Wakeup_Thread_Has_To_Migrate
+      (Wakeup_Thread : Thread_Id)
+      return Boolean
+   is
+      use Core_Execution_Modes;
+   begin
+      --  A Wakeup thread has to migrate to the other CPU iff:
+      --    1. it is migrable;
+      --    2. it is on its Base_CPU
+      --    3. its CPU is in HI-crit mode
+      --  In this way, a thread migrates iff it is actually Runnable.
+      --  It wouldn't make much sense to migrate Sleeping threads.
+      return
+         Wakeup_Thread.Is_Migrable
+            and
+         Wakeup_Thread.Base_CPU = Wakeup_Thread.Active_CPU
+            and
+         Get_Core_Mode (Wakeup_Thread.Base_CPU) = HIGH;
+
+   end Wakeup_Thread_Has_To_Migrate;
+
+   ----------------------------------------
+   --  Wakeup_Thread_Has_To_Be_Restored  --
+   ----------------------------------------
+
+   function Wakeup_Thread_Has_To_Be_Restored
+      (Wakeup_Thread : Thread_Id)
+      return Boolean;
+
+   function Wakeup_Thread_Has_To_Be_Restored
+      (Wakeup_Thread : Thread_Id)
+      return Boolean
+   is
+      use Core_Execution_Modes;
+   begin
+      --  A Wakeup thread has to be restored on its Base_CPU iff:
+      --    1. it is migrable;
+      --    2. it is NOT on its Base_CPU
+      --    3. its CPU is in LO-crit mode
+      --  In this way, a thread migrates iff it is actually Runnable.
+      --  It wouldn't make much sense to migrate Sleeping threads.
+      return
+         Wakeup_Thread.Is_Migrable
+            and
+         Wakeup_Thread.Base_CPU /= Wakeup_Thread.Active_CPU
+            and
+         Get_Core_Mode (Wakeup_Thread.Base_CPU) = LOW;
+
+   end Wakeup_Thread_Has_To_Be_Restored;
+
    ---------------------------
    -- Wakeup_Expired_Alarms --
    ---------------------------
 
    procedure Wakeup_Expired_Alarms (Now : Time.Time) is
-
       CPU_Id        : constant CPU := Current_CPU;
+      CPU_Target    : CPU          := CPU'Last;
       Wakeup_Thread : Thread_Id;
-
    begin
       --  Extract all the threads whose delay has expired
+      if CPU_Id = CPU'Last then
+         CPU_Target := CPU'First;
+      end if;
 
       while Get_Next_Alarm_Time (CPU_Id) <= Now loop
 
@@ -733,7 +790,23 @@ package body System.BB.Threads.Queues is
          Wakeup_Thread.Active_Next_Period := Wakeup_Thread.Active_Next_Period
            + Wakeup_Thread.Active_Period;
 
+         if Wakeup_Thread_Has_To_Migrate (Wakeup_Thread) then
+            Wakeup_Thread.Active_CPU := CPU_Target;
+            Wakeup_Thread.Log_Table.Times_Migrated :=
+                                    Wakeup_Thread.Log_Table.Times_Migrated + 1;
+            --  Ada.Text_IO.Put_Line (Integer'Image
+            --    (Wakeup_Thread.Base_Priority) & ": not a good morning.");
+         elsif Wakeup_Thread_Has_To_Be_Restored (Wakeup_Thread) then
+            Wakeup_Thread.Active_CPU := Wakeup_Thread.Base_CPU;
+            Wakeup_Thread.Log_Table.Times_Restored :=
+                                  Wakeup_Thread.Log_Table.Times_Restored + 1;
+            --  Ada.Text_IO.Put_Line (Integer'Image
+            --     (Wakeup_Thread.Base_Priority) & ": not a good restoring.");
+         end if;
+
+         Lock (Ready_Tables_Locks (Wakeup_Thread.Active_CPU).all);
          Insert (Wakeup_Thread);
+         Unlock (Ready_Tables_Locks (Wakeup_Thread.Active_CPU).all);
 
       end loop;
 
@@ -882,9 +955,11 @@ package body System.BB.Threads.Queues is
    --------------------
 
    procedure Print_Queues is
-      Aux_Pointer : Thread_Id := First_Thread_Table (CPU'First);
+      Aux_Pointer : Thread_Id;
       T2 : Integer := -100;
    begin
+
+      Aux_Pointer := First_Thread_Table (CPU'First);
       Ada.Text_IO.Put_Line ("--  PRINT QUEUES  --");
 
       Ada.Text_IO.Put_Line ("Queues on CPU 1");
@@ -1015,15 +1090,27 @@ package body System.BB.Threads.Queues is
    end Initialize_HI_Crit_Task;
 
    ---------------------
-   --  Discard_Tasks  --
+   --  Migrate_Tasks  --
    ---------------------
 
-   procedure Discard_Tasks is
+   procedure Migrate_Tasks (What_To_Do : Action);
+
+   procedure Migrate_Tasks (What_To_Do : Action) is
       CPU_Id       : constant CPU := Current_CPU;
-      Aux_Pointer  : Thread_Id    := First_Thread_Table (CPU_Id);
-      Curr_Pointer : Thread_Id    := First_Thread_Table (CPU_Id);
+      CPU_Target   : CPU          := CPU'Last;
       Prev_Pointer : Thread_Id    := Null_Thread_Id;
+      Aux_Pointer  : Thread_Id;
+      Curr_Pointer : Thread_Id;
    begin
+      if CPU_Id = CPU'Last then
+         CPU_Target := CPU'First;
+      end if;
+
+      Lock (Ready_Tables_Locks (CPU'First).all);
+      Lock (Ready_Tables_Locks (CPU'Last).all);
+
+      Aux_Pointer  := First_Thread_Table (CPU_Id);
+      Curr_Pointer := First_Thread_Table (CPU_Id);
       --  First extract from READY queue
       while Curr_Pointer /= Null_Thread_Id
       loop
@@ -1049,11 +1136,19 @@ package body System.BB.Threads.Queues is
                --  Isolate the current thread.
                Curr_Pointer.Next := Null_Thread_Id;
 
-               --  Log discarding and insert in the Discarded queue.
-               Curr_Pointer.State := Discarded;
-               Curr_Pointer.Log_Table.Times_Discarded
+               if What_To_Do = Migrate then
+                  Curr_Pointer.Log_Table.Times_Migrated
+                                 := Curr_Pointer.Log_Table.Times_Migrated + 1;
+                  Curr_Pointer.Active_CPU := CPU_Target;
+                  Insert (Curr_Pointer);
+               elsif What_To_Do = Discard then
+
+                  --  Log discarding and insert in the Discarded queue.
+                  Curr_Pointer.State := Discarded;
+                  Curr_Pointer.Log_Table.Times_Discarded
                                  := Curr_Pointer.Log_Table.Times_Discarded + 1;
-               Insert_Discarded (Curr_Pointer);
+                  Insert_Discarded (Curr_Pointer);
+               end if;
 
                --  Go ahead with the current pointer.
                Curr_Pointer := Aux_Pointer;
@@ -1066,40 +1161,68 @@ package body System.BB.Threads.Queues is
             end if;
       end loop;
 
-      --  Then extract from SUSPENDED queue
-      Aux_Pointer  := Alarms_Table (CPU_Id);
-      Curr_Pointer := Alarms_Table (CPU_Id);
-      Prev_Pointer := Null_Thread_Id;
+      Unlock (Ready_Tables_Locks (CPU'First).all);
+      Unlock (Ready_Tables_Locks (CPU'Last).all);
 
+   end Migrate_Tasks;
+
+   ---------------------
+   --  Restore_Tasks  --
+   ---------------------
+
+   procedure Restore_Tasks;
+
+   procedure Restore_Tasks is
+      CPU_Id       : constant CPU := Current_CPU;
+      CPU_Target   : CPU          := CPU'Last;
+      Prev_Pointer : Thread_Id    := Null_Thread_Id;
+      Aux_Pointer  : Thread_Id;
+      Curr_Pointer : Thread_Id;
+   begin
+
+      if CPU_Id = CPU_Target then
+         CPU_Target := CPU'First;
+      end if;
+
+      Lock (Ready_Tables_Locks (CPU'First).all);
+      Lock (Ready_Tables_Locks (CPU'Last).all);
+
+      Aux_Pointer  := First_Thread_Table (CPU_Target);
+      Curr_Pointer := First_Thread_Table (CPU_Target);
+      --  First extract from READY queue
       while Curr_Pointer /= Null_Thread_Id
       loop
-            if Curr_Pointer.Is_Migrable then
+            if Curr_Pointer.Is_Migrable
+                  and
+               Curr_Pointer.Base_CPU = CPU_Id
+            then
 
-               if Curr_Pointer = Alarms_Table (CPU_Id) then
+               if Curr_Pointer = First_Thread_Table (CPU_Target) then
                   --  The first thread is migrable, so it must be removed.
                   --  This means that the second thread in the queue,
-                  --  i.e. Curr_Pointer.Next_Alarm, must be set
+                  --  i.e. Curr_Pointer.Next, must be set
                   --  as the first thread in the queue.
-                  Alarms_Table (CPU_Id) := Curr_Pointer.Next_Alarm;
+                  First_Thread_Table (CPU_Target) := Curr_Pointer.Next;
                else
                   --  We have to remove a thread between two others
                   --  (the last one could be the Null thread).
                   --  This means that the previous thread in the queue
                   --  must be linked to the last one.
-                  Prev_Pointer.Next_Alarm := Curr_Pointer.Next_Alarm;
+                  Prev_Pointer.Next := Curr_Pointer.Next;
                end if;
 
                --  Go ahead with the aux pointer.
-               Aux_Pointer := Aux_Pointer.Next_Alarm;
+               Aux_Pointer := Aux_Pointer.Next;
 
                --  Isolate the current thread.
-               Curr_Pointer.Next_Alarm := Null_Thread_Id;
+               Curr_Pointer.Next := Null_Thread_Id;
 
-               --  Log discarding and insert in the Discarded queue.
-               Curr_Pointer.State := Discarded;
-               Curr_Pointer.Log_Table.Times_Discarded
-                                 := Curr_Pointer.Log_Table.Times_Discarded + 1;
-               Insert_Discarded (Curr_Pointer);
+               --  Restore it.
+               Curr_Pointer.Log_Table.Times_Restored
+                               := Curr_Pointer.Log_Table.Times_Restored + 1;
+               Curr_Pointer.Active_CPU := Curr_Pointer.Base_CPU;
+
+               Insert (Curr_Pointer);
 
                --  Go ahead with the current pointer.
                Curr_Pointer := Aux_Pointer;
@@ -1107,77 +1230,25 @@ package body System.BB.Threads.Queues is
             else --  Current thread is NOT migrable
                --  then go ahead normally
                Prev_Pointer := Curr_Pointer;
-               Aux_Pointer := Aux_Pointer.Next_Alarm;
+               Aux_Pointer := Aux_Pointer.Next;
                Curr_Pointer := Aux_Pointer;
             end if;
       end loop;
 
-   end Discard_Tasks;
-
+      Unlock (Ready_Tables_Locks (CPU'First).all);
+      Unlock (Ready_Tables_Locks (CPU'Last).all);
+   end Restore_Tasks;
    ----------------------------
    --  Back_To_LO_Crit_Mode  --
    ----------------------------
 
    procedure Back_To_LO_Crit_Mode is
-      use Experiments_Data;
       CPU_Id       : constant CPU := Current_CPU;
-      Curr_Pointer : Thread_Id := Extract_Discarded;
-      Logic_Zero   : constant Time_Span := Microseconds (Delay_Time);
-      --  NRT is Next Release Time
-      NRT : System.BB.Time.Time;
-      Now : constant System.BB.Time.Time := Clock;
-      Inserted_As_First : Boolean;
-
-      --  Time elapsed since the beginning of the experiment
-      TEE : constant Time_Span := (Now - Logic_Zero) - Time_First;
-
-      --  How many Curr_Pointer's jobs would have been released
-      --  if HI-crit mode had not been activated?
-      Release_Skipped : Integer := 0;
+      Curr_Pointer : Thread_Id := HI_Crit_Table (CPU_Id);
    begin
-      --  Ada.Text_IO.Put_Line (CPU'Image (CPU_Id)
-      --      & " is GOING BACK to LO-crit mode.");
-      while Curr_Pointer /= Null_Thread_Id
-      loop
-         --  For each discarded task, we must:
-         --    1. compute its next release time;
-         --    2. insert it in the Alarms_Thread_Table;
 
-         --  1. compute next release time.
-         --  "Time_First" is used just to please the type system.
-         Release_Skipped := TEE / Curr_Pointer.Period;
-
-         NRT :=
-            ((Release_Skipped + 1) * Curr_Pointer.Period)
-                                 +
-                     (Logic_Zero + Time_First);
-
-         --  Ada.Text_IO.Put_Line (Integer'Image (Release_Skipped) &
-         --     " Release skipped");
-         --  Ada.Text_IO.Put ("NRT "
-         --      & Integer'Image (Curr_Pointer.Base_Priority));
-         --  Ada.Text_IO.Put_Line (Duration'Image (To_Duration
-         --     (Now - Time_First)) & " < " & Duration'Image
-         --     (To_Duration (NRT - Time_First)));
-
-         --  if NRT > Now then
-         --     Ada.Text_IO.Put_Line ("NRT > Now");
-         --  end if;
-
-         --  2. insert it in the Alarms_Thread_Table;
-         --  See Insert_Alarm's precondition.
-         Curr_Pointer.State := Delayed;
-         Insert_Alarm (NRT, Curr_Pointer, Inserted_As_First);
-         --  Log task restoring.
-         Curr_Pointer.Log_Table.Times_Restored
-                                 := Curr_Pointer.Log_Table.Times_Restored + 1;
-
-         if Inserted_As_First then
-            Update_Alarm (Get_Next_Timeout (CPU_Id));
-         end if;
-         --  Go ahead.
-         Curr_Pointer := Extract_Discarded;
-      end loop;
+      --  Migrating tasks must be restored
+      Restore_Tasks;
 
       --  For each HI-crit task, set its Active_Budget to the LO-crit one.
       Curr_Pointer := HI_Crit_Table (CPU_Id);
@@ -1195,7 +1266,7 @@ package body System.BB.Threads.Queues is
 
    procedure Enter_In_HI_Crit_Mode is
       CPU_Id       : constant CPU := Current_CPU;
-      Curr_Pointer : Thread_Id := HI_Crit_Table (CPU_Id);
+      Curr_Pointer : Thread_Id    := HI_Crit_Table (CPU_Id);
    begin
       --  Ada.Text_IO.Put_Line (CPU'Image (CPU_Id)
       --         & " is ENTERING in HI-crit mode.");
@@ -1206,13 +1277,13 @@ package body System.BB.Threads.Queues is
          Curr_Pointer := Curr_Pointer.Next_HI_Crit;
       end loop;
 
-      --  Discard migrable tasks.
-      Discard_Tasks;
+      --  Perform migration.
+      Migrate_Tasks (Migrate);
    end Enter_In_HI_Crit_Mode;
 
-   --------------------
-   --  Print_BE_Log  --
-   --------------------
+   -----------------------
+   --  Print_Tasks_Log  --
+   -----------------------
 
    procedure Print_Tasks_Log is
       Curr_Pointer : Thread_Id := Global_List;
@@ -1226,6 +1297,7 @@ package body System.BB.Threads.Queues is
          then
             Ada.Text_IO.Put_Line ("Task " &
                                  Integer'Image (Curr_Pointer.Base_Priority));
+
             if Curr_Pointer.Criticality_Level = LOW then
                Ada.Text_IO.Put ("LO-Crit & ");
                if Curr_Pointer.Is_Migrable then
@@ -1236,12 +1308,27 @@ package body System.BB.Threads.Queues is
             else
                Ada.Text_IO.Put_Line ("HI-Crit");
             end if;
+
             Ada.Text_IO.Put_Line ("BE Detected: " &
-                              Natural'Image (Curr_Pointer.Log_Table.Times_BE));
+                            Natural'Image (Curr_Pointer.Log_Table.Times_BE));
+
             Ada.Text_IO.Put_Line ("Times Discarded: " &
                      Natural'Image (Curr_Pointer.Log_Table.Times_Discarded));
+
+            Ada.Text_IO.Put_Line ("Times Migrated: " &
+                     Natural'Image (Curr_Pointer.Log_Table.Times_Migrated));
+
             Ada.Text_IO.Put_Line ("Times Restored: " &
-                        Natural'Image (Curr_Pointer.Log_Table.Times_Restored));
+                      Natural'Image (Curr_Pointer.Log_Table.Times_Restored));
+
+            Ada.Text_IO.Put_Line ("Times on CPU 1: " &
+               Natural'Image (Executions (Curr_Pointer.Base_Priority).
+                                                         Times_On_First_CPU));
+
+            Ada.Text_IO.Put_Line ("Times on CPU 2: " &
+               Natural'Image (Executions (Curr_Pointer.Base_Priority).
+                                                         Times_On_Second_CPU));
+
             Ada.Text_IO.Put_Line ("Locked Time: " &
                               Duration'Image (To_Duration
                                        (Curr_Pointer.Log_Table.Locked_Time)));

@@ -58,9 +58,13 @@ pragma Warnings (On);
 pragma Warnings (Off);
 pragma Elaborate (System.BB.Threads.Queues);
 with System.BB.Execution_Time;
-pragma Warnings (On);
+--  pragma Warnings (On);
 
 with System.Tasking;
+with System.Multiprocessors.Fair_Locks;
+use System.Multiprocessors.Fair_Locks;
+with System.Multiprocessors;
+with System.BB.Board_Support;
 
 package body System.BB.Protection is
 
@@ -83,8 +87,11 @@ package body System.BB.Protection is
    procedure Leave_Kernel is
       pragma Warnings (Off);
       use System.BB.Time;
+      use System.BB.Board_Support.Multiprocessors;
+      use System.Multiprocessors;
       use type System.BB.Threads.Thread_States;
       Cancelled : Boolean := False;
+      CPU_Id : constant CPU := Current_CPU;
    begin
       --  Interrupts are always disabled when entering here
 
@@ -100,6 +107,7 @@ package body System.BB.Protection is
       --  run.
 
       --  We need to check whether a context switch is needed
+      --  Lock (Ready_Tables_Locks (CPU_Id).all);
 
       if Threads.Queues.Context_Switch_Needed then
          --  Ada.Text_IO.Put_Line ("Leave_Kernel");
@@ -132,7 +140,7 @@ package body System.BB.Protection is
       pragma Assert (Threads.Queues.Running_Thread.State = Threads.Runnable);
 
       Threads.Queues.Change_Release_Jitter (Threads.Queues.First_Thread);
-
+      --  Unlock (Ready_Tables_Locks (CPU_Id).all);
       --  Now we need to set the hardware interrupt masking level equal to the
       --  software priority of the task that is executing.
       --  Ada.Text_IO.Put_Line ("End of L_K");
