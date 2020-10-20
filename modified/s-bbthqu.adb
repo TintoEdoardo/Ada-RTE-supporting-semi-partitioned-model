@@ -1295,8 +1295,11 @@ package body System.BB.Threads.Queues is
          if Curr_Pointer.Base_Priority in
                               System.Priority'First .. System.Priority'Last - 2
          then
-            Ada.Text_IO.Put_Line ("Task " &
+            Ada.Text_IO.Put ("Task " &
                                  Integer'Image (Curr_Pointer.Base_Priority));
+
+            Ada.Text_IO.Put_Line (", allocated on Base CPU: " &
+                                 CPU'Image (Curr_Pointer.Base_CPU));
 
             if Curr_Pointer.Criticality_Level = LOW then
                Ada.Text_IO.Put ("LO-Crit & ");

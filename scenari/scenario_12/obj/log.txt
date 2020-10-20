@@ -4,51 +4,51 @@
 --  CPU 1  --
 LOW => HIGH  0 Times
 HIGH => LOW  0 Times
-Idle time:  19.636917396
+Idle time:  2.759625502
 
 --  CPU 2  --
-LOW => HIGH  5 Times
-HIGH => LOW  5 Times
-Idle time:  12.411454814
+LOW => HIGH  3 Times
+HIGH => LOW  2 Times
+Idle time:  2.045222435
 
 --  Tasks log  --
-Task  40
+Task  40, allocated on Base CPU:  2
 HI-Crit
-BE Detected:  5
+BE Detected:  3
 Times Discarded:  0
 Times Migrated:  0
 Times Restored:  0
 Times on CPU 1:  0
-Times on CPU 2:  28
-Locked Time:  0.000001459
+Times on CPU 2:  9
+Locked Time:  0.000000243
 
-Task  45
+Task  45, allocated on Base CPU:  2
 HI-Crit
 BE Detected:  0
 Times Discarded:  0
 Times Migrated:  0
 Times Restored:  0
 Times on CPU 1:  0
-Times on CPU 2:  37
-Locked Time:  0.000000309
+Times on CPU 2:  6
+Locked Time:  0.000000000
 
-Task  25
+Task  5, allocated on Base CPU:  2
 LO-Crit & Migrable
 BE Detected:  0
 Times Discarded:  0
-Times Migrated:  5
-Times Restored:  5
-Times on CPU 1:  70
-Times on CPU 2:  120
-Locked Time:  0.000002411
+Times Migrated:  3
+Times Restored:  2
+Times on CPU 1:  5
+Times on CPU 2:  16
+Locked Time:  0.000000000
 
-Task  15
+Task  15, allocated on Base CPU:  1
 LO-Crit & NOT Migrable
 BE Detected:  0
 Times Discarded:  0
 Times Migrated:  0
 Times Restored:  0
-Times on CPU 1:  125
+Times on CPU 1:  19
 Times on CPU 2:  0
 Locked Time:  0.000000000
 

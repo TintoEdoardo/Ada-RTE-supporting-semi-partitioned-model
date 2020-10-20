@@ -41,7 +41,7 @@ package body Periodic_Tasks is
    task body High_Crit is
       Next_Period : Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Experiments_Data.Delay_Time);
       Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Period);
-      I : Natural := 1;
+      I : Natural := 0;
    begin
       STPO.Initialize_HI_Crit_Task (STPO.Self, System.BB.Time.Microseconds (Low_Critical_Budget), System.BB.Time.Microseconds (High_Critical_Budget), Period);
 
@@ -83,13 +83,13 @@ package body Periodic_Tasks is
    --  CPU 1  --
    -------------
 
-   HC_1_1 : High_Crit (Pri => 40, Low_Critical_Budget => 100_000, High_Critical_Budget => 10_000_000, Workload => 200_000, Period => 2_050_000, CPU_Id => CPU_A);
+   HC_1_1 : High_Crit (Pri => 40, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 50_000, Period => 700_000, CPU_Id => CPU_A);
    
    HC_1_2 : High_Crit (Pri => 45, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 1, Period => 550_000, CPU_Id => CPU_A);
 
    --  LC_1_1 : Low_Crit (Pri => 20, Low_Critical_Budget => 300_000, Is_Migrable => False, Workload => 1, Period => 100_000, CPU_Id => CPU_A);
 
-   LC_1_2 : Low_Crit (Pri => 25, Low_Critical_Budget => 1_440_000, Is_Migrable => True, Workload => 1, Period => 100_000, CPU_Id => CPU_A);
+   LC_1_2 : Low_Crit (Pri => 5, Low_Critical_Budget => 1_440_000, Is_Migrable => True, Workload => 1, Period => 100_000, CPU_Id => CPU_A);
 
    --  LC_1_3 : Low_Crit (Pri => 24, Low_Critical_Budget => 1_440_000, Is_Migrable => True, Workload => 1, Period => 300_000, CPU_Id => CPU_A);
 
@@ -99,7 +99,7 @@ package body Periodic_Tasks is
    --  CPU 2  --
    -------------
 
-   --  HC_2_1 : High_Crit (Pri => 30, Low_Critical_Budget => 100_000_000, High_Critical_Budget => 500_000_000, Workload => 1_000_000, Period => 50_000, CPU_Id => CPU_B);
+   --  HC_2_1 : High_Crit (Pri => 30, Low_Critical_Budget => 100_000_000, High_Critical_Budget => 500_000_000, Workload => 90_000_000, Period => 100_000_000, CPU_Id => CPU_B);
    
    --  HC_2_2 : High_Crit (Pri => 35, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 1, Period => 1_550_000, CPU_Id => CPU_B);
 
