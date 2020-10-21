@@ -85,11 +85,11 @@ package body Periodic_Tasks is
 
    HC_1_1 : High_Crit (Pri => 40, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 50_000, Period => 700_000, CPU_Id => CPU_A);
    
-   HC_1_2 : High_Crit (Pri => 45, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 1, Period => 550_000, CPU_Id => CPU_A);
+   HC_1_2 : High_Crit (Pri => 35, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 1_000, Period => 550_000, CPU_Id => CPU_A);
 
    --  LC_1_1 : Low_Crit (Pri => 20, Low_Critical_Budget => 300_000, Is_Migrable => False, Workload => 1, Period => 100_000, CPU_Id => CPU_A);
 
-   LC_1_2 : Low_Crit (Pri => 5, Low_Critical_Budget => 1_440_000, Is_Migrable => True, Workload => 1, Period => 100_000, CPU_Id => CPU_A);
+   --  LC_1_2 : Low_Crit (Pri => 5, Low_Critical_Budget => 1_440_000, Is_Migrable => True, Workload => 1, Period => 100_000, CPU_Id => CPU_A);
 
    --  LC_1_3 : Low_Crit (Pri => 24, Low_Critical_Budget => 1_440_000, Is_Migrable => True, Workload => 1, Period => 300_000, CPU_Id => CPU_A);
 
@@ -105,7 +105,7 @@ package body Periodic_Tasks is
 
    --  LC_2_1 : Low_Crit (Pri => 10, Low_Critical_Budget => 300_000, Is_Migrable => True, Workload => 1, Period => 1_000_000, CPU_Id => CPU_B);
 
-   LC_2_2 : Low_Crit (Pri => 15, Low_Critical_Budget => 140_000, Is_Migrable => False, Workload => 1, Period => 160_000, CPU_Id => CPU_B);
+   --  LC_2_2 : Low_Crit (Pri => 15, Low_Critical_Budget => 140_000, Is_Migrable => False, Workload => 1, Period => 160_000, CPU_Id => CPU_B);
 
    task End_Task_Second_Core with 
          Priority => System.Priority'Last - 1,

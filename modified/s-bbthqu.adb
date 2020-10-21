@@ -804,6 +804,10 @@ package body System.BB.Threads.Queues is
             --     (Wakeup_Thread.Base_Priority) & ": not a good restoring.");
          end if;
 
+         --  Ada.Text_IO.Put_Line (Integer'Image (Wakeup_Thread.Base_Priority)
+         --   & " released with " &
+         --   Duration'Image (To_Duration (Wakeup_Thread.Active_Budget)));
+
          Lock (Ready_Tables_Locks (Wakeup_Thread.Active_CPU).all);
          Insert (Wakeup_Thread);
          Unlock (Ready_Tables_Locks (Wakeup_Thread.Active_CPU).all);
@@ -1273,7 +1277,19 @@ package body System.BB.Threads.Queues is
       --  For each HI-crit task, set its Active_Budget to the HI-crit one.
       while Curr_Pointer /= Null_Thread_Id
       loop
-         Curr_Pointer.Active_Budget := Curr_Pointer.High_Critical_Budget;
+         if Curr_Pointer.State = Runnable then
+            Curr_Pointer.Active_Budget :=
+               Curr_Pointer.Active_Budget +
+                     (Curr_Pointer.High_Critical_Budget -
+                        Curr_Pointer.Low_Critical_Budget);
+         else
+            Curr_Pointer.Active_Budget := Curr_Pointer.High_Critical_Budget;
+         end if;
+
+            Ada.Text_IO.Put_Line (Integer'Image (Curr_Pointer.Base_Priority)
+               & " raised to " &
+               Duration'Image (To_Duration (Curr_Pointer.Active_Budget)));
+
          Curr_Pointer := Curr_Pointer.Next_HI_Crit;
       end loop;
 

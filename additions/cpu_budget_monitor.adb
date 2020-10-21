@@ -35,7 +35,7 @@ package body CPU_Budget_Monitor is
       if Get_Core_Mode (CPU_Id) = LOW then
          if Self_Id.Criticality_Level = HIGH then
             Clear_Monitor (Cancelled);
-
+            Self_Id.Active_Budget := 0;
             --  Ada.Text_IO.Put_Line
             --   (" HI-CRIT CPU_Budget_Exceeded DETECTED.");
             Set_Core_Mode (HIGH, CPU_Id);

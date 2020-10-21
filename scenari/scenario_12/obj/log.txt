@@ -1,54 +1,40 @@
+ 35 raised to  1.000000000
+ 40 raised to  0.900000000
+ 35 raised to  1.000000000
+ 40 raised to  0.900000000
+ 35 raised to  1.000000000
+ 40 raised to  0.900000000
 ----------------------
 --  END EXPERIMENT  --
 ----------------------
 --  CPU 1  --
-LOW => HIGH  0 Times
-HIGH => LOW  0 Times
-Idle time:  2.759625502
-
---  CPU 2  --
 LOW => HIGH  3 Times
 HIGH => LOW  2 Times
-Idle time:  2.045222435
+Idle time:  2.022657096
+
+--  CPU 2  --
+LOW => HIGH  0 Times
+HIGH => LOW  0 Times
+Idle time:  0.000000000
 
 --  Tasks log  --
-Task  40, allocated on Base CPU:  2
+Task  40, allocated on Base CPU:  1
 HI-Crit
 BE Detected:  3
 Times Discarded:  0
 Times Migrated:  0
 Times Restored:  0
-Times on CPU 1:  0
-Times on CPU 2:  9
-Locked Time:  0.000000243
+Times on CPU 1:  8
+Times on CPU 2:  0
+Locked Time:  0.000000000
 
-Task  45, allocated on Base CPU:  2
+Task  35, allocated on Base CPU:  1
 HI-Crit
 BE Detected:  0
 Times Discarded:  0
 Times Migrated:  0
 Times Restored:  0
-Times on CPU 1:  0
-Times on CPU 2:  6
-Locked Time:  0.000000000
-
-Task  5, allocated on Base CPU:  2
-LO-Crit & Migrable
-BE Detected:  0
-Times Discarded:  0
-Times Migrated:  3
-Times Restored:  2
-Times on CPU 1:  5
-Times on CPU 2:  16
-Locked Time:  0.000000000
-
-Task  15, allocated on Base CPU:  1
-LO-Crit & NOT Migrable
-BE Detected:  0
-Times Discarded:  0
-Times Migrated:  0
-Times Restored:  0
-Times on CPU 1:  19
+Times on CPU 1:  6
 Times on CPU 2:  0
 Locked Time:  0.000000000
 

@@ -9,8 +9,8 @@ pragma Warnings (On);
 
 package Periodic_Tasks is
 
-  CPU_A  : constant CPU := CPU'Last;
-  CPU_B  : constant CPU := CPU'First; 
+  CPU_A  : constant CPU := CPU'First;
+  CPU_B  : constant CPU := CPU'Last; 
 
   --  Periodic LO-CRIT task
   task type Low_Crit
