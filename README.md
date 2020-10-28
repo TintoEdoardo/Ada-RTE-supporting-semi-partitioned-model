@@ -1,0 +1,1 @@
+An experimental implementation of the ["Semi-partitioned model for dual-core mixed criticality system"](https://dl.acm.org/doi/10.1145/2834848.2834865) by Xu & Burns.
