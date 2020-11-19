@@ -2,7 +2,17 @@
 
 From bottom to MCS by Xu & Burns
 
-- [Scenario 0](scenario_0/scenario_0.md)
-- [Scenario 1](scenario_1/scenario_1.md)
-- [Scenario 2](scenario_2/scenario_2.md)
-- [Scenario 3](scenario_3/scenario_3.md)
+- [X] [Scenario 0](scenario_0/scenario_0.md)
+- [X] [Scenario 1](scenario_1/scenario_1.md)
+- [X] [Scenario 2](scenario_2/scenario_2.md)
+- [X] [Scenario 3](scenario_3/scenario_3.md)
+- [X] [Scenario 4](scenario_4/scenario_4.md)
+- [X] [Scenario 5](scenario_5/scenario_5.md)
+- [X] [Scenario 6](scenario_6/scenario_6.md)
+- [X] [Scenario 7](scenario_7/scenario_7.md)
+- [X] [Scenario 8](scenario_8/scenario_8.md)
+- [X] [Scenario 9](scenario_9/scenario_9.md)
+- [X] [Scenario 10](scenario_10/scenario_10.md)
+- [X] [Scenario 11](scenario_11/scenario_11.md)
+- [X] [Scenario 12](scenario_12/scenario_12.md)
+- [ ] [~~Scenario 13~~](scenario_13/scenario_13.md)

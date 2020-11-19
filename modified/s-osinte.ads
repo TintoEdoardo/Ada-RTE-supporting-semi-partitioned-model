@@ -223,4 +223,28 @@ package System.OS_Interface is
      renames System.BB.Board_Support.Multiprocessors.Current_CPU;
    --  Return the id of the current CPU
 
+   -----------------------
+   -- Additions for MCS --
+   -----------------------
+
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural;
+         Is_Migrable : Boolean)
+         renames System.BB.Threads.Initialize_LO_Crit_Task;
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         HI_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural)
+         renames System.BB.Threads.Initialize_HI_Crit_Task;
+
 end System.OS_Interface;

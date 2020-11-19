@@ -32,6 +32,11 @@
 --  instruction set. It is not suitable for ARMv7-M targets, which use
 --  Thumb2.
 
+pragma Warnings (Off);
+with Ada.Text_IO;
+with System.BB.Execution_Time;
+--  pragma Warnings (On);
+
 with Interfaces; use Interfaces;
 
 with System.Multiprocessors;
@@ -40,6 +45,11 @@ with System.BB.Threads.Queues;
 with System.BB.Board_Support;
 with System.BB.Parameters;
 with System.Machine_Code; use System.Machine_Code;
+
+with CPU_Budget_Monitor;
+with System.Tasking;
+with System.Multiprocessors.Fair_Locks;
+use System.Multiprocessors.Fair_Locks;
 
 package body System.BB.CPU_Primitives is
    use System.BB.Threads;
@@ -167,9 +177,22 @@ package body System.BB.CPU_Primitives is
                    Board_Support.Multiprocessors.Current_CPU;
       IRQ_Ctxt : aliased VFPU_Context_Buffer;
       Old_Ctxt : constant VFPU_Context_Access :=
-                   Running_Thread_Table (CPU_Id).Context.Running;
-
+        Running_Thread_Table (CPU_Id).Context.Running;
+      Cancelled : Boolean := False;
+      pragma Unreferenced (Cancelled);
    begin
+      --  One between FIQ or IRQ handler is about to be executed,
+      --  so we need to stop budget monitoring for the current thread.
+      --  Watchout: in our experiments IRQ handler is called in just one case:
+      --    1. when a CPU_Budget_Exceeded has expired.
+      --  In a real system, this could not be true.
+      --  CPU_Budget_Monitor.Clear_Monitor (Cancelled);
+
+      --  The previous considerations are WRONG!!
+      --  if we are here, it could be because of Timing_Event expiration,
+      --  i.e. CPU_Budget_Exceeded. Clearing monitor means deleting
+      --  CPU_Budget_Exceeded handler.
+
       --  Force trap if handler uses floating point
 
       Set_FPU_Enabled (False);
@@ -212,6 +235,7 @@ package body System.BB.CPU_Primitives is
       --  switches, we need to do that here.
 
       if Threads.Queues.Context_Switch_Needed then
+         CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
          --  The interrupt handler caused pre-emption of the thread that
          --  was executing. This means we need to switch context. We do not
@@ -224,6 +248,20 @@ package body System.BB.CPU_Primitives is
          Context_Switch;
 
          --  The pre-empted thread can now resume
+
+         --  Start budget monitoring iff the new running thread
+         --  is NOT the idle thread and it has a budget
+         --  (i.e. Is_Monitored = True).
+         --  Todo: Should Start_Monitor be invoked
+         --  regardless Context_Switch_Needed ? For our experiments,
+         --  it should be the same.
+         if (not (Running_Thread.Base_Priority = System.Tasking.Idle_Priority))
+           and
+             Running_Thread.Is_Monitored
+         then
+            CPU_Budget_Monitor.Start_Monitor (Running_Thread.Active_Budget);
+         end if;
+
       end if;
 
       Asm ("msr   SPSR_cxsf, %0",
@@ -259,8 +297,7 @@ package body System.BB.CPU_Primitives is
 
       CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
 
-      New_Priority : constant Integer :=
-                       First_Thread_Table (CPU_Id).Active_Priority;
+      New_Priority : Integer;
    begin
       --  Whenever switching to a new context, disable the FPU, so we don't
       --  have to worry about its state. It is much more efficient to lazily
@@ -273,6 +310,8 @@ package body System.BB.CPU_Primitives is
       --  the caller is responsible for saving the (banked) SPSR register.
       --  This register is only visible in banked modes, so can't be saved
       --  here.
+
+      New_Priority := First_Thread_Table (CPU_Id).Active_Priority;
 
       if Current_FPU_Context (CPU_Id) /=
         First_Thread_Table (CPU_Id).Context.Running

@@ -1,0 +1,78 @@
+----------------------
+--  END EXPERIMENT  --
+----------------------
+--  CPU 1  --
+LOW => HIGH  13 Times
+HIGH => LOW  13 Times
+Idle time:  6.069116261
+
+--  CPU 2  --
+LOW => HIGH  13 Times
+HIGH => LOW  13 Times
+Idle time:  6.050833931
+
+--  Tasks log  --
+Task  40
+HI-Crit
+BE Detected:  6
+Times Discarded:  0
+Times Migrated:  0
+Times Restored:  0
+Locked Time:  0.000001661
+
+Task  45
+HI-Crit
+BE Detected:  7
+Times Discarded:  0
+Times Migrated:  0
+Times Restored:  0
+Locked Time:  0.000001447
+
+Task  20
+LO-Crit & Migrable
+BE Detected:  0
+Times Discarded:  0
+Times Migrated:  19
+Times Restored:  0
+Locked Time:  0.000000312
+
+Task  25
+LO-Crit & NOT Migrable
+BE Detected:  0
+Times Discarded:  0
+Times Migrated:  0
+Times Restored:  0
+Locked Time:  0.000000000
+
+Task  30
+HI-Crit
+BE Detected:  6
+Times Discarded:  0
+Times Migrated:  0
+Times Restored:  0
+Locked Time:  0.000002652
+
+Task  35
+HI-Crit
+BE Detected:  7
+Times Discarded:  0
+Times Migrated:  0
+Times Restored:  0
+Locked Time:  0.000003303
+
+Task  10
+LO-Crit & Migrable
+BE Detected:  0
+Times Discarded:  0
+Times Migrated:  18
+Times Restored:  0
+Locked Time:  0.000000000
+
+Task  15
+LO-Crit & Migrable
+BE Detected:  0
+Times Discarded:  0
+Times Migrated:  15
+Times Restored:  0
+Locked Time:  0.000000568
+

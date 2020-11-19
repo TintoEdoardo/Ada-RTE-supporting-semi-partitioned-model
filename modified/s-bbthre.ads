@@ -45,11 +45,13 @@ with System.BB.Time;
 with System.BB.Board_Support;
 with System.Multiprocessors;
 with System.BB.Deadlines;
+with Mixed_Criticality_System;
 
 package System.BB.Threads is
    pragma Preelaborate;
 
    use type System.Multiprocessors.CPU;
+   package MCS renames Mixed_Criticality_System;
 
    --------------------------
    -- Basic thread support --
@@ -68,11 +70,27 @@ package System.BB.Threads is
    Null_Thread_Id : constant Thread_Id := null;
    --  Identifier used to define an invalid value for a thread identifier
 
-   type Thread_States is (Runnable, Suspended, Delayed);
+   type Thread_States is (Runnable, Suspended, Delayed, Discarded);
    --  These are the three possible states for a thread under the Ravenscar
    --  profile restrictions: Runnable (not blocked, and it may also be
    --  executing), Suspended (waiting on an entry call), and Delayed (waiting
    --  on a delay until statement).
+
+   type Array_CPUs is array (System.Multiprocessors.CPU) of Natural;
+
+   --  Addition for MCS by Xu & Burns: a thread is Discarded when is going to
+   --  be inserted in the discarded queue (Discarded_Thread_Table).
+
+   type Task_Data_Log is record
+      --  BE is Budget_Exceeded
+      Times_BE         : Natural                  := 0;
+      Times_Discarded  : Natural                  := 0;
+      Times_Migrated   : Natural                  := 0;
+      Times_Restored   : Natural                  := 0;
+      --  Times_On_CPUs    : Array_CPUs               := (others => 0);
+      Locked_Time      : System.BB.Time.Time_Span := 0;
+      Last_Time_Locked : System.BB.Time.Time      := 0;
+   end record;
 
    type Thread_Descriptor is record
       Context : aliased System.BB.CPU_Primitives.Context_Buffer;
@@ -179,6 +197,43 @@ package System.BB.Threads is
       pragma Volatile (Active_Release_Jitter);
 
       First_Execution : Boolean := False;
+
+      --  Additions for MCS by Xu & Burns
+
+      --  CPU runtime (if migrations have been made).
+      Active_CPU : System.Multiprocessors.CPU_Range;
+
+      Period : System.BB.Time.Time_Span;
+
+      --  Statically-assigned budget
+      Low_Critical_Budget  : System.BB.Time.Time_Span;
+      High_Critical_Budget : System.BB.Time.Time_Span;
+
+      --  Run-time budget based on core criticality mode.
+      --    1. If criticality mode is LOW, then Budget := Low_Critical_Budget.
+      --    2. If criticality mode is HIGH  && Task.Criticality_Level is HIGH,
+      --         then Budget := High_Critical_Budget.
+      Active_Budget : System.BB.Time.Time_Span;
+
+      Is_Monitored : Boolean := False;
+
+      Criticality_Level : MCS.Criticality;
+
+      --  Next thread in HI-crit queue.
+      --  This fields is set iff Thread.Criticality_Level is HIGH.
+      Next_HI_Crit : Thread_Id;
+
+      Is_Migrable : Boolean := False;
+
+      --  The following two fields are needed by monitored (Is_Monitored) tasks
+      --  Last time that this threads takes the CPU.
+      T_Start : System.BB.Time.Time;
+
+      --  Last time that this threads loses/yields the CPU.
+      T_Clear : System.BB.Time.Time;
+
+      Log_Table : Task_Data_Log;
+
    end record;
 
    function Get_Affinity
@@ -354,5 +409,27 @@ package System.BB.Threads is
    function Get_ATCB return System.Address;
    pragma Inline (Get_ATCB);
    --  Returns the ATCB of the currently executing thread
+
+   -----------------------
+   -- Additions for MCS --
+   -----------------------
+
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural;
+         Is_Migrable : Boolean);
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         HI_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural);
 
 end System.BB.Threads;

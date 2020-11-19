@@ -39,6 +39,16 @@ with System.Storage_Elements;
 with System.Tasking.Debug;
 with System.Task_Info;
 
+with Core_Execution_Modes;
+with System.BB.Protection;
+with System.BB.Threads.Queues;
+
+with Experiments_Data;
+
+pragma Warnings (Off);
+with Ada.Text_IO;
+pragma Warnings (On);
+
 package body System.Task_Primitives.Operations is
 
    use System.OS_Interface;
@@ -272,12 +282,42 @@ package body System.Task_Primitives.Operations is
 
    procedure Idle (Param : Address)
    is
+      use Core_Execution_Modes;
+      use System.BB.Protection;
+      use System.BB.Threads.Queues;
+      use Experiments_Data;
       pragma Unreferenced (Param);
       T : constant Tasking.Task_Id := Self;
+      CPU_Id : System.Multiprocessors.CPU;
+      First_Execution : Boolean := True;
    begin
       Enter_Task (T);
 
       loop
+         Enter_Kernel;
+         CPU_Id := Current_CPU;
+         CPU_Log_Table (CPU_Id).Is_Idle := True;
+
+         if not First_Execution then
+            --  Start logging idle time.
+            CPU_Log_Table (CPU_Id).Last_Time_Idle := Clock;
+         else
+            CPU_Log_Table (CPU_Id).Last_Time_Idle :=
+               System.BB.Time."+"
+                  (System.BB.Time.Time_First,
+                  System.BB.Time.Microseconds (Experiments_Data.Delay_Time));
+         end if;
+
+         First_Execution := False;
+
+         if Get_Core_Mode (CPU_Id) = HIGH then
+            --  An idle tick during HI-crit mode has beed detected
+            --  => go back to LO-crit mode.
+            Set_Core_Mode (LOW, CPU_Id);
+            Back_To_LO_Crit_Mode;
+         end if;
+
+         Leave_Kernel;
          OS_Interface.Power_Down;
       end loop;
    end Idle;
@@ -459,5 +499,37 @@ package body System.Task_Primitives.Operations is
    begin
       return System.OS_Interface.Current_Interrupt = No_Interrupt;
    end Is_Task_Context;
+
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+       (T : ST.Task_Id;
+       LO_Crit_Budget : System.BB.Time.Time_Span;
+       Period : Natural;
+       Is_Migrable : Boolean) is
+   begin
+      pragma Assert (T = Self);
+
+      System.OS_Interface.Initialize_LO_Crit_Task
+                                       (LO_Crit_Budget, Period, Is_Migrable);
+   end  Initialize_LO_Crit_Task;
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+       (T : ST.Task_Id;
+       LO_Crit_Budget : System.BB.Time.Time_Span;
+       HI_Crit_Budget : System.BB.Time.Time_Span;
+       Period : Natural) is
+   begin
+      pragma Assert (T = Self);
+
+      System.OS_Interface.Initialize_HI_Crit_Task
+                                    (LO_Crit_Budget, HI_Crit_Budget, Period);
+   end  Initialize_HI_Crit_Task;
 
 end System.Task_Primitives.Operations;

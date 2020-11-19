@@ -44,6 +44,13 @@ with System.BB.Timing_Events;
 with Ada.Unchecked_Conversion;
 with System.OS_Interface;
 
+with CPU_Budget_Monitor;
+with Core_Execution_Modes;
+
+pragma Warnings (Off);
+with Ada.Text_IO;
+pragma Warnings (On);
+
 package body System.BB.Time is
 
    use System.Multiprocessors;
@@ -123,6 +130,7 @@ package body System.BB.Time is
    -----------------
 
    procedure Delay_Until (T : Time) is
+      use Core_Execution_Modes;
       Now               : Time;
       Self              : Threads.Thread_Id;
       Inserted_As_First : Boolean;
@@ -130,11 +138,21 @@ package body System.BB.Time is
       Response_Jitter   : Time_Span;
       Temp1             : Time_Span;
       Temp2             : Time;
-
+      Cancelled         : Boolean;
+      pragma Unreferenced (Cancelled);
    begin
       --  First mask interrupts, this is necessary to handle thread queues
 
       Protection.Enter_Kernel;
+
+      --  Stop budget monitoring.
+      --  To be fair (aka: in a real system), budget monitoring
+      --  should be stopped if:
+      --    1. the alarm time is in the future.
+      --    2. the Yield procedure re-inserts the running thread
+      --       on top (head) of ready queue.
+
+      --  CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
       --  Read the clock once the interrupts are masked to avoid being
       --  interrupted before the alarm is set.
@@ -167,6 +185,20 @@ package body System.BB.Time is
       --  Test if the alarm time is in the future
 
       if T + System.BB.Threads.Queues.Global_Interrupt_Delay > Now then
+         --  Ada.Text_IO.Put_Line ("Delay_Until");
+         CPU_Budget_Monitor.Clear_Monitor (Cancelled);
+
+         --  Restore its budget
+         if Get_Core_Mode (CPU_Id) = LOW then
+            Self.Active_Budget := Self.Low_Critical_Budget;
+         else
+            --  for LO-crit tasks, HI-crit budget is set to LO-crit budget.
+            Self.Active_Budget := Self.High_Critical_Budget;
+         end if;
+
+         --  Ada.Text_IO.Put_Line (Integer'Image (Self.Base_Priority) &
+         --   " restored budget to " & Duration'Image
+         --         (System.BB.Time.To_Duration (Self.Active_Budget)));
 
          --  Extract the thread from the ready queue. When a thread wants to
          --  wait for an alarm it becomes blocked.

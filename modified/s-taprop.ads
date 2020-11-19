@@ -134,4 +134,28 @@ package System.Task_Primitives.Operations is
    --  This function returns True if the current execution is in the context
    --  of a task, and False if it is an interrupt context.
 
+   -----------------------
+   -- Additions for MCS --
+   -----------------------
+
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+         (T : ST.Task_Id;
+         LO_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural;
+         Is_Migrable : Boolean);
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+         (T : ST.Task_Id;
+         LO_Crit_Budget : System.BB.Time.Time_Span;
+         HI_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural);
+
 end System.Task_Primitives.Operations;

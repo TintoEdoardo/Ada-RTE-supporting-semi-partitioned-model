@@ -37,6 +37,8 @@
 with System.BB.Time;
 with System.BB.Board_Support;
 with System.Multiprocessors;
+with System.Multiprocessors.Fair_Locks;
+with System.Multiprocessors.Spin_Locks;
 
 package System.BB.Threads.Queues is
    pragma Preelaborate;
@@ -47,6 +49,32 @@ package System.BB.Threads.Queues is
    ----------------
    -- Ready list --
    ----------------
+
+   Ready_Table_Core_1_Lock :
+      aliased System.Multiprocessors.Fair_Locks.Fair_Lock :=
+         (Spinning => (others => False),
+            Lock => (Flag => System.Multiprocessors.Spin_Locks.Unlocked));
+
+   Ready_Table_Core_2_Lock :
+      aliased System.Multiprocessors.Fair_Locks.Fair_Lock :=
+         (Spinning => (others => False),
+            Lock => (Flag => System.Multiprocessors.Spin_Locks.Unlocked));
+
+   Ready_Tables_Locks : constant array (System.Multiprocessors.CPU) of
+      access System.Multiprocessors.Fair_Locks.Fair_Lock :=
+         (System.Multiprocessors.CPU'First => Ready_Table_Core_1_Lock'Access,
+          System.Multiprocessors.CPU'Last => Ready_Table_Core_2_Lock'Access);
+   --  Two locks in order to protect access to ready queues
+   --  on multiprocessor systems.
+
+   type Log_Exec_Tasks is record
+      Times_On_First_CPU : Natural := 0;
+      Times_On_Second_CPU : Natural := 0;
+   end record;
+
+   type Array_Log_Tasks is array (System.Priority) of Log_Exec_Tasks;
+
+   Executions : Array_Log_Tasks;
 
    procedure Initialize_Log_Table (ID : Integer);
    procedure Add_DM (ID : Integer);
@@ -401,5 +429,71 @@ package System.BB.Threads.Queues is
    function Queue_Ordered return Boolean with Ghost;
    --  Return True iff thread list headed by HEAD is correctly ordered by
    --  priority.
+
+   -----------------------
+   -- Additions for MCS --
+   -----------------------
+
+   --  Whenever both core are in HI-CRIT mode, according to
+   --  MCS model by Xu & Burns, some threads must be discarded
+   --  and resumed as soon as a core switch back to LO-CRIT mode.
+   --  This table contains the discarded threads.
+   Discarded_Thread_Table : Thread_Id := Null_Thread_Id;
+
+   ------------------------
+   --  Insert_Discarded  --
+   ------------------------
+
+   --  push Thread on top (head) of Discarderd_Thread_Table
+   procedure Insert_Discarded (Thread : Thread_Id);
+
+   -------------------------
+   --  Extract_Discarded  --
+   -------------------------
+
+   --  Pop operation on Discarded_Thread_Table
+   function Extract_Discarded return Thread_Id;
+
+   --  Just for debugging
+   procedure Print_Queues;
+
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+     (Thread : Thread_Id;
+     LO_Crit_Budget : System.BB.Time.Time_Span;
+     Period : Natural;
+     Is_Migrable : Boolean);
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+     (Thread : Thread_Id;
+     LO_Crit_Budget : System.BB.Time.Time_Span;
+     HI_Crit_Budget : System.BB.Time.Time_Span;
+     Period : Natural);
+
+   ----------------------------
+   --  Back_To_LO_Crit_Mode  --
+   ----------------------------
+
+   --  it brings back the current CPU to the low critical mode.
+   procedure Back_To_LO_Crit_Mode;
+
+   -----------------------------
+   --  Enter_In_HI_Crit_Mode  --
+   -----------------------------
+
+   procedure Enter_In_HI_Crit_Mode;
+
+   --------------------
+   --  Print_BE_Log  --
+   --------------------
+
+   procedure Print_Tasks_Log;
 
 end System.BB.Threads.Queues;

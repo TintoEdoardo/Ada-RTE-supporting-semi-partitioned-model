@@ -18,9 +18,12 @@ library project Libgnat is
    for Object_Dir use "obj";
 
    Modified_Runtime_Sources := (Project'Project_Dir & "../../../modified");
+   Addition_Runtime_Sources := (Project'Project_Dir & "../../../additions");
+
 
    for Source_Dirs use
      Modified_Runtime_Sources &
+     Addition_Runtime_Sources &
      Libgnat_Sources.Gnat_Dirs &
      Libgnarl_Sources.Gnarl_Dirs & 
      ("../../src/arch",

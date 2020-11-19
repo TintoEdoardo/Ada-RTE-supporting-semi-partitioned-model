@@ -35,14 +35,20 @@
 ------------------------------------------------------------------------------
 
 pragma Restrictions (No_Elaboration_Code);
-
 with System.BB.CPU_Primitives;
 with System.BB.Parameters;
 with System.BB.Threads;
+use System.BB.Threads;
 with System.BB.Time;
 
 with System.BB.Threads.Queues;
+use System.BB.Threads.Queues;
 
+with CPU_Budget_Monitor;
+
+pragma Warnings (Off);
+with Ada.Text_IO;
+pragma Warnings (On);
 --  The following pragma Elaborate is anomalous. We generally do not like
 --  to use pragma Elaborate, since it disconnects the static elaboration
 --  model checking (and generates a warning when using this model). So
@@ -51,7 +57,14 @@ with System.BB.Threads.Queues;
 
 pragma Warnings (Off);
 pragma Elaborate (System.BB.Threads.Queues);
-pragma Warnings (On);
+with System.BB.Execution_Time;
+--  pragma Warnings (On);
+
+with System.Tasking;
+with System.Multiprocessors.Fair_Locks;
+use System.Multiprocessors.Fair_Locks;
+with System.Multiprocessors;
+with System.BB.Board_Support;
 
 package body System.BB.Protection is
 
@@ -72,8 +85,13 @@ package body System.BB.Protection is
    ------------------
 
    procedure Leave_Kernel is
+      pragma Warnings (Off);
       use System.BB.Time;
+      use System.BB.Board_Support.Multiprocessors;
+      use System.Multiprocessors;
       use type System.BB.Threads.Thread_States;
+      Cancelled : Boolean := False;
+      CPU_Id : constant CPU := Current_CPU;
    begin
       --  Interrupts are always disabled when entering here
 
@@ -89,8 +107,11 @@ package body System.BB.Protection is
       --  run.
 
       --  We need to check whether a context switch is needed
+      --  Lock (Ready_Tables_Locks (CPU_Id).all);
 
       if Threads.Queues.Context_Switch_Needed then
+         --  Ada.Text_IO.Put_Line ("Leave_Kernel");
+         CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
          --  Perform a context switch because the currently executing thread
          --  is blocked or it is no longer the one with the highest priority.
@@ -102,6 +123,16 @@ package body System.BB.Protection is
          end if;
 
          CPU_Primitives.Context_Switch;
+         --  Ada.Text_IO.Put_Line ("Context Switch done!");
+         --  Start budget monitoring iff the new running thread
+         --  is NOT the idle thread and it has a budget
+         --  (i.e. Is_Monitored = True).
+         if (not (Running_Thread.Base_Priority = System.Tasking.Idle_Priority))
+           and
+             Running_Thread.Is_Monitored
+         then
+            CPU_Budget_Monitor.Start_Monitor (Running_Thread.Active_Budget);
+         end if;
       end if;
 
       --  There is always a running thread (at worst the idle thread)
@@ -109,12 +140,14 @@ package body System.BB.Protection is
       pragma Assert (Threads.Queues.Running_Thread.State = Threads.Runnable);
 
       Threads.Queues.Change_Release_Jitter (Threads.Queues.First_Thread);
-
+      --  Unlock (Ready_Tables_Locks (CPU_Id).all);
       --  Now we need to set the hardware interrupt masking level equal to the
       --  software priority of the task that is executing.
+      --  Ada.Text_IO.Put_Line ("End of L_K");
 
       CPU_Primitives.Enable_Interrupts
         (Threads.Queues.Running_Thread.Active_Priority);
+      --  Ada.Text_IO.Put_Line ("Interr ENABLED");
 
    end Leave_Kernel;
 

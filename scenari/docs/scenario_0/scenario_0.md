@@ -1,4 +1,7 @@
 # Scenario 0
+
+Torna all'[indice](../index.md)
+
 - [X] Solo il core0 è attivo, mentre il core1 è disattivato (che **non** vuol dire che è attivato e non ha del carico).
 - [X] Esiste un solo task periodico, contenuto in un apposito package, **oltre** a quello di idle e al `main` del programma.
 - [X] tale task viene schedulato correttamente sul core0, ovvero è in testa alla coda di pronti del core0. Il corpo del task avrà la seguente specifica:
@@ -45,3 +48,5 @@ dove `Init` è:
 - [X] Il periodo di un task periodico deve essere espresso in microsecondi.
 - [X] Si deve allocare un task `P1` di tipo `Periodic_First_CPU` di priorità `10` e periodo `1_000_000` di microsecondi.
 - [X] Essendo questo task di priorità strettamente maggiore di quella del main (`10 > 0`), la procedura `Init` deve eseguire, sul core0, solo ed esclusivamente quando il task `P1` è sospeso.
+
+Torna all'[indice](../index.md)

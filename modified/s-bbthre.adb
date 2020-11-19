@@ -40,6 +40,7 @@ with System.Parameters;
 with System.BB.Interrupts;
 with System.BB.Protection;
 with System.BB.Threads.Queues;
+with System.Multiprocessors.Fair_Locks;
 
 package body System.BB.Threads is
 
@@ -90,13 +91,13 @@ package body System.BB.Threads is
 
    function Get_CPU (Thread : Thread_Id) return CPU is
    begin
-      if Thread.Base_CPU = Not_A_Specific_CPU then
+      if Thread.Active_CPU = Not_A_Specific_CPU then
 
          --  Return the implementation specific default CPU
 
          return CPU'First;
       else
-         return CPU (Thread.Base_CPU);
+         return CPU (Thread.Active_CPU);
       end if;
    end Get_CPU;
 
@@ -142,7 +143,8 @@ package body System.BB.Threads is
 
       --  CPU of the environment thread is current one (initialization CPU)
 
-      Id.Base_CPU := This_CPU;
+      Id.Base_CPU   := This_CPU;
+      Id.Active_CPU := Id.Base_CPU;
 
       --  The active priority is initially equal to the base priority
 
@@ -156,9 +158,11 @@ package body System.BB.Threads is
       Queues.Global_List := Id;
 
       --  Insert task inside the ready list (as last within its priority)
-
+      System.Multiprocessors.Fair_Locks.Lock
+        (Queues.Ready_Tables_Locks (This_CPU).all);
       Queues.Insert (Id);
-
+      System.Multiprocessors.Fair_Locks.Unlock
+        (Queues.Ready_Tables_Locks (This_CPU).all);
       --  Store stack information
 
       Id.Top_Of_Stack := Stack_Top;
@@ -261,6 +265,9 @@ package body System.BB.Threads is
       CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
 
    begin
+      Board_Support.Initialize_Board;
+      Initialize_Timers;
+
       Initialize_Thread
         (Idle_Thread, Null_Address, Null_Address,
          Idle_Priority, CPU_Id,
@@ -511,8 +518,11 @@ package body System.BB.Threads is
          end if;
          --  Insert the thread at the tail of its active priority so that the
          --  thread will resume execution.
-
+         System.Multiprocessors.Fair_Locks.Lock
+           (Queues.Ready_Tables_Locks (Id.Active_CPU).all);
          Queues.Insert (Id);
+         System.Multiprocessors.Fair_Locks.Unlock
+           (Queues.Ready_Tables_Locks (Id.Active_CPU).all);
 
       else
          --  The thread is not yet waiting so that we just signal that the
@@ -527,5 +537,39 @@ package body System.BB.Threads is
 
       Protection.Leave_Kernel;
    end Wakeup;
+
+   -------------------------------
+   --  Initialize_LO_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_LO_Crit_Task
+         (LO_Crit_Budget : System.BB.Time.Time_Span;
+         Period : Natural;
+         Is_Migrable : Boolean) is
+   begin
+      Protection.Enter_Kernel;
+
+      Queues.Initialize_LO_Crit_Task
+               (Queues.Running_Thread, LO_Crit_Budget, Period, Is_Migrable);
+
+      Protection.Leave_Kernel;
+   end Initialize_LO_Crit_Task;
+
+   -------------------------------
+   --  Initialize_HI_Crit_Task  --
+   -------------------------------
+
+   procedure Initialize_HI_Crit_Task
+             (LO_Crit_Budget : System.BB.Time.Time_Span;
+             HI_Crit_Budget : System.BB.Time.Time_Span;
+             Period : Natural) is
+   begin
+      Protection.Enter_Kernel;
+
+      Queues.Initialize_HI_Crit_Task
+               (Queues.Running_Thread, LO_Crit_Budget, HI_Crit_Budget, Period);
+
+      Protection.Leave_Kernel;
+   end Initialize_HI_Crit_Task;
 
 end System.BB.Threads;
