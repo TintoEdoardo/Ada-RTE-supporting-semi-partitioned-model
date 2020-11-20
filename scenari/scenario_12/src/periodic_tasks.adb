@@ -11,7 +11,7 @@ with Core_Execution_Modes;
 pragma Warnings (On);
 
 with Production_Workload;
-with Experiments_Data;
+with Initial_Delay;
 
 package body Periodic_Tasks is
 
@@ -22,7 +22,7 @@ package body Periodic_Tasks is
    ---------------------
 
    task body Low_Crit is
-      Next_Period : Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Experiments_Data.Delay_Time);
+      Next_Period : Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Initial_Delay.Delay_Time);
       Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Period);
    begin
       STPO.Initialize_LO_Crit_Task (STPO.Self, System.BB.Time.Microseconds (Low_Critical_Budget), Period, Is_Migrable);
@@ -39,7 +39,7 @@ package body Periodic_Tasks is
    ----------------------
 
    task body High_Crit is
-      Next_Period : Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Experiments_Data.Delay_Time);
+      Next_Period : Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Initial_Delay.Delay_Time);
       Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Period);
       I : Natural := 0;
    begin
@@ -60,7 +60,7 @@ package body Periodic_Tasks is
    ------------
 
    procedure Init is
-      Next_Period   : constant Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Experiments_Data.Delay_Time);
+      Next_Period   : constant Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Initial_Delay.Delay_Time);
       Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Experiment_Hyperperiod);
    begin
       delay until Next_Period + Period_To_Add;
@@ -112,7 +112,7 @@ package body Periodic_Tasks is
          CPU      => CPU'Last;
 
    task body End_Task_Second_Core is
-      Next_Period : constant Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Experiments_Data.Delay_Time);
+      Next_Period : constant Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Initial_Delay.Delay_Time);
       Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Experiment_Hyperperiod);
    begin
       delay until Next_Period + Period_To_Add;
