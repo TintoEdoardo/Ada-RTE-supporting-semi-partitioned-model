@@ -61,7 +61,7 @@ package body Periodic_Tasks is
 
    procedure Init is
       Next_Period   : constant Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Experiments_Data.Delay_Time);
-      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Experiments_Data.Experiment_Duration);
+      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Experiment_Hyperperiod);
    begin
       delay until Next_Period + Period_To_Add;
       Ada.Text_IO.Put_Line ("----------------------");
@@ -113,7 +113,7 @@ package body Periodic_Tasks is
 
    task body End_Task_Second_Core is
       Next_Period : constant Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Experiments_Data.Delay_Time);
-      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Experiments_Data.Experiment_Duration);
+      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Experiment_Hyperperiod);
    begin
       delay until Next_Period + Period_To_Add;
       loop

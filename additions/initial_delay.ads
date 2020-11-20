@@ -4,4 +4,6 @@ package Initial_Delay is
    --  zero-logic starting time
    Delay_Time : Natural := 2_000_000;  -- microseconds
 
+   --  Experiment_Duration : Natural := 3_000_000; -- microseconds
+
 end Initial_Delay;
