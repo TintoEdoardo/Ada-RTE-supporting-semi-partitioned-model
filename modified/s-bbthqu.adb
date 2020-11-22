@@ -45,6 +45,7 @@ pragma Warnings (Off);
 with Ada.Text_IO;
 with System.BB.Execution_Time;
 pragma Warnings (On);
+with System.Tasking;
 
 package body System.BB.Threads.Queues is
 
@@ -106,9 +107,10 @@ package body System.BB.Threads.Queues is
 
    procedure Add_DM (ID : Integer) is
    begin
-      if ID /= 0 then
-         Log_Table (ID).DM := Log_Table (ID).DM + 1;
-      end if;
+      Executions (ID).Deadlines_Missed := Executions (ID).Deadlines_Missed + 1;
+      --  if ID /= 0 then
+      --     Log_Table (ID).DM := Log_Table (ID).DM + 1;
+      --  end if;
    end Add_DM;
 
    procedure Add_Runs (ID : Integer) is
@@ -458,6 +460,13 @@ package body System.BB.Threads.Queues is
 
       pragma Assert (Thread = Running_Thread_Table (CPU_Id));
 
+      --  Ada.Text_IO.Put_Line (Integer'Image (Thread.Base_Priority) &
+      --            Duration'Image (To_Duration (Thread.Period)) & " " &
+      --                  Duration'Image (To_Duration (Thread.Active_Period)));
+
+      --  Ada.Text_IO.Put_Line (Integer'Image (Thread.Base_Priority) & ": " &
+      --             Duration'Image (To_Duration (Time_Span (Abs_Deadline))));
+
       Thread.Active_Absolute_Deadline := Abs_Deadline;
 
    end Change_Absolute_Deadline;
@@ -753,6 +762,40 @@ package body System.BB.Threads.Queues is
 
    end Wakeup_Thread_Has_To_Be_Restored;
 
+   ------------------------------------------------
+   --  Wakeup_Thread_Is_Hosting_Migrating_Tasks  --
+   ------------------------------------------------
+
+   function Wakeup_Thread_Is_Hosting_Migrating_Tasks
+      (Wakeup_Thread : Thread_Id)
+       return Boolean;
+
+   function Wakeup_Thread_Is_Hosting_Migrating_Tasks
+     (Wakeup_Thread : Thread_Id) return Boolean is
+      Target_CPU : CPU := CPU'First;
+      use Core_Execution_Modes;
+   begin
+      if Wakeup_Thread.Base_CPU = CPU'First then
+         Target_CPU := CPU'Last;
+      end if;
+      --  A Wakeup_Thread, on a LO-crit mode CPU,
+      --  has to change its current (active) priority iff
+      --  it core is hosting the other core's migratings tasks, i.e.:
+      --    1. it is on its Base_CPU
+      --    2. its Base_CPU is executing in LO-crit mode
+      --    3. the other CPU is executing in HI-crit mode
+      return
+        Wakeup_Thread.Active_CPU = Wakeup_Thread.Base_CPU
+            and
+        Get_Core_Mode (Wakeup_Thread.Base_CPU) = LOW
+            and
+        Get_Core_Mode (Target_CPU) = HIGH
+            and
+        Wakeup_Thread.Base_Priority < 238;
+      --  We exclude final tasks (238 & 239) which stuck both CPUs
+      --  in order to print log data
+   end Wakeup_Thread_Is_Hosting_Migrating_Tasks;
+
    ---------------------------
    -- Wakeup_Expired_Alarms --
    ---------------------------
@@ -783,8 +826,7 @@ package body System.BB.Threads.Queues is
          Wakeup_Thread.Preemption_Needed := True;
 
          Change_Absolute_Deadline (Wakeup_Thread,
-                                   (Wakeup_Thread.Active_Period +
-                                      Wakeup_Thread.Active_Absolute_Deadline));
+                                   (Wakeup_Thread.Period + Clock));
 
          Wakeup_Thread.Just_Wakeup := True;
          Wakeup_Thread.Active_Next_Period := Wakeup_Thread.Active_Next_Period
@@ -792,16 +834,35 @@ package body System.BB.Threads.Queues is
 
          if Wakeup_Thread_Has_To_Migrate (Wakeup_Thread) then
             Wakeup_Thread.Active_CPU := CPU_Target;
+
+            Wakeup_Thread.Active_Priority := Wakeup_Thread.
+                Priorities_Concerning_Migration.On_Target_Core_Priority;
+
             Wakeup_Thread.Log_Table.Times_Migrated :=
                                     Wakeup_Thread.Log_Table.Times_Migrated + 1;
             --  Ada.Text_IO.Put_Line (Integer'Image
             --    (Wakeup_Thread.Base_Priority) & ": not a good morning.");
          elsif Wakeup_Thread_Has_To_Be_Restored (Wakeup_Thread) then
             Wakeup_Thread.Active_CPU := Wakeup_Thread.Base_CPU;
+
+            Wakeup_Thread.Active_Priority := Wakeup_Thread.Base_Priority;
+
             Wakeup_Thread.Log_Table.Times_Restored :=
                                   Wakeup_Thread.Log_Table.Times_Restored + 1;
             --  Ada.Text_IO.Put_Line (Integer'Image
             --     (Wakeup_Thread.Base_Priority) & ": not a good restoring.");
+         elsif Wakeup_Thread_Is_Hosting_Migrating_Tasks (Wakeup_Thread) then
+
+            Wakeup_Thread.Active_Priority :=
+              Wakeup_Thread.Priorities_Concerning_Migration.
+                Hosting_Migrating_Tasks_Priority;
+
+            Ada.Text_IO.Put_Line (Integer'Image (Wakeup_Thread.Base_Priority)
+                                  & " on core " & CPU'Image (CPU_Target) &
+                                    " WAKING migrated priority to " &
+                                Integer'Image (Wakeup_Thread.Active_Priority));
+         else
+            Wakeup_Thread.Active_Priority := Wakeup_Thread.Base_Priority;
          end if;
 
          --  Ada.Text_IO.Put_Line (Integer'Image (Wakeup_Thread.Base_Priority)
@@ -1055,7 +1116,9 @@ package body System.BB.Threads.Queues is
 
    procedure Initialize_LO_Crit_Task
       (Thread : Thread_Id;
-      LO_Crit_Budget : System.BB.Time.Time_Span;
+       LO_Crit_Budget : System.BB.Time.Time_Span;
+        Hosting_Migrating_Tasks_Priority : System.Priority;
+        On_Target_Core_Priority : System.Priority;
       Period : Natural;
       Is_Migrable : Boolean) is
       use Mixed_Criticality_System;
@@ -1065,8 +1128,16 @@ package body System.BB.Threads.Queues is
       Thread.Active_Budget := Thread.Low_Critical_Budget;
       Thread.Is_Monitored := True;
 
+      Thread.Priorities_Concerning_Migration.
+        Hosting_Migrating_Tasks_Priority := Hosting_Migrating_Tasks_Priority;
+
+      Thread.Priorities_Concerning_Migration.On_Target_Core_Priority :=
+        On_Target_Core_Priority;
+
       Thread.Period := System.BB.Time.Microseconds (Period);
       Thread.Criticality_Level := LOW;
+
+      Thread.First_Time_On_Delay_Until := True;
 
       Thread.Is_Migrable := Is_Migrable;
    end Initialize_LO_Crit_Task;
@@ -1078,7 +1149,8 @@ package body System.BB.Threads.Queues is
    procedure Initialize_HI_Crit_Task
      (Thread : Thread_Id;
      LO_Crit_Budget : System.BB.Time.Time_Span;
-     HI_Crit_Budget : System.BB.Time.Time_Span;
+      HI_Crit_Budget : System.BB.Time.Time_Span;
+      Hosting_Migrating_Tasks_Priority : System.Priority;
      Period : Natural) is
       use Mixed_Criticality_System;
    begin
@@ -1087,8 +1159,17 @@ package body System.BB.Threads.Queues is
       Thread.Active_Budget := Thread.Low_Critical_Budget;
       Thread.Is_Monitored := True;
 
+      Thread.Priorities_Concerning_Migration.
+        Hosting_Migrating_Tasks_Priority := Hosting_Migrating_Tasks_Priority;
+
+      --  Thread.Hosting_Migrating_Tasks_Priority :=
+      --                  Hosting_Migrating_Tasks_Priority;
+      --  Thread.On_Target_Core_Priority := -1;
+
       Thread.Period := System.BB.Time.Microseconds (Period);
       Thread.Criticality_Level := HIGH;
+
+      Thread.First_Time_On_Delay_Until := True;
 
       Insert_High_Crit (Thread);
    end Initialize_HI_Crit_Task;
@@ -1144,6 +1225,10 @@ package body System.BB.Threads.Queues is
                   Curr_Pointer.Log_Table.Times_Migrated
                                  := Curr_Pointer.Log_Table.Times_Migrated + 1;
                   Curr_Pointer.Active_CPU := CPU_Target;
+
+                  --  Curr_Pointer.Active_Priority :=
+                  --     Curr_Pointer.On_Target_Core_Priority;
+
                   Insert (Curr_Pointer);
                elsif What_To_Do = Discard then
 
@@ -1226,6 +1311,8 @@ package body System.BB.Threads.Queues is
                                := Curr_Pointer.Log_Table.Times_Restored + 1;
                Curr_Pointer.Active_CPU := Curr_Pointer.Base_CPU;
 
+               --  Curr_Pointer.Active_Priority := Curr_Pointer.Base_Priority;
+
                Insert (Curr_Pointer);
 
                --  Go ahead with the current pointer.
@@ -1248,9 +1335,12 @@ package body System.BB.Threads.Queues is
 
    procedure Back_To_LO_Crit_Mode is
       CPU_Id       : constant CPU := Current_CPU;
-      Curr_Pointer : Thread_Id := HI_Crit_Table (CPU_Id);
+      CPU_Target   : CPU          := CPU'First;
+      Curr_Pointer : Thread_Id    := HI_Crit_Table (CPU_Id);
    begin
-
+      if CPU_Id = CPU'First then
+         CPU_Target := CPU'Last;
+      end if;
       --  Migrating tasks must be restored
       Restore_Tasks;
 
@@ -1262,6 +1352,15 @@ package body System.BB.Threads.Queues is
          Curr_Pointer := Curr_Pointer.Next_HI_Crit;
       end loop;
 
+      --  For each tasks on CPU_Target, use its steady mode's priority.
+      Curr_Pointer := First_Thread_Table (CPU_Target);
+      while Curr_Pointer /= Null_Thread_Id
+      loop
+         Curr_Pointer.Active_Priority := Curr_Pointer.Base_Priority;
+
+         Curr_Pointer := Curr_Pointer.Next;
+      end loop;
+
    end Back_To_LO_Crit_Mode;
 
    -----------------------------
@@ -1270,8 +1369,12 @@ package body System.BB.Threads.Queues is
 
    procedure Enter_In_HI_Crit_Mode is
       CPU_Id       : constant CPU := Current_CPU;
+      CPU_Target   : CPU          := CPU'First;
       Curr_Pointer : Thread_Id    := HI_Crit_Table (CPU_Id);
    begin
+      if CPU_Id = CPU'First then
+         CPU_Target := CPU'Last;
+      end if;
       --  Ada.Text_IO.Put_Line (CPU'Image (CPU_Id)
       --         & " is ENTERING in HI-crit mode.");
       --  For each HI-crit task, set its Active_Budget to the HI-crit one.
@@ -1291,6 +1394,27 @@ package body System.BB.Threads.Queues is
                Duration'Image (To_Duration (Curr_Pointer.Active_Budget)));
 
          Curr_Pointer := Curr_Pointer.Next_HI_Crit;
+      end loop;
+
+      --  For each task on CPU_Target, use its priority concerning the migratin
+      --  tasks hosting.
+      Curr_Pointer := First_Thread_Table (CPU_Target);
+      while Curr_Pointer /= Null_Thread_Id
+      loop
+         if Curr_Pointer.Active_Priority /= System.Tasking.Idle_Priority
+                and
+            Curr_Pointer.Base_Priority < 238  --  Final tasks prints log data
+         then
+            Curr_Pointer.Active_Priority := Curr_Pointer.
+              Priorities_Concerning_Migration.Hosting_Migrating_Tasks_Priority;
+
+            Ada.Text_IO.Put_Line (Integer'Image (Curr_Pointer.Base_Priority)
+                                  & " on core " & CPU'Image (CPU_Target) &
+                                    " migrated priority to " &
+                                 Integer'Image (Curr_Pointer.Active_Priority));
+         end if;
+
+         Curr_Pointer := Curr_Pointer.Next;
       end loop;
 
       --  Perform migration.
@@ -1327,6 +1451,10 @@ package body System.BB.Threads.Queues is
             else
                Ada.Text_IO.Put_Line ("HI-Crit");
             end if;
+
+            Ada.Text_IO.Put_Line ("DM Detected: " &
+               Natural'Image (Executions (Curr_Pointer.Base_Priority).
+                                                         Deadlines_Missed));
 
             Ada.Text_IO.Put_Line ("BE Detected: " &
                             Natural'Image (Curr_Pointer.Log_Table.Times_BE));

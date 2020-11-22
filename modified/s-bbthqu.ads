@@ -70,6 +70,7 @@ package System.BB.Threads.Queues is
    type Log_Exec_Tasks is record
       Times_On_First_CPU : Natural := 0;
       Times_On_Second_CPU : Natural := 0;
+      Deadlines_Missed : Natural := 0;
    end record;
 
    type Array_Log_Tasks is array (System.Priority) of Log_Exec_Tasks;
@@ -462,20 +463,23 @@ package System.BB.Threads.Queues is
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-     (Thread : Thread_Id;
-     LO_Crit_Budget : System.BB.Time.Time_Span;
-     Period : Natural;
-     Is_Migrable : Boolean);
+        (Thread : Thread_Id;
+        LO_Crit_Budget : System.BB.Time.Time_Span;
+        Hosting_Migrating_Tasks_Priority : System.Priority;
+        On_Target_Core_Priority : System.Priority;
+        Period : Natural;
+        Is_Migrable : Boolean);
 
    -------------------------------
    --  Initialize_HI_Crit_Task  --
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
-     (Thread : Thread_Id;
-     LO_Crit_Budget : System.BB.Time.Time_Span;
-     HI_Crit_Budget : System.BB.Time.Time_Span;
-     Period : Natural);
+        (Thread : Thread_Id;
+        LO_Crit_Budget : System.BB.Time.Time_Span;
+        HI_Crit_Budget : System.BB.Time.Time_Span;
+        Hosting_Migrating_Tasks_Priority : System.Priority;
+        Period : Natural);
 
    ----------------------------
    --  Back_To_LO_Crit_Mode  --

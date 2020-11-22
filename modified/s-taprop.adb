@@ -504,15 +504,18 @@ package body System.Task_Primitives.Operations is
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-       (T : ST.Task_Id;
-       LO_Crit_Budget : System.BB.Time.Time_Span;
-       Period : Natural;
-       Is_Migrable : Boolean) is
+      (T : ST.Task_Id;
+      Hosting_Migrating_Tasks_Priority : System.Priority;
+      On_Target_Core_Priority : System.Priority;
+      LO_Crit_Budget : System.BB.Time.Time_Span;
+      Period : Natural;
+      Is_Migrable : Boolean) is
    begin
       pragma Assert (T = Self);
 
       System.OS_Interface.Initialize_LO_Crit_Task
-                                       (LO_Crit_Budget, Period, Is_Migrable);
+                (LO_Crit_Budget, Hosting_Migrating_Tasks_Priority,
+                        On_Target_Core_Priority, Period, Is_Migrable);
    end  Initialize_LO_Crit_Task;
 
    -------------------------------
@@ -520,15 +523,17 @@ package body System.Task_Primitives.Operations is
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
-       (T : ST.Task_Id;
-       LO_Crit_Budget : System.BB.Time.Time_Span;
-       HI_Crit_Budget : System.BB.Time.Time_Span;
-       Period : Natural) is
+      (T : ST.Task_Id;
+      Hosting_Migrating_Tasks_Priority : System.Priority;
+      LO_Crit_Budget : System.BB.Time.Time_Span;
+      HI_Crit_Budget : System.BB.Time.Time_Span;
+      Period : Natural) is
    begin
       pragma Assert (T = Self);
 
       System.OS_Interface.Initialize_HI_Crit_Task
-                                    (LO_Crit_Budget, HI_Crit_Budget, Period);
+                        (LO_Crit_Budget, HI_Crit_Budget,
+                        Hosting_Migrating_Tasks_Priority, Period);
    end  Initialize_HI_Crit_Task;
 
 end System.Task_Primitives.Operations;

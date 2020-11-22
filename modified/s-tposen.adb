@@ -167,7 +167,7 @@ package body System.Tasking.Protected_Objects.Single_Entry is
          System.BB.Threads.Queues.Add_Runs
            (Running_Thread.Fake_Number_ID);
          if Running_Thread.Active_Absolute_Deadline < Now then
-            System.BB.Threads.Queues.Add_DM (Running_Thread.Fake_Number_ID);
+            System.BB.Threads.Queues.Add_DM (Running_Thread.Base_Priority);
          end if;
       end if;
 
