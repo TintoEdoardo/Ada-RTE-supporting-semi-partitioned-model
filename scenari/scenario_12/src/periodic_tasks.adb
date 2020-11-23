@@ -25,7 +25,8 @@ package body Periodic_Tasks is
       Next_Period : Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Initial_Delay.Delay_Time);
       Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Period);
    begin
-      STPO.Initialize_LO_Crit_Task (STPO.Self, System.BB.Time.Microseconds (Low_Critical_Budget), Period, Is_Migrable);
+      STPO.Initialize_LO_Crit_Task (STPO.Self, Hosting_Migrating_Tasks_Priority, On_Target_Core_Priority,
+                                    System.BB.Time.Microseconds (Low_Critical_Budget), Period, Is_Migrable);
       loop
          delay until Next_Period;
          --  Ada.Text_IO.Put_Line ("Task " & Integer'Image (System.BB.Threads.Queues.Running_Thread.Base_Priority) & " (belonging to CPU n."  & CPU_Range'Image (System.BB.Threads.Queues.Running_Thread.Base_CPU) & ") is executing on CPU n. " & CPU_Range'Image (System.BB.Threads.Queues.Running_Thread.Active_CPU));
@@ -43,7 +44,8 @@ package body Periodic_Tasks is
       Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Period);
       I : Natural := 0;
    begin
-      STPO.Initialize_HI_Crit_Task (STPO.Self, System.BB.Time.Microseconds (Low_Critical_Budget), System.BB.Time.Microseconds (High_Critical_Budget), Period);
+      STPO.Initialize_HI_Crit_Task
+         (STPO.Self, Hosting_Migrating_Tasks_Priority, System.BB.Time.Microseconds (Low_Critical_Budget), System.BB.Time.Microseconds (High_Critical_Budget), Period);
 
       loop
          delay until Next_Period;
@@ -83,13 +85,13 @@ package body Periodic_Tasks is
    --  CPU 1  --
    -------------
 
-   HC_1_1 : High_Crit (Pri => 40, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 50_000, Period => 700_000, CPU_Id => CPU_A);
+   HC_1_1 : High_Crit (Pri => 40, Hosting_Migrating_Tasks_Priority => 45, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 50_000, Period => 700_000, CPU_Id => CPU_A);
    
-   HC_1_2 : High_Crit (Pri => 35, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 1_000, Period => 550_000, CPU_Id => CPU_A);
+   HC_1_2 : High_Crit (Pri => 35, Hosting_Migrating_Tasks_Priority => 42, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 1_000, Period => 550_000, CPU_Id => CPU_A);
 
-   --  LC_1_1 : Low_Crit (Pri => 20, Low_Critical_Budget => 300_000, Is_Migrable => False, Workload => 1, Period => 100_000, CPU_Id => CPU_A);
+   LC_1_1 : Low_Crit (Pri => 20, Hosting_Migrating_Tasks_Priority => 21, On_Target_Core_Priority => 0, Low_Critical_Budget => 1_000_000, Is_Migrable => False, Workload => 1, Period => 10_000, CPU_Id => CPU_A);
 
-   --  LC_1_2 : Low_Crit (Pri => 5, Low_Critical_Budget => 1_440_000, Is_Migrable => True, Workload => 1, Period => 100_000, CPU_Id => CPU_A);
+   LC_1_2 : Low_Crit (Pri => 5, Hosting_Migrating_Tasks_Priority => 6, On_Target_Core_Priority => 4, Low_Critical_Budget => 1_440_000, Is_Migrable => True, Workload => 1, Period => 100_000, CPU_Id => CPU_A);
 
    --  LC_1_3 : Low_Crit (Pri => 24, Low_Critical_Budget => 1_440_000, Is_Migrable => True, Workload => 1, Period => 300_000, CPU_Id => CPU_A);
 
@@ -103,7 +105,7 @@ package body Periodic_Tasks is
    
    --  HC_2_2 : High_Crit (Pri => 35, Low_Critical_Budget => 100_000, High_Critical_Budget => 1_000_000, Workload => 1, Period => 1_550_000, CPU_Id => CPU_B);
 
-   --  LC_2_1 : Low_Crit (Pri => 10, Low_Critical_Budget => 300_000, Is_Migrable => True, Workload => 1, Period => 1_000_000, CPU_Id => CPU_B);
+   LC_2_1 : Low_Crit (Pri => 10, Hosting_Migrating_Tasks_Priority => 11, On_Target_Core_Priority => 1, Low_Critical_Budget => 300_000, Is_Migrable => False, Workload => 1, Period => 5_000_000, CPU_Id => CPU_B);
 
    --  LC_2_2 : Low_Crit (Pri => 15, Low_Critical_Budget => 140_000, Is_Migrable => False, Workload => 1, Period => 160_000, CPU_Id => CPU_B);
 

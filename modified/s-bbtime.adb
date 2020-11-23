@@ -178,9 +178,15 @@ package body System.BB.Time is
 
       --  add DM if necessary and add Regular_Completion
       System.BB.Threads.Queues.Add_Runs (Self.Fake_Number_ID);
-      if Self.Active_Absolute_Deadline < Now then
-         System.BB.Threads.Queues.Add_DM (Self.Fake_Number_ID);
+
+      if Self.Active_Absolute_Deadline < Now
+           and
+         not Self.First_Time_On_Delay_Until
+      then
+         System.BB.Threads.Queues.Add_DM (Self.Base_Priority);
       end if;
+
+      Self.First_Time_On_Delay_Until := False;
 
       --  Test if the alarm time is in the future
 
@@ -221,7 +227,7 @@ package body System.BB.Time is
       else
          --  If alarm time is not in the future, the thread must yield the CPU
          Threads.Queues.Change_Absolute_Deadline
-            (Self, Self.Active_Absolute_Deadline + Self.Active_Period);
+            (Self, Self.Active_Absolute_Deadline + Self.Period);
 
          Threads.Queues.Yield (Self);
       end if;

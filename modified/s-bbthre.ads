@@ -81,6 +81,11 @@ package System.BB.Threads is
    --  Addition for MCS by Xu & Burns: a thread is Discarded when is going to
    --  be inserted in the discarded queue (Discarded_Thread_Table).
 
+   type Task_Priorities is record
+      Hosting_Migrating_Tasks_Priority : Integer;
+      On_Target_Core_Priority : Integer;
+   end record;
+
    type Task_Data_Log is record
       --  BE is Budget_Exceeded
       Times_BE         : Natural                  := 0;
@@ -111,7 +116,18 @@ package System.BB.Threads is
       --  CPU affinity of the thread
 
       Base_Priority : Integer;
-      --  Base priority of the thread
+      --  Base priority of the thread. It is used during steady mode.
+
+      --  Hosting_Migrating_Tasks_Priority : Integer;
+      --  Priority value used when the current core c_i is hosting the migratin
+      --  tasks of the other core c_j, i.e. c_i is in LO-crit mode, while
+      --  c_j is in HI-crit one. According to Xu & Burns, this state is
+      --  referred as Y(j)_i.
+
+      --  On_Target_Core_Priority : Integer;
+      --  Priority valued used when this thread is hosted on the migrating core
+      --  , i.e. the one which is not the original one. This happens when
+      --  Base_CPU is NOT Active_CPU
 
       Active_Priority : Integer;
       pragma Volatile (Active_Priority);
@@ -233,6 +249,10 @@ package System.BB.Threads is
       T_Clear : System.BB.Time.Time;
 
       Log_Table : Task_Data_Log;
+
+      Priorities_Concerning_Migration : Task_Priorities;
+
+      First_Time_On_Delay_Until : Boolean := True;
 
    end record;
 
@@ -419,17 +439,20 @@ package System.BB.Threads is
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-         (LO_Crit_Budget : System.BB.Time.Time_Span;
-         Period : Natural;
-         Is_Migrable : Boolean);
+        (LO_Crit_Budget : System.BB.Time.Time_Span;
+        Hosting_Migrating_Tasks_Priority : System.Priority;
+        On_Target_Core_Priority : System.Priority;
+        Period : Natural;
+        Is_Migrable : Boolean);
 
    -------------------------------
    --  Initialize_HI_Crit_Task  --
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
-         (LO_Crit_Budget : System.BB.Time.Time_Span;
-         HI_Crit_Budget : System.BB.Time.Time_Span;
-         Period : Natural);
+       (LO_Crit_Budget : System.BB.Time.Time_Span;
+       HI_Crit_Budget : System.BB.Time.Time_Span;
+       Hosting_Migrating_Tasks_Priority : System.Priority;
+       Period : Natural);
 
 end System.BB.Threads;
