@@ -43,41 +43,45 @@ package body CPU_Budget_Monitor is
 
             Start_Monitor (Self_Id.Active_Budget);
          else
-            Ada.Text_IO.Put_Line ("");
-            Ada.Text_IO.Put_Line ("CPU_"
-                           & System.Multiprocessors.CPU'Image (CPU_Id)
-                           & ": GUILTY task " & Integer'Image (Task_Exceeded));
+            Experiment_Is_Not_Valid := True;
+            Guilty_Task := Task_Exceeded;
+            --  Ada.Text_IO.Put_Line ("");
+            --  Ada.Text_IO.Put_Line ("CPU_"
+            --               & System.Multiprocessors.CPU'Image (CPU_Id)
+            --            & ": GUILTY task " & Integer'Image (Task_Exceeded));
 
-            Ada.Text_IO.Put_Line
-                     ("-------------------------------------------------");
-            Ada.Text_IO.Put_Line
-                     ("--  LO-crit task exceeding its LO-crit budget  --");
-            Ada.Text_IO.Put_Line
-                     ("--        !!!  INVALID EXPERIMENTS  !!!        --");
-            Ada.Text_IO.Put_Line
-                     ("-------------------------------------------------");
-            loop
-               null;
-            end loop;
+            --  Ada.Text_IO.Put_Line
+            --         ("-------------------------------------------------");
+            --  Ada.Text_IO.Put_Line
+            --         ("--  LO-crit task exceeding its LO-crit budget  --");
+            --  Ada.Text_IO.Put_Line
+            --         ("--        !!!  INVALID EXPERIMENTS  !!!        --");
+            --  Ada.Text_IO.Put_Line
+            --         ("-------------------------------------------------");
+            --  loop
+            --     null;
+            --  end loop;
          end if;
       else  --  Get_Core_Mode (CPU_Id) is HIGH
-            Ada.Text_IO.Put_Line ("");
-            Ada.Text_IO.Put_Line ("CPU_"
-                           & System.Multiprocessors.CPU'Image (CPU_Id)
-                           & ": GUILTY task " & Integer'Image (Task_Exceeded));
-            Ada.Text_IO.Put_Line
-               ("----------------------------------------------------------");
-            Ada.Text_IO.Put_Line
-               ("--        A task has exceeded its current budget        --");
-            Ada.Text_IO.Put_Line
-               ("--      Unpredictable overload during HI-crit mode      --");
-            Ada.Text_IO.Put_Line
-               ("--             !!!  INVALID EXPERIMENTS  !!!            --");
-            Ada.Text_IO.Put_Line
-               ("----------------------------------------------------------");
-            loop
-               null;
-            end loop;
+            Experiment_Is_Not_Valid := True;
+            Guilty_Task := Task_Exceeded;
+            --  Ada.Text_IO.Put_Line ("");
+            --  Ada.Text_IO.Put_Line ("CPU_"
+            --               & System.Multiprocessors.CPU'Image (CPU_Id)
+            --             & ": GUILTY task " & Integer'Image (Task_Exceeded));
+            --  Ada.Text_IO.Put_Line
+            --  ("----------------------------------------------------------");
+            --  Ada.Text_IO.Put_Line
+            --  ("--        A task has exceeded its current budget        --");
+            --  Ada.Text_IO.Put_Line
+            --  ("--      Unpredictable overload during HI-crit mode      --");
+            --  Ada.Text_IO.Put_Line
+            --  ("--             !!!  INVALID EXPERIMENTS  !!!            --");
+            --  Ada.Text_IO.Put_Line
+            --  ("----------------------------------------------------------");
+            --  loop
+            --     null;
+            --  end loop;
       end if;
 
       System.BB.Protection.Leave_Kernel;

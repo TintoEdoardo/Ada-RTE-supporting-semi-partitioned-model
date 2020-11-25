@@ -30,4 +30,8 @@ package CPU_Budget_Monitor is
 
    procedure Clear_Monitor (Cancelled : out Boolean);
 
+   --  Log stuff
+   Experiment_Is_Not_Valid : Boolean := False;
+   Guilty_Task : Integer := -2;
+
 end CPU_Budget_Monitor;
