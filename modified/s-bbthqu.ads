@@ -465,8 +465,8 @@ package System.BB.Threads.Queues is
    procedure Initialize_LO_Crit_Task
         (Thread : Thread_Id;
         LO_Crit_Budget : System.BB.Time.Time_Span;
-        Hosting_Migrating_Tasks_Priority : System.Priority;
-        On_Target_Core_Priority : System.Priority;
+        Hosting_Migrating_Tasks_Priority : Integer;
+        On_Target_Core_Priority : Integer;
         Period : Natural;
         Is_Migrable : Boolean);
 
@@ -478,7 +478,7 @@ package System.BB.Threads.Queues is
         (Thread : Thread_Id;
         LO_Crit_Budget : System.BB.Time.Time_Span;
         HI_Crit_Budget : System.BB.Time.Time_Span;
-        Hosting_Migrating_Tasks_Priority : System.Priority;
+        Hosting_Migrating_Tasks_Priority : Integer;
         Period : Natural);
 
    ----------------------------

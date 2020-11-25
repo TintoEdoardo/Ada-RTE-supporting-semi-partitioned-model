@@ -440,8 +440,8 @@ package System.BB.Threads is
 
    procedure Initialize_LO_Crit_Task
         (LO_Crit_Budget : System.BB.Time.Time_Span;
-        Hosting_Migrating_Tasks_Priority : System.Priority;
-        On_Target_Core_Priority : System.Priority;
+        Hosting_Migrating_Tasks_Priority : Integer;
+        On_Target_Core_Priority : Integer;
         Period : Natural;
         Is_Migrable : Boolean);
 
@@ -452,7 +452,7 @@ package System.BB.Threads is
    procedure Initialize_HI_Crit_Task
        (LO_Crit_Budget : System.BB.Time.Time_Span;
        HI_Crit_Budget : System.BB.Time.Time_Span;
-       Hosting_Migrating_Tasks_Priority : System.Priority;
+       Hosting_Migrating_Tasks_Priority : Integer;
        Period : Natural);
 
 end System.BB.Threads;

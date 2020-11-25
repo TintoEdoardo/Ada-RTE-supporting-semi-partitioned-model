@@ -47,6 +47,10 @@ package Core_Execution_Modes is
     --     and its core is running in low-critical Mode, than the Mode
     --     level must be set to high.
 
+   --  Log Stuff
+   Safe_Boundary_Has_Been_Exceeded : Boolean := False;
+   Experiment_Is_Not_Valid : Boolean := False;
+
 private
 
    Mode_Cores : array (CPU) of Mode := (others => LOW);
