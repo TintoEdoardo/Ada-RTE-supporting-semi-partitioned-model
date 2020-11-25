@@ -15,8 +15,8 @@ package Periodic_Tasks is
   --  Periodic LO-CRIT task
   task type Low_Crit
       (Pri                             : System.Priority;
-      Hosting_Migrating_Tasks_Priority : System.Priority;
-      On_Target_Core_Priority          : System.Priority;
+      Hosting_Migrating_Tasks_Priority : Integer;
+      On_Target_Core_Priority          : Integer;
       Low_Critical_Budget              : Natural;
       Is_Migrable                      : Boolean;
       Workload                         : Positive;
@@ -30,7 +30,7 @@ package Periodic_Tasks is
   --  Periodic HI-CRIT task
   task type High_Crit
       (Pri                             : System.Priority;
-      Hosting_Migrating_Tasks_Priority : System.Priority;
+      Hosting_Migrating_Tasks_Priority : Integer;
       Low_Critical_Budget              : Natural;
       High_Critical_Budget             : Natural;
       Workload                         : Positive;
@@ -41,7 +41,7 @@ package Periodic_Tasks is
       pragma CPU (CPU_Id);
   end High_Crit;
 
-  procedure Init (Id_Experiment : Integer; Approach : String; Taskset_Id : Integer);
+  procedure Init;
   pragma No_Return (Init);
 
 end Periodic_Tasks;

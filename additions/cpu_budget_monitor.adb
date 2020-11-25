@@ -90,13 +90,13 @@ package body CPU_Budget_Monitor is
 
    procedure Start_Monitor (For_Time : System.BB.Time.Time_Span) is
       use Real_Time_No_Elab;
-      use System.BB.Board_Support.Multiprocessors;
+      --  use System.BB.Board_Support.Multiprocessors;
       use System.BB.Threads;
       use System.BB.Threads.Queues;
       use Core_Execution_Modes;
       use System.Multiprocessors;
-      CPU_Id : constant CPU := Current_CPU;
       Self_Id : constant Thread_Id := Running_Thread;
+      CPU_Id : constant CPU := Self_Id.Active_CPU;
       --  Task_Exceeded : constant System.Priority := Self_Id.Base_Priority;
    begin
       Set_Handler
@@ -115,13 +115,13 @@ package body CPU_Budget_Monitor is
 
          CPU_Log_Table (CPU_Id).Idle_Time :=
                      CPU_Log_Table (CPU_Id).Idle_Time +
-                              (Clock - CPU_Log_Table (CPU_Id).Last_Time_Idle);
+            (Clock - CPU_Log_Table (CPU_Id).Last_Time_Idle);
       end if;
 
       --  Log that thread is (again) on this CPU
-      if CPU_Id = 1 then
+      if CPU_Id = CPU'First then
          Executions (Self_Id.Base_Priority).Times_On_First_CPU :=
-                     Executions (Self_Id.Base_Priority).Times_On_First_CPU + 1;
+                   Executions (Self_Id.Base_Priority).Times_On_First_CPU + 1;
       else
          Executions (Self_Id.Base_Priority).Times_On_Second_CPU :=
                   Executions (Self_Id.Base_Priority).Times_On_Second_CPU + 1;
@@ -131,17 +131,17 @@ package body CPU_Budget_Monitor is
    end Start_Monitor;
 
    procedure Clear_Monitor (Cancelled : out Boolean) is
-      use System.BB.Board_Support.Multiprocessors;
+      --  use System.BB.Board_Support.Multiprocessors;
       use System.BB.Threads;
       use System.BB.Time;
       use System.BB.Threads.Queues;
-      CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
       Self_Id : constant Thread_Id := Running_Thread;
+      CPU_Id : constant System.Multiprocessors.CPU :=
+                                                      Self_Id.Active_CPU;
    begin
       Self_Id.T_Clear := System.BB.Time.Clock;
 
-      Cancel_Handler
-            (BE_Happened (CPU_Id), Cancelled);
+      Cancel_Handler (BE_Happened (CPU_Id), Cancelled);
 
       if Self_Id.Is_Monitored and Self_Id.State = Runnable then
          --  Ada.Text_IO.Put (Integer'Image (Self_Id.Base_Priority)

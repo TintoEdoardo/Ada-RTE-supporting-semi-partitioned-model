@@ -62,25 +62,29 @@ package body Periodic_Tasks is
    --  Init  --
    ------------
 
-   procedure Init (Id_Experiment : Integer; Approach : String; Taskset_Id : Integer) is
+   procedure Init is
       Next_Period   : constant Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Initial_Delay.Delay_Time);
-      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Single_Execution_Data.Experiment_Hyperperiod);
+      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Single_Execution_Data.Experiment_Hyperperiod_CPU_1);
    begin
       delay until Next_Period + Period_To_Add;
       --  Ada.Text_IO.Put_Line ("----------------------");
       --  Ada.Text_IO.Put_Line ("--  END EXPERIMENT  --");
       --  Ada.Text_IO.Put_Line ("----------------------");
 
-      Ada.Text_IO.Put_Line ("<execution>");
-      Ada.Text_IO.Put_Line ("<experimentid>" & Integer'Image (Id_Experiment) & "</experimentid>");
-      Ada.Text_IO.Put_Line ("<approach>" & Approach & "</approach>");
-      Ada.Text_IO.Put_Line ("<tasksetid>" & Integer'Image (Taskset_Id) & "</tasksetid>");
+      if Single_Execution_Data.Experiment_Hyperperiod_CPU_1 >= Single_Execution_Data.Experiment_Hyperperiod_CPU_2
+      then
+         Ada.Text_IO.Put_Line ("<execution>");
+         Ada.Text_IO.Put_Line ("<experimentid>" & Integer'Image (Single_Execution_Data.Id_Experiment) & "</experimentid>");
+         Ada.Text_IO.Put_Line ("<approach>" & Single_Execution_Data.Approach & "</approach>");
+         Ada.Text_IO.Put_Line ("<tasksetid>" & Integer'Image (Single_Execution_Data.Taskset_Id) & "</tasksetid>");
 
-      System.BB.Threads.Queues.Print_Tasks_Log;
-      Core_Execution_Modes.Print_CPUs_Log;
+         System.BB.Threads.Queues.Print_Tasks_Log;
+         Core_Execution_Modes.Print_CPUs_Log;
 
-      Ada.Text_IO.Put_Line ("</execution>");
-      --  System.BB.Threads.Queues.Print_Queues;
+         Ada.Text_IO.Put_Line ("</execution>");
+         --  System.BB.Threads.Queues.Print_Queues;
+      end if;
+
       loop
          null;
       end loop;
@@ -97,9 +101,24 @@ package body Periodic_Tasks is
 
    task body End_Task_Second_Core is
       Next_Period : constant Ada.Real_Time.Time := Ada.Real_Time.Time_First + Ada.Real_Time.Microseconds (Initial_Delay.Delay_Time);
-      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Single_Execution_Data.Experiment_Hyperperiod);
+      Period_To_Add : constant Ada.Real_Time.Time_Span := Ada.Real_Time.Microseconds (Single_Execution_Data.Experiment_Hyperperiod_CPU_2);
    begin
       delay until Next_Period + Period_To_Add;
+
+      if Single_Execution_Data.Experiment_Hyperperiod_CPU_1 < Single_Execution_Data.Experiment_Hyperperiod_CPU_2
+      then
+         Ada.Text_IO.Put_Line ("<execution>");
+         Ada.Text_IO.Put_Line ("<experimentid>" & Integer'Image (Single_Execution_Data.Id_Experiment) & "</experimentid>");
+         Ada.Text_IO.Put_Line ("<approach>" & Single_Execution_Data.Approach & "</approach>");
+         Ada.Text_IO.Put_Line ("<tasksetid>" & Integer'Image (Single_Execution_Data.Taskset_Id) & "</tasksetid>");
+
+         System.BB.Threads.Queues.Print_Tasks_Log;
+         Core_Execution_Modes.Print_CPUs_Log;
+
+         Ada.Text_IO.Put_Line ("</execution>");
+         --  System.BB.Threads.Queues.Print_Queues;
+      end if;
+
       loop
          null;
       end loop;

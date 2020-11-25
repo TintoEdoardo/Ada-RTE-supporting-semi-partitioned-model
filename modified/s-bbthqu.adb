@@ -840,8 +840,7 @@ package body System.BB.Threads.Queues is
 
             Wakeup_Thread.Log_Table.Times_Migrated :=
                                     Wakeup_Thread.Log_Table.Times_Migrated + 1;
-            --  Ada.Text_IO.Put_Line (Integer'Image
-            --    (Wakeup_Thread.Base_Priority) & ": not a good morning.");
+
          elsif Wakeup_Thread_Has_To_Be_Restored (Wakeup_Thread) then
             Wakeup_Thread.Active_CPU := Wakeup_Thread.Base_CPU;
 
@@ -849,8 +848,7 @@ package body System.BB.Threads.Queues is
 
             Wakeup_Thread.Log_Table.Times_Restored :=
                                   Wakeup_Thread.Log_Table.Times_Restored + 1;
-            --  Ada.Text_IO.Put_Line (Integer'Image
-            --     (Wakeup_Thread.Base_Priority) & ": not a good restoring.");
+
          elsif Wakeup_Thread_Is_Hosting_Migrating_Tasks (Wakeup_Thread) then
 
             Wakeup_Thread.Active_Priority :=
@@ -1117,8 +1115,8 @@ package body System.BB.Threads.Queues is
    procedure Initialize_LO_Crit_Task
       (Thread : Thread_Id;
        LO_Crit_Budget : System.BB.Time.Time_Span;
-        Hosting_Migrating_Tasks_Priority : System.Priority;
-        On_Target_Core_Priority : System.Priority;
+        Hosting_Migrating_Tasks_Priority : Integer;
+        On_Target_Core_Priority : Integer;
       Period : Natural;
       Is_Migrable : Boolean) is
       use Mixed_Criticality_System;
@@ -1150,7 +1148,7 @@ package body System.BB.Threads.Queues is
      (Thread : Thread_Id;
      LO_Crit_Budget : System.BB.Time.Time_Span;
       HI_Crit_Budget : System.BB.Time.Time_Span;
-      Hosting_Migrating_Tasks_Priority : System.Priority;
+      Hosting_Migrating_Tasks_Priority : Integer;
      Period : Natural) is
       use Mixed_Criticality_System;
    begin
@@ -1226,8 +1224,8 @@ package body System.BB.Threads.Queues is
                                  := Curr_Pointer.Log_Table.Times_Migrated + 1;
                   Curr_Pointer.Active_CPU := CPU_Target;
 
-                  --  Curr_Pointer.Active_Priority :=
-                  --     Curr_Pointer.On_Target_Core_Priority;
+                  Curr_Pointer.Active_Priority := Curr_Pointer.
+                       Priorities_Concerning_Migration.On_Target_Core_Priority;
 
                   Insert (Curr_Pointer);
                elsif What_To_Do = Discard then
@@ -1311,7 +1309,7 @@ package body System.BB.Threads.Queues is
                                := Curr_Pointer.Log_Table.Times_Restored + 1;
                Curr_Pointer.Active_CPU := Curr_Pointer.Base_CPU;
 
-               --  Curr_Pointer.Active_Priority := Curr_Pointer.Base_Priority;
+               Curr_Pointer.Active_Priority := Curr_Pointer.Base_Priority;
 
                Insert (Curr_Pointer);
 
@@ -1403,7 +1401,8 @@ package body System.BB.Threads.Queues is
       loop
          if Curr_Pointer.Active_Priority /= System.Tasking.Idle_Priority
                 and
-            Curr_Pointer.Base_Priority < 238  --  Final tasks prints log data
+            --  Avoid final tasks printing log data
+            Curr_Pointer.Base_Priority < 238
          then
             Curr_Pointer.Active_Priority := Curr_Pointer.
               Priorities_Concerning_Migration.Hosting_Migrating_Tasks_Priority;
@@ -1452,21 +1451,22 @@ package body System.BB.Threads.Queues is
          then
             Ada.Text_IO.Put_Line ("<task>");
 
-            Ada.Text_IO.Put ("<id>" &
-                        Integer'Image (Curr_Pointer.Base_Priority) & "</id>");
+            Ada.Text_IO.Put ("<priority>" &
+                  Integer'Image (Curr_Pointer.Base_Priority) & "</priority>");
 
             Ada.Text_IO.Put_Line ("<basecpu>" &
                            CPU'Image (Curr_Pointer.Base_CPU) & "</basecpu>");
 
             if Curr_Pointer.Criticality_Level = LOW then
                Ada.Text_IO.Put_Line ("<criticality>LOW</criticality>");
-               if Curr_Pointer.Is_Migrable then
-                  Ada.Text_IO.Put_Line ("<migrable>True</migrable>");
-               else
-                  Ada.Text_IO.Put_Line ("<migrable>False</migrable>");
-               end if;
             else
                Ada.Text_IO.Put_Line ("<criticality>HIGH</criticality>");
+            end if;
+
+            if Curr_Pointer.Is_Migrable then
+               Ada.Text_IO.Put_Line ("<migrable>True</migrable>");
+            else
+               Ada.Text_IO.Put_Line ("<migrable>False</migrable>");
             end if;
 
             Ada.Text_IO.Put_Line ("<deadlinesmissed>" &
