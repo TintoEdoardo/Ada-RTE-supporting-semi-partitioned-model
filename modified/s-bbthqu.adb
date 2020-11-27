@@ -466,8 +466,9 @@ package body System.BB.Threads.Queues is
 
       --  Ada.Text_IO.Put_Line (Integer'Image (Thread.Base_Priority) & ": " &
       --             Duration'Image (To_Duration (Time_Span (Abs_Deadline))));
-
       Thread.Active_Absolute_Deadline := Abs_Deadline;
+      Thread.Data_Concerning_Migration.Stored_Absolute_Deadline
+                                                            := Abs_Deadline;
 
    end Change_Absolute_Deadline;
 
@@ -828,6 +829,12 @@ package body System.BB.Threads.Queues is
          Change_Absolute_Deadline (Wakeup_Thread,
                                    (Wakeup_Thread.Period + Clock));
 
+         --  Update reduced deadline value if current task is a migrating one.
+         if Wakeup_Thread.Is_Migrable then
+            Wakeup_Thread.Data_Concerning_Migration.Reduced_Absolute_Deadline
+             := Wakeup_Thread.Data_Concerning_Migration.Reduced_Period + Clock;
+         end if;
+
          Wakeup_Thread.Just_Wakeup := True;
          Wakeup_Thread.Active_Next_Period := Wakeup_Thread.Active_Next_Period
            + Wakeup_Thread.Active_Period;
@@ -836,7 +843,7 @@ package body System.BB.Threads.Queues is
             Wakeup_Thread.Active_CPU := CPU_Target;
 
             Wakeup_Thread.Active_Priority := Wakeup_Thread.
-                Priorities_Concerning_Migration.On_Target_Core_Priority;
+                Data_Concerning_Migration.On_Target_Core_Priority;
 
             Wakeup_Thread.Log_Table.Times_Migrated :=
                                     Wakeup_Thread.Log_Table.Times_Migrated + 1;
@@ -852,7 +859,7 @@ package body System.BB.Threads.Queues is
          elsif Wakeup_Thread_Is_Hosting_Migrating_Tasks (Wakeup_Thread) then
 
             Wakeup_Thread.Active_Priority :=
-              Wakeup_Thread.Priorities_Concerning_Migration.
+              Wakeup_Thread.Data_Concerning_Migration.
                 Hosting_Migrating_Tasks_Priority;
 
             --  Ada.Text_IO.Put_Line(Integer'Image(Wakeup_Thread.Base_Priority)
@@ -1113,24 +1120,31 @@ package body System.BB.Threads.Queues is
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-      (Thread : Thread_Id;
+     (Thread : Thread_Id;
+       Task_Id : Natural;
        LO_Crit_Budget : System.BB.Time.Time_Span;
         Hosting_Migrating_Tasks_Priority : Integer;
         On_Target_Core_Priority : Integer;
       Period : Natural;
+      Reduced_Deadline : Natural;
       Is_Migrable : Boolean) is
       use Mixed_Criticality_System;
    begin
+      Thread.Data_Concerning_Migration.Id := Task_Id;
+
       Thread.Low_Critical_Budget := LO_Crit_Budget;
       Thread.High_Critical_Budget := LO_Crit_Budget;
       Thread.Active_Budget := Thread.Low_Critical_Budget;
       Thread.Is_Monitored := True;
 
-      Thread.Priorities_Concerning_Migration.
+      Thread.Data_Concerning_Migration.
         Hosting_Migrating_Tasks_Priority := Hosting_Migrating_Tasks_Priority;
 
-      Thread.Priorities_Concerning_Migration.On_Target_Core_Priority :=
+      Thread.Data_Concerning_Migration.On_Target_Core_Priority :=
         On_Target_Core_Priority;
+
+      Thread.Data_Concerning_Migration.Reduced_Period :=
+                      System.BB.Time.Microseconds (Reduced_Deadline);
 
       Thread.Period := System.BB.Time.Microseconds (Period);
       Thread.Criticality_Level := LOW;
@@ -1146,18 +1160,21 @@ package body System.BB.Threads.Queues is
 
    procedure Initialize_HI_Crit_Task
      (Thread : Thread_Id;
+      Task_Id : Natural;
      LO_Crit_Budget : System.BB.Time.Time_Span;
       HI_Crit_Budget : System.BB.Time.Time_Span;
       Hosting_Migrating_Tasks_Priority : Integer;
      Period : Natural) is
       use Mixed_Criticality_System;
    begin
+      Thread.Data_Concerning_Migration.Id := Task_Id;
+
       Thread.Low_Critical_Budget := LO_Crit_Budget;
       Thread.High_Critical_Budget := HI_Crit_Budget;
       Thread.Active_Budget := Thread.Low_Critical_Budget;
       Thread.Is_Monitored := True;
 
-      Thread.Priorities_Concerning_Migration.
+      Thread.Data_Concerning_Migration.
         Hosting_Migrating_Tasks_Priority := Hosting_Migrating_Tasks_Priority;
 
       --  Thread.Hosting_Migrating_Tasks_Priority :=
@@ -1220,12 +1237,20 @@ package body System.BB.Threads.Queues is
                Curr_Pointer.Next := Null_Thread_Id;
 
                if What_To_Do = Migrate then
+                  --  Log migration
                   Curr_Pointer.Log_Table.Times_Migrated
                                  := Curr_Pointer.Log_Table.Times_Migrated + 1;
+
+                  --  Change Active CPU
                   Curr_Pointer.Active_CPU := CPU_Target;
 
+                  --  Change Active priority
                   Curr_Pointer.Active_Priority := Curr_Pointer.
-                       Priorities_Concerning_Migration.On_Target_Core_Priority;
+                       Data_Concerning_Migration.On_Target_Core_Priority;
+
+                  --  Set deadline to the reduced one.
+                  Curr_Pointer.Active_Absolute_Deadline := Curr_Pointer.
+                        Data_Concerning_Migration.Reduced_Absolute_Deadline;
 
                   Insert (Curr_Pointer);
                elsif What_To_Do = Discard then
@@ -1307,9 +1332,14 @@ package body System.BB.Threads.Queues is
                --  Restore it.
                Curr_Pointer.Log_Table.Times_Restored
                                := Curr_Pointer.Log_Table.Times_Restored + 1;
+
                Curr_Pointer.Active_CPU := Curr_Pointer.Base_CPU;
 
                Curr_Pointer.Active_Priority := Curr_Pointer.Base_Priority;
+
+               --  Restore deadline value to the NON-reduced one.
+               Curr_Pointer.Active_Absolute_Deadline := Curr_Pointer.
+                        Data_Concerning_Migration.Stored_Absolute_Deadline;
 
                Insert (Curr_Pointer);
 
@@ -1405,7 +1435,7 @@ package body System.BB.Threads.Queues is
             Curr_Pointer.Base_Priority < 238
          then
             Curr_Pointer.Active_Priority := Curr_Pointer.
-              Priorities_Concerning_Migration.Hosting_Migrating_Tasks_Priority;
+              Data_Concerning_Migration.Hosting_Migrating_Tasks_Priority;
 
             --  Ada.Text_IO.Put_Line (Integer'Image(Curr_Pointer.Base_Priority)
             --                      & " on core " & CPU'Image (CPU_Target) &
@@ -1428,6 +1458,7 @@ package body System.BB.Threads.Queues is
       Curr_Pointer : Thread_Id := Global_List;
       use Mixed_Criticality_System;
       Is_System_Schedulable : Boolean := True;
+      Task_Id : Natural := 0;
    begin
       Ada.Text_IO.Put_Line ("<experimentisnotvalid>" &
                Boolean'Image (
@@ -1449,7 +1480,11 @@ package body System.BB.Threads.Queues is
          if Curr_Pointer.Base_Priority in
                               System.Priority'First .. System.Priority'Last - 2
          then
+            Task_Id := Curr_Pointer.Data_Concerning_Migration.Id;
             Ada.Text_IO.Put_Line ("<task>");
+
+            Ada.Text_IO.Put_Line ("<taskid>" &
+                                       Natural'Image (Task_Id) & "</taskid>");
 
             Ada.Text_IO.Put ("<priority>" &
                   Integer'Image (Curr_Pointer.Base_Priority) & "</priority>");
@@ -1470,10 +1505,10 @@ package body System.BB.Threads.Queues is
             end if;
 
             Ada.Text_IO.Put_Line ("<deadlinesmissed>" &
-               Natural'Image (Executions (Curr_Pointer.Base_Priority).
+               Natural'Image (Executions (Task_Id).
                                     Deadlines_Missed) & "</deadlinesmissed>");
 
-            if Executions (Curr_Pointer.Base_Priority).Deadlines_Missed > 0
+            if Executions (Task_Id).Deadlines_Missed > 0
             then
                Is_System_Schedulable := False;
             end if;
@@ -1495,12 +1530,12 @@ package body System.BB.Threads.Queues is
                                                          & "</timesrestored>");
 
             Ada.Text_IO.Put_Line ("<timesonc1>" &
-               Natural'Image (Executions (Curr_Pointer.Base_Priority).
+               Natural'Image (Executions (Task_Id).
                                                          Times_On_First_CPU)
                                                             & "</timesonc1>");
 
             Ada.Text_IO.Put_Line ("<timesonc2>" &
-               Natural'Image (Executions (Curr_Pointer.Base_Priority).
+               Natural'Image (Executions (Task_Id).
                                                          Times_On_Second_CPU)
                                                             & "</timesonc2>");
 

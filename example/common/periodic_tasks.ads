@@ -14,13 +14,15 @@ package Periodic_Tasks is
 
   --  Periodic LO-CRIT task
   task type Low_Crit
-      (Pri                             : System.Priority;
+      (Id                              : Natural;
+      Pri                              : System.Priority;
       Hosting_Migrating_Tasks_Priority : Integer;
       On_Target_Core_Priority          : Integer;
       Low_Critical_Budget              : Natural;
       Is_Migrable                      : Boolean;
       Workload                         : Positive;
       Period                           : Positive;
+      Reduced_Deadline                 : Positive;
       CPU_Id                           : CPU)
   is
       pragma Priority (Pri);
@@ -29,12 +31,14 @@ package Periodic_Tasks is
 
   --  Periodic HI-CRIT task
   task type High_Crit
-      (Pri                             : System.Priority;
+      (Id                              : Natural;
+      Pri                              : System.Priority;
       Hosting_Migrating_Tasks_Priority : Integer;
       Low_Critical_Budget              : Natural;
       High_Critical_Budget             : Natural;
       Workload                         : Positive;
       Period                           : Positive;
+      Reduced_Deadline                 : Positive;
       CPU_Id                           : CPU) 
   is
       pragma Priority (Pri);

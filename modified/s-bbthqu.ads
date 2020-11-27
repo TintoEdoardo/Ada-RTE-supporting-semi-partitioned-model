@@ -73,7 +73,10 @@ package System.BB.Threads.Queues is
       Deadlines_Missed : Natural := 0;
    end record;
 
-   type Array_Log_Tasks is array (System.Priority) of Log_Exec_Tasks;
+   --  This array should be long as the number of tasks.
+   --  Our experiments concerns at most 35 tasks.
+   Max_No_Of_Tasks : constant  := 35;
+   type Array_Log_Tasks is array (0 .. Max_No_Of_Tasks - 1) of Log_Exec_Tasks;
 
    Executions : Array_Log_Tasks;
 
@@ -463,11 +466,13 @@ package System.BB.Threads.Queues is
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-        (Thread : Thread_Id;
+     (Thread : Thread_Id;
+      Task_Id : Natural;
         LO_Crit_Budget : System.BB.Time.Time_Span;
         Hosting_Migrating_Tasks_Priority : Integer;
         On_Target_Core_Priority : Integer;
-        Period : Natural;
+      Period : Natural;
+      Reduced_Deadline : Natural;
         Is_Migrable : Boolean);
 
    -------------------------------
@@ -475,7 +480,8 @@ package System.BB.Threads.Queues is
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
-        (Thread : Thread_Id;
+     (Thread : Thread_Id;
+      Task_Id : Natural;
         LO_Crit_Budget : System.BB.Time.Time_Span;
         HI_Crit_Budget : System.BB.Time.Time_Span;
         Hosting_Migrating_Tasks_Priority : Integer;

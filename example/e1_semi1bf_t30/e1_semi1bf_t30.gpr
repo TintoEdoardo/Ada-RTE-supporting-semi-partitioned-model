@@ -1,7 +1,7 @@
-project e1_semi1bf_t3122 is
+project e1_semi1bf_t30 is
 
 	for Languages use ("ada");
-	for Main use ("main_e1_semi1bf_t3122.adb");
+	for Main use ("main_e1_semi1bf_t30.adb");
 	for Source_Dirs use ("src", "../common");
 	for Object_Dir use "obj";
     for Runtime ("ada") use "../../runtime/arm-eabi/lib/gnat/ravenscar_full_zynq7000";
@@ -15,4 +15,4 @@ project e1_semi1bf_t3122 is
         for Switches ("ada") use ("-g", "-O0");
     end Builder;
 
-end e1_semi1bf_t3122;
+end e1_semi1bf_t30;

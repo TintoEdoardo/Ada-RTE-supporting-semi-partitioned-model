@@ -543,18 +543,20 @@ package body System.BB.Threads is
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-        (LO_Crit_Budget : System.BB.Time.Time_Span;
+     (Task_Id : Natural;
+      LO_Crit_Budget : System.BB.Time.Time_Span;
         Hosting_Migrating_Tasks_Priority : Integer;
         On_Target_Core_Priority : Integer;
-        Period : Natural;
+      Period : Natural;
+      Reduced_Deadline : Natural;
         Is_Migrable : Boolean) is
    begin
       Protection.Enter_Kernel;
 
       Queues.Initialize_LO_Crit_Task
-        (Queues.Running_Thread, LO_Crit_Budget,
+        (Queues.Running_Thread, Task_Id, LO_Crit_Budget,
          Hosting_Migrating_Tasks_Priority, On_Target_Core_Priority,
-         Period, Is_Migrable);
+         Period, Reduced_Deadline, Is_Migrable);
 
       Protection.Leave_Kernel;
    end Initialize_LO_Crit_Task;
@@ -564,7 +566,8 @@ package body System.BB.Threads is
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
-            (LO_Crit_Budget : System.BB.Time.Time_Span;
+     (Task_Id : Natural;
+      LO_Crit_Budget : System.BB.Time.Time_Span;
             HI_Crit_Budget : System.BB.Time.Time_Span;
             Hosting_Migrating_Tasks_Priority : Integer;
             Period : Natural) is
@@ -572,7 +575,7 @@ package body System.BB.Threads is
       Protection.Enter_Kernel;
 
       Queues.Initialize_HI_Crit_Task
-        (Queues.Running_Thread, LO_Crit_Budget, HI_Crit_Budget,
+        (Queues.Running_Thread, Task_Id, LO_Crit_Budget, HI_Crit_Budget,
          Hosting_Migrating_Tasks_Priority, Period);
 
       Protection.Leave_Kernel;

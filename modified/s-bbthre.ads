@@ -81,9 +81,19 @@ package System.BB.Threads is
    --  Addition for MCS by Xu & Burns: a thread is Discarded when is going to
    --  be inserted in the discarded queue (Discarded_Thread_Table).
 
-   type Task_Priorities is record
+   type Task_MCS_Data is record
+      Id : Natural;
+
       Hosting_Migrating_Tasks_Priority : Integer;
       On_Target_Core_Priority : Integer;
+
+      Reduced_Period : System.BB.Time.Time_Span;
+      Reduced_Absolute_Deadline : System.BB.Deadlines.Absolute_Deadline;
+      --  It is the "reduced deadline" concept in Xu & Burns 2015.
+
+      Stored_Absolute_Deadline : System.BB.Deadlines.Absolute_Deadline;
+      --  Needed to restore a migrating task's Active_Absoluted_Deadline
+      --  once it is restored on its Base_CPU.
    end record;
 
    type Task_Data_Log is record
@@ -98,6 +108,7 @@ package System.BB.Threads is
    end record;
 
    type Thread_Descriptor is record
+
       Context : aliased System.BB.CPU_Primitives.Context_Buffer;
       --  Location where the hardware registers (stack pointer, program
       --  counter, ...) are stored. This field supports context switches among
@@ -190,6 +201,8 @@ package System.BB.Threads is
       --  time a thread is appened in the ready queue because absolute
       --  deadline is the comparison value for correct queue order
 
+      --  Deadlines_Concerning_Migration : Task_Deadlines;
+
       Preemption_Needed : Boolean := False;
       --  Boolean that indicates whether an urgent task after a wakeup needs to
       --  preempt the running task before its natural suspension.
@@ -250,7 +263,7 @@ package System.BB.Threads is
 
       Log_Table : Task_Data_Log;
 
-      Priorities_Concerning_Migration : Task_Priorities;
+      Data_Concerning_Migration : Task_MCS_Data;
 
       First_Time_On_Delay_Until : Boolean := True;
 
@@ -439,10 +452,12 @@ package System.BB.Threads is
    -------------------------------
 
    procedure Initialize_LO_Crit_Task
-        (LO_Crit_Budget : System.BB.Time.Time_Span;
+     (Task_Id : Natural;
+      LO_Crit_Budget : System.BB.Time.Time_Span;
         Hosting_Migrating_Tasks_Priority : Integer;
         On_Target_Core_Priority : Integer;
-        Period : Natural;
+      Period : Natural;
+      Reduced_Deadline : Natural;
         Is_Migrable : Boolean);
 
    -------------------------------
@@ -450,7 +465,8 @@ package System.BB.Threads is
    -------------------------------
 
    procedure Initialize_HI_Crit_Task
-       (LO_Crit_Budget : System.BB.Time.Time_Span;
+     (Task_Id : Natural;
+      LO_Crit_Budget : System.BB.Time.Time_Span;
        HI_Crit_Budget : System.BB.Time.Time_Span;
        Hosting_Migrating_Tasks_Priority : Integer;
        Period : Natural);
