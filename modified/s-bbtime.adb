@@ -183,7 +183,7 @@ package body System.BB.Time is
            and
          not Self.First_Time_On_Delay_Until
       then
-         System.BB.Threads.Queues.Add_DM (Self.Base_Priority);
+         System.BB.Threads.Queues.Add_DM (Self.Data_Concerning_Migration.Id);
       end if;
 
       Self.First_Time_On_Delay_Until := False;

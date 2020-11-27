@@ -22,7 +22,8 @@ package body CPU_Budget_Monitor is
       pragma Unreferenced (E);
       CPU_Id : constant CPU := Current_CPU;
       Self_Id : constant Thread_Id := Running_Thread;
-      Task_Exceeded : constant System.Priority := Self_Id.Base_Priority;
+      Task_Exceeded : constant System.Priority :=
+                    Self_Id.Data_Concerning_Migration.Id;
       Cancelled : Boolean;
    begin
       System.BB.Protection.Enter_Kernel;
@@ -120,11 +121,13 @@ package body CPU_Budget_Monitor is
 
       --  Log that thread is (again) on this CPU
       if CPU_Id = CPU'First then
-         Executions (Self_Id.Base_Priority).Times_On_First_CPU :=
-                   Executions (Self_Id.Base_Priority).Times_On_First_CPU + 1;
+         Executions (Self_Id.Data_Concerning_Migration.Id).Times_On_First_CPU
+           := Executions (Self_Id.Data_Concerning_Migration.Id).
+                                                  Times_On_First_CPU + 1;
       else
-         Executions (Self_Id.Base_Priority).Times_On_Second_CPU :=
-                  Executions (Self_Id.Base_Priority).Times_On_Second_CPU + 1;
+         Executions (Self_Id.Data_Concerning_Migration.Id).Times_On_Second_CPU
+           := Executions (Self_Id.Data_Concerning_Migration.Id).
+                                                  Times_On_Second_CPU + 1;
       end if;
 
       Self_Id.T_Start := System.BB.Time.Clock;
