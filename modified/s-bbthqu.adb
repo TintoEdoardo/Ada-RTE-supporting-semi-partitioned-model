@@ -1337,7 +1337,7 @@ package body System.BB.Threads.Queues is
 
                Curr_Pointer.Active_Priority := Curr_Pointer.Base_Priority;
 
-               --  Restore deadline value to the NOT reduced one.
+               --  Restore deadline value to the NON-reduced one.
                Curr_Pointer.Active_Absolute_Deadline := Curr_Pointer.
                         Data_Concerning_Migration.Stored_Absolute_Deadline;
 
