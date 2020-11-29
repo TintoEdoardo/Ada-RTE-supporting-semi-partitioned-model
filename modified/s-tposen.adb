@@ -70,6 +70,7 @@ with System.Tasking.Protected_Objects.Multiprocessors;
 
 with System.BB.Time; use System.BB.Time;
 with System.BB.Threads.Queues; use System.BB.Threads.Queues;
+with Ada.Text_IO;
 
 package body System.Tasking.Protected_Objects.Single_Entry is
 
@@ -167,6 +168,8 @@ package body System.Tasking.Protected_Objects.Single_Entry is
          System.BB.Threads.Queues.Add_Runs
            (Running_Thread.Fake_Number_ID);
          if Running_Thread.Active_Absolute_Deadline < Now then
+            Ada.Text_IO.Put_Line (Integer'Image
+                (Running_Thread.Data_Concerning_Migration.Id));
             System.BB.Threads.Queues.Add_DM
               (Running_Thread.Data_Concerning_Migration.Id);
          end if;

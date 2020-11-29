@@ -466,6 +466,9 @@ package body System.BB.Threads.Queues is
 
       --  Ada.Text_IO.Put_Line (Integer'Image (Thread.Base_Priority) & ": " &
       --             Duration'Image (To_Duration (Time_Span (Abs_Deadline))));
+      --  Ada.Text_IO.Put_Line ("C:" & Integer'Image
+      --                      (Thread.Data_Concerning_Migration.Id));
+      Thread.First_Time_On_Delay_Until := False;
       Thread.Active_Absolute_Deadline := Abs_Deadline;
       Thread.Data_Concerning_Migration.Stored_Absolute_Deadline
                                                             := Abs_Deadline;
