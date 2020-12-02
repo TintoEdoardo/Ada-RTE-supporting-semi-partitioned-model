@@ -1,5 +1,9 @@
 pragma Warnings (Off);
 with Ada.Text_IO;
+
+--  TODO: this should be safe.
+with Guard_Experiment;
+pragma Elaborate (Guard_Experiment);
 pragma Warnings (On);
 
 with System.BB.Board_Support;
@@ -43,6 +47,11 @@ package body Core_Execution_Modes is
          --  schedulable, i.e. some tasks have to be dropped. MCS has failed.
          Safe_Boundary_Has_Been_Exceeded := True;
          Experiment_Is_Not_Valid := True;
+
+         Guard_Experiment.Referee.Set_Parameters
+                     (Safe_Boundary_Has_Been_Exceeded,
+                     Experiment_Is_Not_Valid,
+                     False);
 
          --  Ada.Text_IO.Put_Line
          --         ("-----------------------------------------------------");
@@ -94,5 +103,18 @@ package body Core_Execution_Modes is
 
       Ada.Text_IO.Put_Line ("</cores>");
    end Print_CPUs_Log;
+
+   procedure Set_Parameters_Referee (Safe_Boundary_Exceeded : Boolean;
+                                    Experiment_Not_Valid : Boolean;
+                                    Finish_Experiment : Boolean) is
+   begin
+      Guard_Experiment.Referee.Set_Parameters
+            (Safe_Boundary_Exceeded, Experiment_Not_Valid, Finish_Experiment);
+   end Set_Parameters_Referee;
+
+   procedure Wait_Experiment_Over is
+   begin
+      Guard_Experiment.Referee.Is_Experiment_Over;
+   end Wait_Experiment_Over;
 
 end Core_Execution_Modes;

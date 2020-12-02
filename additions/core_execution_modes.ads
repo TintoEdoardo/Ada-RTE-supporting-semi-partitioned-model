@@ -51,6 +51,12 @@ package Core_Execution_Modes is
    Safe_Boundary_Has_Been_Exceeded : Boolean := False;
    Experiment_Is_Not_Valid : Boolean := False;
 
+   procedure Set_Parameters_Referee (Safe_Boundary_Exceeded : Boolean;
+                                    Experiment_Not_Valid : Boolean;
+                                    Finish_Experiment : Boolean);
+
+   procedure Wait_Experiment_Over;
+
 private
 
    Mode_Cores : array (CPU) of Mode := (others => LOW);

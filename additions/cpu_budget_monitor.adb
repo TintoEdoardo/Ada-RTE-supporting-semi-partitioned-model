@@ -46,6 +46,8 @@ package body CPU_Budget_Monitor is
          else
             Experiment_Is_Not_Valid := True;
             Guilty_Task := Task_Exceeded;
+            Set_Parameters_Referee
+               (False, Experiment_Is_Not_Valid, False);
             --  Ada.Text_IO.Put_Line ("");
             --  Ada.Text_IO.Put_Line ("CPU_"
             --               & System.Multiprocessors.CPU'Image (CPU_Id)
@@ -66,6 +68,8 @@ package body CPU_Budget_Monitor is
       else  --  Get_Core_Mode (CPU_Id) is HIGH
             Experiment_Is_Not_Valid := True;
             Guilty_Task := Task_Exceeded;
+            Set_Parameters_Referee
+                  (False, Experiment_Is_Not_Valid, False);
             --  Ada.Text_IO.Put_Line ("");
             --  Ada.Text_IO.Put_Line ("CPU_"
             --               & System.Multiprocessors.CPU'Image (CPU_Id)
