@@ -89,7 +89,7 @@ package System.BB.Threads is
 
       Reduced_Period : System.BB.Time.Time_Span;
       Reduced_Absolute_Deadline : System.BB.Deadlines.Absolute_Deadline;
-      --  It is the "reduced deadline" concept in Xu & Burns 2015.
+      --  @TODO: they seems not necessary...
 
       Stored_Absolute_Deadline : System.BB.Deadlines.Absolute_Deadline;
       --  Needed to restore a migrating task's Active_Absoluted_Deadline

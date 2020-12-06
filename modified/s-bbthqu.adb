@@ -833,10 +833,10 @@ package body System.BB.Threads.Queues is
                                    (Wakeup_Thread.Period + Clock));
 
          --  Update reduced deadline value if current task is a migrating one.
-         if Wakeup_Thread.Is_Migrable then
-            Wakeup_Thread.Data_Concerning_Migration.Reduced_Absolute_Deadline
-             := Wakeup_Thread.Data_Concerning_Migration.Reduced_Period + Clock;
-         end if;
+         --  if Wakeup_Thread.Is_Migrable then
+         --   Wakeup_Thread.Data_Concerning_Migration.Reduced_Absolute_Deadline
+         --  := Wakeup_Thread.Data_Concerning_Migration.Reduced_Period + Clock;
+         --  end if;
 
          Wakeup_Thread.Just_Wakeup := True;
          Wakeup_Thread.Active_Next_Period := Wakeup_Thread.Active_Next_Period
@@ -1256,8 +1256,8 @@ package body System.BB.Threads.Queues is
                        Data_Concerning_Migration.On_Target_Core_Priority;
 
                   --  Set deadline to the reduced one.
-                  Curr_Pointer.Active_Absolute_Deadline := Curr_Pointer.
-                        Data_Concerning_Migration.Reduced_Absolute_Deadline;
+                  --  Curr_Pointer.Active_Absolute_Deadline := Curr_Pointer.
+                  --      Data_Concerning_Migration.Reduced_Absolute_Deadline;
 
                   Insert (Curr_Pointer);
                elsif What_To_Do = Discard then
