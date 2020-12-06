@@ -211,7 +211,7 @@ package System.BB.Threads is
 
       Active_Starting_Time :  System.BB.Time.Time_Span;
 
-      Fake_Number_ID : Integer := 0;
+      Fake_Number_ID : Integer := -1;
 
       Is_Sporadic : Boolean := False;
 

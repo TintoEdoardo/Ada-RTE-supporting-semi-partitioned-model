@@ -92,7 +92,7 @@ package body System.BB.Threads.Queues is
 
    procedure Initialize_Log_Table (ID : Integer) is
    begin
-      if ID /= 0 then
+      if ID /= -1 then
          Log_Table (ID) := (ID, 0, -1, 0,
                              System.BB.Time.Time_Span_Last,
                              System.BB.Time.Time_Span_First,
@@ -1133,6 +1133,8 @@ package body System.BB.Threads.Queues is
       Is_Migrable : Boolean) is
       use Mixed_Criticality_System;
    begin
+      Change_Fake_Number_ID (Thread, Task_Id);
+
       Thread.Data_Concerning_Migration.Id := Task_Id;
 
       Thread.Low_Critical_Budget := LO_Crit_Budget;
@@ -1170,6 +1172,8 @@ package body System.BB.Threads.Queues is
      Period : Natural) is
       use Mixed_Criticality_System;
    begin
+      Change_Fake_Number_ID (Thread, Task_Id);
+
       Thread.Data_Concerning_Migration.Id := Task_Id;
 
       Thread.Low_Critical_Budget := LO_Crit_Budget;
@@ -1495,6 +1499,18 @@ package body System.BB.Threads.Queues is
             Ada.Text_IO.Put_Line ("<basecpu>" &
                            CPU'Image (Curr_Pointer.Base_CPU) & "</basecpu>");
 
+            Ada.Text_IO.Put_Line ("<period>" &
+                  Duration'Image (To_Duration (Curr_Pointer.Period))
+                  & "</period>");
+
+            Ada.Text_IO.Put_Line ("<locritbudget>" &
+               Duration'Image (To_Duration (Curr_Pointer.Low_Critical_Budget))
+               & "</locritbudget>");
+
+            Ada.Text_IO.Put_Line ("<hicritbudget>" &
+               Duration'Image (To_Duration (Curr_Pointer.High_Critical_Budget))
+               & "</hicritbudget>");
+
             if Curr_Pointer.Criticality_Level = LOW then
                Ada.Text_IO.Put_Line ("<criticality>LOW</criticality>");
             else
@@ -1506,6 +1522,33 @@ package body System.BB.Threads.Queues is
             else
                Ada.Text_IO.Put_Line ("<migrable>False</migrable>");
             end if;
+
+            Ada.Text_IO.Put_Line ("<completedruns>" &
+               Integer'Image (Log_Table (Task_Id).Runs) & "</completedruns>");
+
+            Ada.Text_IO.Put_Line ("<preemptions>" & Integer'Image (
+                           Log_Table (Task_Id).Preemption) & "</preemptions>");
+
+            Ada.Text_IO.Put_Line ("<minresponsejitter>" &
+            Duration'Image (To_Duration (Log_Table
+            (Task_Id).Min_Response_Jitter)) & "</minresponsejitter>");
+
+            Ada.Text_IO.Put_Line ("<maxresponsejitter>" &
+            Duration'Image (To_Duration (Log_Table
+            (Task_Id).Max_Response_Jitter)) & "</maxresponsejitter>");
+
+            Ada.Text_IO.Put_Line ("<minreleasejitter>" &
+            Duration'Image (To_Duration (
+            Log_Table (Task_Id).Min_Release_Jitter)) & "</minreleasejitter>");
+
+            Ada.Text_IO.Put_Line ("<maxreleasejitter>" &
+            Duration'Image (To_Duration (
+            Log_Table (Task_Id).Max_Release_Jitter)) & "</maxreleasejitter>");
+
+            Ada.Text_IO.Put_Line ("<avgresponsejitter>" &
+            Duration'Image (To_Duration (
+            Log_Table (Task_Id).Average_Response_Jitter))
+                                                 & "</avgresponsejitter>");
 
             Ada.Text_IO.Put_Line ("<deadlinesmissed>" &
                Natural'Image (Executions (Task_Id).

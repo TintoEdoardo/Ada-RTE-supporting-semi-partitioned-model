@@ -143,11 +143,8 @@ package body System.BB.Protection is
       --  Unlock (Ready_Tables_Locks (CPU_Id).all);
       --  Now we need to set the hardware interrupt masking level equal to the
       --  software priority of the task that is executing.
-      --  Ada.Text_IO.Put_Line ("End of L_K");
-
       CPU_Primitives.Enable_Interrupts
         (Threads.Queues.Running_Thread.Active_Priority);
-      --  Ada.Text_IO.Put_Line ("Interr ENABLED");
 
    end Leave_Kernel;
 

@@ -167,7 +167,7 @@ package body System.BB.Time is
          Temp1 := Self.Active_Next_Period - Time_First;
          Temp2 := Self.Active_Release_Jitter + Temp1;
          Response_Jitter := Now - Temp2;
-         if Self.Fake_Number_ID > 0 then
+         if Self.Fake_Number_ID > -1 then
             System.BB.Threads.Queues.Update_Jitters (Self,
                   (Response_Jitter),
                   (Self.Active_Release_Jitter - Time_First));
