@@ -51,6 +51,9 @@ with System.Tasking;
 with System.Multiprocessors.Fair_Locks;
 use System.Multiprocessors.Fair_Locks;
 
+with Experiment_Info;
+with Ada.Strings.Unbounded;
+
 package body System.BB.CPU_Primitives is
    use System.BB.Threads;
    use System.BB.Board_Support.Multiprocessors;

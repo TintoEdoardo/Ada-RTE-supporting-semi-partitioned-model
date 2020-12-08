@@ -22,6 +22,7 @@ package body CPU_Budget_Monitor is
       pragma Unreferenced (E);
       CPU_Id : constant CPU := Current_CPU;
       Self_Id : constant Thread_Id := Running_Thread;
+      Task_Id : Integer;
       Task_Exceeded : constant System.Priority :=
                     Self_Id.Data_Concerning_Migration.Id;
       Cancelled : Boolean;
@@ -32,6 +33,13 @@ package body CPU_Budget_Monitor is
       Self_Id.Log_Table.Times_BE := Self_Id.Log_Table.Times_BE + 1;
       --  Ada.Text_IO.Put ("CPU_" & System.Multiprocessors.CPU'Image (CPU_Id)
       --                         & ": task " & Integer'Image (Task_Exceeded));
+
+      --  Log that CPU_Budget_Exceeded has been happened on target CPU
+      if Self_Id.Active_CPU /= Self_Id.Base_CPU then
+         Task_Id := Self_Id.Data_Concerning_Migration.Id;
+         Executions (Task_Id).BE_On_Target_Core :=
+           Executions (Task_Id).BE_On_Target_Core + 1;
+      end if;
 
       if Get_Core_Mode (CPU_Id) = LOW then
          if Self_Id.Criticality_Level = HIGH then

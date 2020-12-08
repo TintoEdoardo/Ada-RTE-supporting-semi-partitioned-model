@@ -108,6 +108,13 @@ package body System.BB.Threads.Queues is
    procedure Add_DM (ID : Integer) is
    begin
       Executions (ID).Deadlines_Missed := Executions (ID).Deadlines_Missed + 1;
+
+      --  Log DM on target core.
+      --  This event should concerns only migrating tasks.
+      if Running_Thread.Active_CPU /= Running_Thread.Base_CPU then
+         Executions (ID).Deadlines_Missed_On_Target_Core :=
+                       Executions (ID).Deadlines_Missed_On_Target_Core + 1;
+      end if;
       --  if ID /= 0 then
       --     Log_Table (ID).DM := Log_Table (ID).DM + 1;
       --  end if;
@@ -1554,6 +1561,10 @@ package body System.BB.Threads.Queues is
                Natural'Image (Executions (Task_Id).
                                     Deadlines_Missed) & "</deadlinesmissed>");
 
+            Ada.Text_IO.Put_Line ("<deadlinemissedtargetcore>" &
+            Natural'Image (Executions (Task_Id).
+            Deadlines_Missed_On_Target_Core) & "</deadlinemissedtargetcore>");
+
             if Executions (Task_Id).Deadlines_Missed > 0
             then
                Is_System_Schedulable := False;
@@ -1561,7 +1572,11 @@ package body System.BB.Threads.Queues is
 
             Ada.Text_IO.Put_Line ("<budgetexceeded>" &
                Natural'Image (Curr_Pointer.Log_Table.Times_BE)
-                                                      & "</budgetexceeded>");
+                                             & "</budgetexceeded>");
+
+            Ada.Text_IO.Put_Line ("<budgetexceededtargetcore>" &
+                        Natural'Image (Executions (Task_Id).
+                        BE_On_Target_Core) & "</budgetexceededtargetcore>");
 
             Ada.Text_IO.Put_Line ("<timesdiscarded>" &
                      Natural'Image (Curr_Pointer.Log_Table.Times_Discarded)

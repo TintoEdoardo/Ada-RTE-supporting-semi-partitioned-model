@@ -71,6 +71,8 @@ package System.BB.Threads.Queues is
       Times_On_First_CPU : Natural := 0;
       Times_On_Second_CPU : Natural := 0;
       Deadlines_Missed : Natural := 0;
+      Deadlines_Missed_On_Target_Core : Natural := 0;
+      BE_On_Target_Core : Natural := 0;
    end record;
 
    --  This array should be long as the number of tasks.

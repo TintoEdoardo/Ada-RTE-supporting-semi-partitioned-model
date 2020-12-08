@@ -98,10 +98,11 @@ package System.BB.Threads is
 
    type Task_Data_Log is record
       --  BE is Budget_Exceeded
-      Times_BE         : Natural                  := 0;
-      Times_Discarded  : Natural                  := 0;
-      Times_Migrated   : Natural                  := 0;
-      Times_Restored   : Natural                  := 0;
+      Times_BE                : Natural           := 0;
+      --  Times_BE_On_Target_Core : Natural           := 0;
+      Times_Discarded         : Natural           := 0;
+      Times_Migrated          : Natural           := 0;
+      Times_Restored          : Natural           := 0;
       --  Times_On_CPUs    : Array_CPUs               := (others => 0);
       Locked_Time      : System.BB.Time.Time_Span := 0;
       Last_Time_Locked : System.BB.Time.Time      := 0;
