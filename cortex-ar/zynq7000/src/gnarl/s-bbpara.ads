@@ -47,7 +47,7 @@ package System.BB.Parameters is
    -- Hardware clock --
    --------------------
 
-   Clock_Frequency : constant := 333_000_000;
+   Clock_Frequency : constant := 667_000_000;
    --  Frequency of the CPU clock in Hz. We hard-code this hear to allow static
    --  computation of the required prescaler.
 
