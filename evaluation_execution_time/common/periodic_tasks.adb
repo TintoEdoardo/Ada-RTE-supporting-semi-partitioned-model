@@ -62,6 +62,7 @@ package body Periodic_Tasks is
    begin
       STPO.Initialize_HI_Crit_Task
          (STPO.Self, Id, Hosting_Migrating_Tasks_Priority, System.BB.Time.Microseconds (Low_Critical_Budget), System.BB.Time.Microseconds (High_Critical_Budget), Period);
+      Ada.Text_IO.Put_Line ("");
       Ada.Text_IO.Put_Line ("Workload: " & Positive'Image(Workload));
       
       loop
