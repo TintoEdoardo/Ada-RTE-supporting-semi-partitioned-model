@@ -51,6 +51,8 @@ with System.Tasking;
 with System.Multiprocessors.Fair_Locks;
 use System.Multiprocessors.Fair_Locks;
 
+with Core_Execution_Modes;
+
 with Experiment_Info;
 with Ada.Strings.Unbounded;
 
@@ -277,6 +279,7 @@ package body System.BB.CPU_Primitives is
    -------------------
 
    procedure Undef_Handler is
+      use Core_Execution_Modes;
    begin
       if not Is_FPU_Enabled then
          --  If FPU is not enabled, do an FPU context switch first and resume.
@@ -287,6 +290,9 @@ package body System.BB.CPU_Primitives is
            (Queues.Running_Thread_Table (Current_CPU).Context.Running);
 
       else
+         System.BB.Threads.Queues.Print_Tasks_Log;
+         Ada.Text_IO.Put_Line ("Undef Handler On CPU: "
+                                    & CPU'Image (Current_CPU));
          raise Program_Error with "illegal instruction";
       end if;
    end Undef_Handler;

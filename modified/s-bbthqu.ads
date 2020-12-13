@@ -72,7 +72,10 @@ package System.BB.Threads.Queues is
       Times_On_Second_CPU : Natural := 0;
       Deadlines_Missed : Natural := 0;
       Deadlines_Missed_On_Target_Core : Natural := 0;
+      Deadlines_Missed_After_Migration : Natural := 0;
       BE_On_Target_Core : Natural := 0;
+      BE_After_Migration : Natural := 0;
+      Migration_Happened_Current_Job_Release : Boolean := False;
    end record;
 
    --  This array should be long as the number of tasks.

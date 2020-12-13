@@ -115,6 +115,12 @@ package body System.BB.Threads.Queues is
          Executions (ID).Deadlines_Missed_On_Target_Core :=
                        Executions (ID).Deadlines_Missed_On_Target_Core + 1;
       end if;
+
+      --  Log that DM has been happened after migration(s).
+      if Executions (ID).Migration_Happened_Current_Job_Release then
+         Executions (ID).Deadlines_Missed_After_Migration :=
+            Executions (ID).Deadlines_Missed_After_Migration + 1;
+      end if;
       --  if ID /= 0 then
       --     Log_Table (ID).DM := Log_Table (ID).DM + 1;
       --  end if;
@@ -1046,7 +1052,7 @@ package body System.BB.Threads.Queues is
       Ada.Text_IO.Put_Line ("Ready");
       while Aux_Pointer /= Null_Thread_Id
       loop
-         T2 := Aux_Pointer.Base_Priority;
+         T2 := Aux_Pointer.Data_Concerning_Migration.Id;
          Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
          Aux_Pointer := Aux_Pointer.Next;
       end loop;
@@ -1057,7 +1063,7 @@ package body System.BB.Threads.Queues is
 
       while Aux_Pointer /= Null_Thread_Id
       loop
-         T2 := Aux_Pointer.Base_Priority;
+         T2 := Aux_Pointer.Data_Concerning_Migration.Id;
          Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
          Aux_Pointer := Aux_Pointer.Next_Alarm;
       end loop;
@@ -1068,7 +1074,7 @@ package body System.BB.Threads.Queues is
 
       while Aux_Pointer /= Null_Thread_Id
       loop
-         T2 := Aux_Pointer.Base_Priority;
+         T2 := Aux_Pointer.Data_Concerning_Migration.Id;
          Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
          Aux_Pointer := Aux_Pointer.Next_HI_Crit;
       end loop;
@@ -1080,7 +1086,7 @@ package body System.BB.Threads.Queues is
 
       while Aux_Pointer /= Null_Thread_Id
       loop
-         T2 := Aux_Pointer.Base_Priority;
+         T2 := Aux_Pointer.Data_Concerning_Migration.Id;
          Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
          Aux_Pointer := Aux_Pointer.Next;
       end loop;
@@ -1091,7 +1097,7 @@ package body System.BB.Threads.Queues is
 
       while Aux_Pointer /= Null_Thread_Id
       loop
-         T2 := Aux_Pointer.Base_Priority;
+         T2 := Aux_Pointer.Data_Concerning_Migration.Id;
          Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
          Aux_Pointer := Aux_Pointer.Next_Alarm;
       end loop;
@@ -1102,7 +1108,7 @@ package body System.BB.Threads.Queues is
 
       while Aux_Pointer /= Null_Thread_Id
       loop
-         T2 := Aux_Pointer.Base_Priority;
+         T2 := Aux_Pointer.Data_Concerning_Migration.Id;
          Ada.Text_IO.Put ("[" & Integer'Image (T2) & "]");
          Aux_Pointer := Aux_Pointer.Next_HI_Crit;
       end loop;
@@ -1255,6 +1261,11 @@ package body System.BB.Threads.Queues is
                   Curr_Pointer.Log_Table.Times_Migrated
                                  := Curr_Pointer.Log_Table.Times_Migrated + 1;
 
+                  --  Log that this task's current job release is suffering
+                  --  migration overhead.
+                  Executions (Curr_Pointer.Data_Concerning_Migration.Id).
+                              Migration_Happened_Current_Job_Release := True;
+
                   --  Change Active CPU
                   Curr_Pointer.Active_CPU := CPU_Target;
 
@@ -1322,6 +1333,10 @@ package body System.BB.Threads.Queues is
                   and
                Curr_Pointer.Base_CPU = CPU_Id
             then
+               --  Log that this task's current job release is suffering
+               --  migration overhead.
+               Executions (Curr_Pointer.Data_Concerning_Migration.Id).
+                              Migration_Happened_Current_Job_Release := True;
 
                if Curr_Pointer = First_Thread_Table (CPU_Target) then
                   --  The first thread is migrable, so it must be removed.
@@ -1352,8 +1367,8 @@ package body System.BB.Threads.Queues is
                Curr_Pointer.Active_Priority := Curr_Pointer.Base_Priority;
 
                --  Restore deadline value to the NON-reduced one.
-               Curr_Pointer.Active_Absolute_Deadline := Curr_Pointer.
-                        Data_Concerning_Migration.Stored_Absolute_Deadline;
+               --  Curr_Pointer.Active_Absolute_Deadline := Curr_Pointer.
+               --         Data_Concerning_Migration.Stored_Absolute_Deadline;
 
                Insert (Curr_Pointer);
 
@@ -1565,6 +1580,11 @@ package body System.BB.Threads.Queues is
             Natural'Image (Executions (Task_Id).
             Deadlines_Missed_On_Target_Core) & "</deadlinemissedtargetcore>");
 
+            Ada.Text_IO.Put_Line ("<deadlinemissedaftermigration>" &
+            Natural'Image (Executions (Task_Id).
+            Deadlines_Missed_After_Migration) &
+            "</deadlinemissedaftermigration>");
+
             if Executions (Task_Id).Deadlines_Missed > 0
             then
                Is_System_Schedulable := False;
@@ -1577,6 +1597,10 @@ package body System.BB.Threads.Queues is
             Ada.Text_IO.Put_Line ("<budgetexceededtargetcore>" &
                         Natural'Image (Executions (Task_Id).
                         BE_On_Target_Core) & "</budgetexceededtargetcore>");
+
+            Ada.Text_IO.Put_Line ("<budgetexceededaftermigration>" &
+                     Natural'Image (Executions (Task_Id).
+                     BE_After_Migration) & "</budgetexceededaftermigration>");
 
             Ada.Text_IO.Put_Line ("<timesdiscarded>" &
                      Natural'Image (Curr_Pointer.Log_Table.Times_Discarded)

@@ -41,6 +41,12 @@ package body CPU_Budget_Monitor is
            Executions (Task_Id).BE_On_Target_Core + 1;
       end if;
 
+      --  Log that CPU_Budget_Exceeded has been happened after migration(s).
+      if Executions (Task_Id).Migration_Happened_Current_Job_Release then
+         Executions (Task_Id).BE_After_Migration :=
+                              Executions (Task_Id).BE_After_Migration + 1;
+      end if;
+
       if Get_Core_Mode (CPU_Id) = LOW then
          if Self_Id.Criticality_Level = HIGH then
             Clear_Monitor (Cancelled);

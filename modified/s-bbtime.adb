@@ -223,6 +223,12 @@ package body System.BB.Time is
 
          Threads.Queues.Insert_Alarm (T, Self, Inserted_As_First);
 
+         --  This task's current job release is completed, so it is no longer
+         --  suffering migration overhead (if it happened).
+         System.BB.Threads.Queues.
+                  Executions (Self.Data_Concerning_Migration.Id).
+                              Migration_Happened_Current_Job_Release := False;
+
          if Inserted_As_First then
             Update_Alarm (Get_Next_Timeout (CPU_Id));
          end if;
