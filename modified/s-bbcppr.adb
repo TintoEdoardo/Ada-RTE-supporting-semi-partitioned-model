@@ -290,9 +290,6 @@ package body System.BB.CPU_Primitives is
            (Queues.Running_Thread_Table (Current_CPU).Context.Running);
 
       else
-         System.BB.Threads.Queues.Print_Tasks_Log;
-         Ada.Text_IO.Put_Line ("Undef Handler On CPU: "
-                                    & CPU'Image (Current_CPU));
          raise Program_Error with "illegal instruction";
       end if;
    end Undef_Handler;
