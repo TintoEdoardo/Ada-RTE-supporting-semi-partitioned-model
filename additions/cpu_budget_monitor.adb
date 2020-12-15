@@ -8,6 +8,8 @@ with System.BB.Board_Support;
 with System.BB.Threads.Queues;
 with Mixed_Criticality_System;
 with Core_Execution_Modes;
+with Experiment_Info;
+with Initial_Delay;
 
 package body CPU_Budget_Monitor is
 
@@ -107,6 +109,12 @@ package body CPU_Budget_Monitor is
       --  Ada.Text_IO.Put_Line ("BE HANDLED");
    end CPU_BE_Detected;
 
+   --  return True iff we have detected the passage of the hyperperiod
+   --  for at least once. It is useful in order to stop logging CPU's Idle_Time
+   --  as soon as its hyperperiod expires.
+   function Hyperperiod_Not_Yet_Passed
+     (CPU_Id : System.Multiprocessors.CPU) return Boolean;
+
    procedure Start_Monitor (For_Time : System.BB.Time.Time_Span) is
       use Real_Time_No_Elab;
       --  use System.BB.Board_Support.Multiprocessors;
@@ -129,7 +137,8 @@ package body CPU_Budget_Monitor is
       --                    & Duration'Image (To_Duration (For_Time)));
 
       --  Log that CPU_Id is no longer idle.
-      if CPU_Log_Table (CPU_Id).Is_Idle then
+      if CPU_Log_Table (CPU_Id).Is_Idle and Hyperperiod_Not_Yet_Passed (CPU_Id)
+      then
          CPU_Log_Table (CPU_Id).Is_Idle := False;
 
          CPU_Log_Table (CPU_Id).Idle_Time :=
@@ -176,5 +185,34 @@ package body CPU_Budget_Monitor is
          --                                    (Self_Id.Active_Budget)));
       end if;
    end Clear_Monitor;
+
+   Hyperperiod_Passed_First_Time : array (System.Multiprocessors.CPU)
+                                               of Boolean := (others => False);
+
+   function Hyperperiod_Not_Yet_Passed
+     (CPU_Id : System.Multiprocessors.CPU) return Boolean is
+      use Real_Time_No_Elab;
+      Hyperperiod : Real_Time_No_Elab.Time_Span;
+      Hyperperiod_With_Delay : Real_Time_No_Elab.Time_Span;
+      Absolute_Hyperperiod : Real_Time_No_Elab.Time;
+   begin
+      Hyperperiod := Microseconds
+        (Experiment_Info.Get_Parameters.Experiment_Hyperperiods (CPU_Id));
+
+      Hyperperiod_With_Delay := Real_Time_No_Elab."+"
+        (Microseconds (Initial_Delay.Delay_Time), Hyperperiod);
+
+      Absolute_Hyperperiod := Real_Time_No_Elab."+"
+        (Real_Time_No_Elab.Time_First, Hyperperiod_With_Delay);
+
+      if (not Hyperperiod_Passed_First_Time (CPU_Id))
+        and
+         Real_Time_No_Elab.">=" (Real_Time_No_Elab.Clock, Absolute_Hyperperiod)
+      then
+         Hyperperiod_Passed_First_Time (CPU_Id) := True;
+      end if;
+
+      return not Hyperperiod_Passed_First_Time (CPU_Id);
+   end Hyperperiod_Not_Yet_Passed;
 
 end CPU_Budget_Monitor;
