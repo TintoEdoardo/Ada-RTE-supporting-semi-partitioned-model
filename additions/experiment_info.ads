@@ -1,6 +1,9 @@
 with System.Multiprocessors;
 use System.Multiprocessors;
 
+with Real_Time_No_Elab;
+use Real_Time_No_Elab;
+
 with Ada.Strings.Unbounded;
 
 --  The application should use this package in order to get the runtime system
@@ -13,9 +16,11 @@ package Experiment_Info is
    package SU renames Ada.Strings.Unbounded;
 
    type HP_array is array (CPU) of Natural;
+   type AP_array is array (CPU) of Time;
 
    type Exp_Params is record
       Experiment_Hyperperiods : HP_array;
+      Absolutes_Hyperperiods : AP_array;
 
       Id_Experiment : Integer;
       Approach : SU.Unbounded_String;

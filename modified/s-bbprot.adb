@@ -65,6 +65,7 @@ with System.Multiprocessors.Fair_Locks;
 use System.Multiprocessors.Fair_Locks;
 with System.Multiprocessors;
 with System.BB.Board_Support;
+with Real_Time_No_Elab;
 
 package body System.BB.Protection is
 
@@ -111,6 +112,7 @@ package body System.BB.Protection is
 
       if Threads.Queues.Context_Switch_Needed then
          --  Ada.Text_IO.Put_Line ("Leave_Kernel");
+         Running_Thread.T_Clear := System.BB.Time.Clock;
          CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
          --  Perform a context switch because the currently executing thread
@@ -132,6 +134,7 @@ package body System.BB.Protection is
              Running_Thread.Is_Monitored
          then
             CPU_Budget_Monitor.Start_Monitor (Running_Thread.Active_Budget);
+            Running_Thread.T_Start := System.BB.Time.Clock;
          end if;
       end if;
 

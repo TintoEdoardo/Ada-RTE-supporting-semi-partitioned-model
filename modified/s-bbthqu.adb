@@ -923,6 +923,7 @@ package body System.BB.Threads.Queues is
         and then Thread.Next.Active_Priority = Prio
       then
          --  Stop budget monitoring.
+         Thread.T_Clear := System.BB.Time.Clock;
          CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
          First_Thread_Table (CPU_Id) := Thread.Next;

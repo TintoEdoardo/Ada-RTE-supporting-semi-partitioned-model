@@ -55,6 +55,8 @@ with Core_Execution_Modes;
 
 with Experiment_Info;
 with Ada.Strings.Unbounded;
+with Real_Time_No_Elab;
+with System.BB.Time;
 
 package body System.BB.CPU_Primitives is
    use System.BB.Threads;
@@ -240,6 +242,7 @@ package body System.BB.CPU_Primitives is
       --  switches, we need to do that here.
 
       if Threads.Queues.Context_Switch_Needed then
+         Running_Thread.T_Clear := System.BB.Time.Clock;
          CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
          --  The interrupt handler caused pre-emption of the thread that
@@ -265,6 +268,7 @@ package body System.BB.CPU_Primitives is
              Running_Thread.Is_Monitored
          then
             CPU_Budget_Monitor.Start_Monitor (Running_Thread.Active_Budget);
+            Running_Thread.T_Start := System.BB.Time.Clock;
          end if;
 
       end if;

@@ -195,6 +195,7 @@ package body System.BB.Time is
 
       if T + System.BB.Threads.Queues.Global_Interrupt_Delay > Now then
          --  Ada.Text_IO.Put_Line ("Delay_Until");
+         Self.T_Clear := System.BB.Time.Clock;
          CPU_Budget_Monitor.Clear_Monitor (Cancelled);
 
          --  Restore its budget
