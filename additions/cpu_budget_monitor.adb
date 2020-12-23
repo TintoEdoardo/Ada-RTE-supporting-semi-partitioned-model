@@ -26,7 +26,7 @@ package body CPU_Budget_Monitor is
       use Core_Execution_Modes;
       use System.BB.Board_Support.Multiprocessors;
       use System.Multiprocessors;
-      --  use System.BB.Time;
+      use System.BB.Time;
       pragma Unreferenced (E);
       CPU_Id : constant CPU := Current_CPU;
       Self_Id : constant Thread_Id := Running_Thread;
@@ -68,10 +68,19 @@ package body CPU_Budget_Monitor is
             Start_Monitor (Self_Id.Active_Budget);
             Self_Id.T_Start := System.BB.Time.Clock;
          else
+            if Self_Id.Log_Table.Last_Time_Locked /= 0 then
+               Self_Id.Log_Table.Locked_Time :=
+                              Self_Id.Log_Table.Locked_Time +
+                              (Clock - Self_Id.Log_Table.Last_Time_Locked);
+            end if;
+
             Experiment_Is_Not_Valid := True;
             Guilty_Task := Task_Exceeded;
+
             Set_Parameters_Referee
-               (False, Experiment_Is_Not_Valid, False);
+                  (Safe_Boundary_Exceeded => False,
+                  Experiment_Not_Valid => Experiment_Is_Not_Valid,
+                  Finish_Experiment => False);
             --  Ada.Text_IO.Put_Line ("");
             --  Ada.Text_IO.Put_Line ("CPU_"
             --               & System.Multiprocessors.CPU'Image (CPU_Id)
@@ -90,10 +99,19 @@ package body CPU_Budget_Monitor is
             --  end loop;
          end if;
       else  --  Get_Core_Mode (CPU_Id) is HIGH
+            if Self_Id.Log_Table.Last_Time_Locked /= 0 then
+               Self_Id.Log_Table.Locked_Time :=
+                              Self_Id.Log_Table.Locked_Time +
+                              (Clock - Self_Id.Log_Table.Last_Time_Locked);
+            end if;
+
             Experiment_Is_Not_Valid := True;
             Guilty_Task := Task_Exceeded;
+
             Set_Parameters_Referee
-                  (False, Experiment_Is_Not_Valid, False);
+                  (Safe_Boundary_Exceeded => False,
+                  Experiment_Not_Valid => Experiment_Is_Not_Valid,
+                  Finish_Experiment => False);
             --  Ada.Text_IO.Put_Line ("");
             --  Ada.Text_IO.Put_Line ("CPU_"
             --               & System.Multiprocessors.CPU'Image (CPU_Id)
@@ -130,12 +148,13 @@ package body CPU_Budget_Monitor is
    ---------------------
 
    procedure Start_Monitor (For_Time : System.BB.Time.Time_Span) is
-      use Real_Time_No_Elab;
+      --  use Real_Time_No_Elab;
       --  use System.BB.Board_Support.Multiprocessors;
       use System.BB.Threads;
       use System.BB.Threads.Queues;
       use Core_Execution_Modes;
       use System.Multiprocessors;
+      use System.BB.Time;
       Now : constant Time := Clock;
       Self_Id : constant Thread_Id := Running_Thread;
       CPU_Id : constant CPU := Self_Id.Active_CPU;
@@ -153,6 +172,22 @@ package body CPU_Budget_Monitor is
          CPU_Log_Table (CPU_Id).Idle_Time :=
                      CPU_Log_Table (CPU_Id).Idle_Time +
             (Now - CPU_Log_Table (CPU_Id).Last_Time_Idle);
+
+         --  If this core is hosting migratings tasks.
+         if CPU_Log_Table (CPU_Id).Hosting_Mig_Tasks then
+
+            if CPU_Log_Table (CPU_Id).Last_Time_Idle_Hosting_Migs /= 0 then
+               CPU_Log_Table (CPU_Id).Idle_Time_Hosting_Migs :=
+                  CPU_Log_Table (CPU_Id).Idle_Time_Hosting_Migs +
+                    (Now - CPU_Log_Table (CPU_Id).Last_Time_Idle_Hosting_Migs);
+            else
+               CPU_Log_Table (CPU_Id).Idle_Time_Hosting_Migs :=
+                  CPU_Log_Table (CPU_Id).Idle_Time_Hosting_Migs +
+                    (Now - CPU_Log_Table (CPU_Id).Start_Hosting_Mig);
+            end if;
+
+         end if;
+
       end if;
 
       --  Log that thread is (again) on this CPU

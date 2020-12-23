@@ -29,6 +29,17 @@ package Core_Execution_Modes is
       Idle_Time          : System.BB.Time.Time_Span    := 0;
       Last_Time_Idle     : System.BB.Time.Time := 0;
       Is_Idle            : Boolean := False;
+
+      --  Absolute moment in time when the other core is entered in
+      --  HI-crit mode, i.e. this core is hosting mig tasks. It is needed
+      --  in order to compute real utilizations while hosting mig tasks.
+      Start_Hosting_Mig           : System.BB.Time.Time := 0;
+      End_Hosting_Mig             : System.BB.Time.Time := 0;
+      Last_Time_Idle_Hosting_Migs : System.BB.Time.Time := 0;
+      Idle_Time_Hosting_Migs      : System.BB.Time.Time_Span := 0;
+      Total_Time_Hosting_Migs     : System.BB.Time.Time_Span := 0;
+      Hosting_Mig_Tasks           : Boolean := False;
+
    end record;
 
    CPU_Log_Table : array (CPU) of CPU_Data_Log;

@@ -49,9 +49,9 @@ package body Core_Execution_Modes is
          Experiment_Is_Not_Valid := True;
 
          Guard_Experiment.Referee.Set_Parameters
-                     (Safe_Boundary_Has_Been_Exceeded,
-                     Experiment_Is_Not_Valid,
-                     False);
+                  (Safe_Boundary_Exceeded => Safe_Boundary_Has_Been_Exceeded,
+                  Experiment_Not_Valid => Experiment_Is_Not_Valid,
+                  Finish_Experiment => False);
 
          --  Ada.Text_IO.Put_Line
          --         ("-----------------------------------------------------");
@@ -97,6 +97,16 @@ package body Core_Execution_Modes is
          Ada.Text_IO.Put_Line ("<idletime>" &
             Duration'Image (To_Duration (CPU_Log_Table (CPU_Id).Idle_Time))
                                                             & "</idletime>");
+
+         Ada.Text_IO.Put_Line ("<idletimehostingmigs>" &
+            Duration'Image (To_Duration (CPU_Log_Table (CPU_Id).
+                                                      Idle_Time_Hosting_Migs))
+                                                & "</idletimehostingmigs>");
+
+         Ada.Text_IO.Put_Line ("<totaltimehostingmigs>" &
+            Duration'Image (To_Duration (CPU_Log_Table (CPU_Id).
+                                                      Total_Time_Hosting_Migs))
+                                                & "</totaltimehostingmigs>");
 
          Ada.Text_IO.Put_Line ("</cpu>");
       end loop;

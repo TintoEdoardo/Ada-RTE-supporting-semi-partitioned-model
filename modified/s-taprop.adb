@@ -295,11 +295,17 @@ package body System.Task_Primitives.Operations is
       loop
          Enter_Kernel;
          CPU_Id := Current_CPU;
+
          CPU_Log_Table (CPU_Id).Is_Idle := True;
 
          if not First_Execution then
             --  Start logging idle time.
             CPU_Log_Table (CPU_Id).Last_Time_Idle := Clock;
+
+            if CPU_Log_Table (CPU_Id).Hosting_Mig_Tasks then
+               CPU_Log_Table (CPU_Id).Last_Time_Idle_Hosting_Migs := Clock;
+            end if;
+
          else
             CPU_Log_Table (CPU_Id).Last_Time_Idle :=
                System.BB.Time."+"

@@ -38,6 +38,7 @@ pragma Restrictions (No_Elaboration_Code);
 with System.IO;
 with System.BB.Time; use System.BB.Time;
 with Core_Execution_Modes;
+use Core_Execution_Modes;
 with CPU_Budget_Monitor;
 with Mixed_Criticality_System;
 
@@ -733,7 +734,6 @@ package body System.BB.Threads.Queues is
       (Wakeup_Thread : Thread_Id)
       return Boolean
    is
-      use Core_Execution_Modes;
    begin
       --  A Wakeup thread has to migrate to the other CPU iff:
       --    1. it is migrable;
@@ -762,7 +762,6 @@ package body System.BB.Threads.Queues is
       (Wakeup_Thread : Thread_Id)
       return Boolean
    is
-      use Core_Execution_Modes;
    begin
       --  A Wakeup thread has to be restored on its Base_CPU iff:
       --    1. it is migrable;
@@ -790,7 +789,6 @@ package body System.BB.Threads.Queues is
    function Wakeup_Thread_Is_Hosting_Migrating_Tasks
      (Wakeup_Thread : Thread_Id) return Boolean is
       Target_CPU : CPU := CPU'First;
-      use Core_Execution_Modes;
    begin
       if Wakeup_Thread.Base_CPU = CPU'First then
          Target_CPU := CPU'Last;
@@ -1299,6 +1297,9 @@ package body System.BB.Threads.Queues is
             end if;
       end loop;
 
+      CPU_Log_Table (CPU_Target).Start_Hosting_Mig := Clock;
+      CPU_Log_Table (CPU_Target).Hosting_Mig_Tasks := True;
+
       Unlock (Ready_Tables_Locks (CPU'First).all);
       Unlock (Ready_Tables_Locks (CPU'Last).all);
 
@@ -1324,6 +1325,22 @@ package body System.BB.Threads.Queues is
 
       Lock (Ready_Tables_Locks (CPU'First).all);
       Lock (Ready_Tables_Locks (CPU'Last).all);
+
+      CPU_Log_Table (CPU_Target).End_Hosting_Mig := Clock;
+
+      CPU_Log_Table (CPU_Target).Total_Time_Hosting_Migs :=
+                  CPU_Log_Table (CPU_Target).Total_Time_Hosting_Migs +
+                     (CPU_Log_Table (CPU_Target).End_Hosting_Mig -
+                          CPU_Log_Table (CPU_Target).Start_Hosting_Mig);
+
+--        if CPU_Log_Table (CPU_Target).Is_Idle then
+--           CPU_Log_Table (CPU_Id).Idle_Time_Hosting_Migs :=
+--                  CPU_Log_Table (CPU_Id).Idle_Time_Hosting_Migs +
+--             (Clock - CPU_Log_Table (CPU_Id).Last_Time_Idle_Hosting_Migs);
+--        end if;
+
+      CPU_Log_Table (CPU_Target).Last_Time_Idle_Hosting_Migs := 0;
+      CPU_Log_Table (CPU_Target).Hosting_Mig_Tasks := False;
 
       Aux_Pointer  := First_Thread_Table (CPU_Target);
       Curr_Pointer := First_Thread_Table (CPU_Target);
