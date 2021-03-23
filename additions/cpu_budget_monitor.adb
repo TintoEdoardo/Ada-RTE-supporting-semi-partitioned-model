@@ -6,14 +6,38 @@ pragma Warnings (On);
 with System.BB.Protection;
 with System.BB.Board_Support;
 with System.BB.Threads.Queues;
+with System.Tasking;
 with Mixed_Criticality_System;
 with Core_Execution_Modes;
 with Experiment_Info;
+
+--  with MBTA;
 
 package body CPU_Budget_Monitor is
 
    Hyperperiod_Passed_First_Time : array (System.Multiprocessors.CPU)
                                                of Boolean := (others => False);
+
+   -----------------------------------
+   --  Task_Is_The_Only_One_On_CPU  --
+   -----------------------------------
+
+   function Task_Is_The_Only_One_On_CPU
+      (Self_Id : System.BB.Threads.Thread_Id) return Boolean;
+
+   function Task_Is_The_Only_One_On_CPU
+      (Self_Id : System.BB.Threads.Thread_Id) return Boolean is
+      use System.BB.Threads;
+      use System.BB.Threads.Queues;
+   begin
+      --  Self_Id is the only one in the ready queue iff
+      --  no higher-priority tasks are ready AND its successor in the queue
+      --  is the Idle_Task.
+      return
+         (not Context_Switch_Needed) and
+            (Self_Id.Next /= Null_Thread_Id and
+               Self_Id.Next.Active_Priority = System.Tasking.Idle_Priority);
+   end Task_Is_The_Only_One_On_CPU;
 
    -----------------------
    --  CPU_BE_Detected  --
@@ -34,8 +58,10 @@ package body CPU_Budget_Monitor is
       Task_Exceeded : constant System.Priority :=
                     Self_Id.Data_Concerning_Migration.Id;
       Cancelled : Boolean;
+      --  Start_Time : Time;
    begin
       System.BB.Protection.Enter_Kernel;
+      --  Start_Time := Clock;
 
       --  Log CPU_Budget_Exceeded
       Self_Id.Log_Table.Times_BE := Self_Id.Log_Table.Times_BE + 1;
@@ -58,7 +84,7 @@ package body CPU_Budget_Monitor is
       if Get_Core_Mode (CPU_Id) = LOW then
          if Self_Id.Criticality_Level = HIGH then
             Self_Id.T_Clear := System.BB.Time.Clock;
-            Clear_Monitor (Cancelled);
+            Clear_Monitor (Cancelled);  --  This call should be removed (?)
             Self_Id.Active_Budget := 0;
             --  Ada.Text_IO.Put_Line
             --   (" HI-CRIT CPU_Budget_Exceeded DETECTED.");
@@ -67,44 +93,43 @@ package body CPU_Budget_Monitor is
 
             Start_Monitor (Self_Id.Active_Budget);
             Self_Id.T_Start := System.BB.Time.Clock;
-         else
+         else  --  Job is LO-Crit
             if Self_Id.Log_Table.Last_Time_Locked /= 0 then
                Self_Id.Log_Table.Locked_Time :=
                               Self_Id.Log_Table.Locked_Time +
                               (Clock - Self_Id.Log_Table.Last_Time_Locked);
             end if;
 
-            Experiment_Is_Not_Valid := True;
-            Guilty_Task := Task_Exceeded;
+            --  A LO-Crit job can exceed its budget iff it is the only one
+            --  in the ready queue.
 
-            Set_Parameters_Referee
-                  (Safe_Boundary_Exceeded => False,
-                  Experiment_Not_Valid => Experiment_Is_Not_Valid,
-                  Finish_Experiment => False);
-            --  Ada.Text_IO.Put_Line ("");
-            --  Ada.Text_IO.Put_Line ("CPU_"
-            --               & System.Multiprocessors.CPU'Image (CPU_Id)
-            --            & ": GUILTY task " & Integer'Image (Task_Exceeded));
+            if not Task_Is_The_Only_One_On_CPU (Self_Id) then
+               Experiment_Is_Not_Valid := True;
+               Guilty_Task := Task_Exceeded;
 
-            --  Ada.Text_IO.Put_Line
-            --         ("-------------------------------------------------");
-            --  Ada.Text_IO.Put_Line
-            --         ("--  LO-crit task exceeding its LO-crit budget  --");
-            --  Ada.Text_IO.Put_Line
-            --         ("--        !!!  INVALID EXPERIMENTS  !!!        --");
-            --  Ada.Text_IO.Put_Line
-            --         ("-------------------------------------------------");
-            --  loop
-            --     null;
-            --  end loop;
+               Set_Parameters_Referee
+                     (Safe_Boundary_Exceeded => False,
+                     Experiment_Not_Valid => Experiment_Is_Not_Valid,
+                     Finish_Experiment => False);
+            else
+               --  Ada.Text_IO.Put_Line ("CPU_"
+               --   & System.Multiprocessors.CPU'Image (CPU_Id)
+               --   & ": task allowed to exceed during LO-Crit mode: "
+               --   & Integer'Image (Task_Exceeded));
+               null;
+            end if;
          end if;
       else  --  Get_Core_Mode (CPU_Id) is HIGH
-            if Self_Id.Log_Table.Last_Time_Locked /= 0 then
-               Self_Id.Log_Table.Locked_Time :=
-                              Self_Id.Log_Table.Locked_Time +
-                              (Clock - Self_Id.Log_Table.Last_Time_Locked);
-            end if;
+         if Self_Id.Log_Table.Last_Time_Locked /= 0 then
+            Self_Id.Log_Table.Locked_Time :=
+                           Self_Id.Log_Table.Locked_Time +
+                           (Clock - Self_Id.Log_Table.Last_Time_Locked);
+         end if;
 
+         if (Self_Id.Criticality_Level = HIGH) or
+            (Self_Id.Criticality_Level = LOW and
+               not Task_Is_The_Only_One_On_CPU (Self_Id))
+         then
             Experiment_Is_Not_Valid := True;
             Guilty_Task := Task_Exceeded;
 
@@ -116,22 +141,18 @@ package body CPU_Budget_Monitor is
             --  Ada.Text_IO.Put_Line ("CPU_"
             --               & System.Multiprocessors.CPU'Image (CPU_Id)
             --             & ": GUILTY task " & Integer'Image (Task_Exceeded));
-            --  Ada.Text_IO.Put_Line
-            --  ("----------------------------------------------------------");
-            --  Ada.Text_IO.Put_Line
-            --  ("--        A task has exceeded its current budget        --");
-            --  Ada.Text_IO.Put_Line
-            --  ("--      Unpredictable overload during HI-crit mode      --");
-            --  Ada.Text_IO.Put_Line
-            --  ("--             !!!  INVALID EXPERIMENTS  !!!            --");
-            --  Ada.Text_IO.Put_Line
-            --  ("----------------------------------------------------------");
-            --  loop
-            --     null;
-            --  end loop;
+         else
+            --  Ada.Text_IO.Put_Line ("CPU_"
+            --   & System.Multiprocessors.CPU'Image (CPU_Id)
+            --   & ": task allowed to exceed during HI-Crit mode: "
+            --   & Integer'Image (Task_Exceeded));
+            null;
+         end if;
       end if;
 
-      System.BB.Protection.Leave_Kernel;
+      --  MBTA.Log_RTE_Primitive_Duration
+      --   (MBTA.BED, To_Duration (Clock - Start_Time), CPU_Id);
+      --    System.BB.Protection.Leave_Kernel;
       --  Ada.Text_IO.Put_Line ("BE HANDLED");
    end CPU_BE_Detected;
 
@@ -156,11 +177,13 @@ package body CPU_Budget_Monitor is
       use System.Multiprocessors;
       use System.BB.Time;
       Now : constant Time := Clock;
+      --  Start_Time : constant Time := Now;
       Self_Id : constant Thread_Id := Running_Thread;
       CPU_Id : constant CPU := Self_Id.Active_CPU;
       Cancelled : Boolean;
       pragma Unreferenced (Cancelled);
       --  Task_Exceeded : constant System.Priority := Self_Id.Base_Priority;
+
    begin
 
       --  Log that CPU_Id is no longer idle.
@@ -210,6 +233,8 @@ package body CPU_Budget_Monitor is
                 CPU_BE_Detected'Access);
 
       --  Self_Id.T_Start := System.BB.Time.Clock;
+      --  MBTA.Log_RTE_Primitive_Duration
+      --    (MBTA.SM, To_Duration (Clock - Start_Time), CPU_Id);
 
    end Start_Monitor;
 
@@ -222,6 +247,7 @@ package body CPU_Budget_Monitor is
       use System.BB.Threads;
       use System.BB.Time;
       use System.BB.Threads.Queues;
+      --  Start_Time : constant Time := Clock;
       Self_Id : constant Thread_Id := Running_Thread;
       CPU_Id : constant System.Multiprocessors.CPU :=
                                                       Self_Id.Active_CPU;
@@ -240,6 +266,8 @@ package body CPU_Budget_Monitor is
          --  Ada.Text_IO.Put_Line (Duration'Image (System.BB.Time.To_Duration
          --                                    (Self_Id.Active_Budget)));
       end if;
+      --  MBTA.Log_RTE_Primitive_Duration
+      --  (MBTA.CM, To_Duration (Clock - Start_Time), CPU_Id);
    end Clear_Monitor;
 
    ----------------------------------

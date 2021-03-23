@@ -47,6 +47,8 @@ with System.OS_Interface;
 with CPU_Budget_Monitor;
 with Core_Execution_Modes;
 
+--  with MBTA;
+
 pragma Warnings (Off);
 with Ada.Text_IO;
 pragma Warnings (On);
@@ -75,10 +77,9 @@ package body System.BB.Time is
 
    procedure Alarm_Handler (Interrupt : Interrupts.Interrupt_ID) is
       pragma Unreferenced (Interrupt);
-
-      Now    : constant Time := Clock;
-      CPU_Id : constant CPU  := Current_CPU;
-
+      Now        : constant Time := Clock;
+      --  Start_Time : Time          := Now;
+      CPU_Id     : constant CPU  := Current_CPU;
    begin
       Board_Support.Time.Clear_Alarm_Interrupt;
 
@@ -89,6 +90,9 @@ package body System.BB.Time is
          Scheduling_Event_Hook.all;
       end if;
 
+      --  MBTA.Log_RTE_Primitive_Duration
+      --    (MBTA.AH, To_Duration (Clock - Start_Time), CPU_Id);
+
       --  Note that the code is executed with interruptions disabled, so there
       --  is no need to call Enter_Kernel/Leave_Kernel.
 
@@ -97,12 +101,16 @@ package body System.BB.Time is
       Timing_Events.Execute_Expired_Timing_Events (Now);
 
       --  Wake up our alarms
+      --  Start_Time := Clock;
 
       Threads.Queues.Wakeup_Expired_Alarms (Now);
 
       --  Set the timer for the next alarm on this CPU
 
       Update_Alarm (Get_Next_Timeout (CPU_Id));
+
+      --  MBTA.Log_RTE_Primitive_Duration
+      --    (MBTA.WEA_UA, To_Duration (Clock - Start_Time), CPU_Id);
 
       --  The interrupt low-level handler will call context_switch if necessary
 
@@ -139,6 +147,7 @@ package body System.BB.Time is
       Temp1             : Time_Span;
       Temp2             : Time;
       Cancelled         : Boolean;
+      --  Start_Time        : Time;
       pragma Unreferenced (Cancelled);
    begin
       --  First mask interrupts, this is necessary to handle thread queues
@@ -158,6 +167,7 @@ package body System.BB.Time is
       --  interrupted before the alarm is set.
 
       Now := Clock;
+      --  Start_Time := Now;
 
       Self := Threads.Thread_Self;
 
@@ -191,7 +201,7 @@ package body System.BB.Time is
 
       --  Self.First_Time_On_Delay_Until := False;
 
-      --  Test if the alarm time is in the future
+      --  Test if the time is in the future
 
       if T + System.BB.Threads.Queues.Global_Interrupt_Delay > Now then
          --  Ada.Text_IO.Put_Line ("Delay_Until");
@@ -242,6 +252,8 @@ package body System.BB.Time is
          Threads.Queues.Yield (Self);
       end if;
 
+      --  MBTA.Log_RTE_Primitive_Duration
+      --    (MBTA.DU, To_Duration (Clock - Start_Time), CPU_Id);
       Protection.Leave_Kernel;
    end Delay_Until;
 

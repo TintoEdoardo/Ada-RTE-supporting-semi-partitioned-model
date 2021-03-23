@@ -52,10 +52,12 @@ with System.Multiprocessors.Fair_Locks;
 use System.Multiprocessors.Fair_Locks;
 
 with Core_Execution_Modes;
+--  with MBTA;
 
 with Experiment_Info;
 with Ada.Strings.Unbounded;
 with Real_Time_No_Elab;
+use Real_Time_No_Elab;
 with System.BB.Time;
 
 package body System.BB.CPU_Primitives is
@@ -69,6 +71,8 @@ package body System.BB.CPU_Primitives is
 
    NL : constant String := ASCII.LF & ASCII.HT;
    --  New line separator in Asm templates
+
+   Disable_Interr_Time : System.BB.Time.Time := 0;
 
    -----------
    -- Traps --
@@ -275,7 +279,7 @@ package body System.BB.CPU_Primitives is
 
       Asm ("msr   SPSR_cxsf, %0",
          Inputs   => (Unsigned_32'Asm_Input ("r", SPSR)),
-         Volatile => True);
+           Volatile => True);
    end Common_Handler;
 
    -------------------
@@ -308,6 +312,7 @@ package body System.BB.CPU_Primitives is
       CPU_Id : constant System.Multiprocessors.CPU := Current_CPU;
 
       New_Priority : Integer;
+      Start_Time : System.BB.Time.Time := System.BB.Time.Clock;
    begin
       --  Whenever switching to a new context, disable the FPU, so we don't
       --  have to worry about its state. It is much more efficient to lazily
@@ -400,6 +405,9 @@ package body System.BB.CPU_Primitives is
             Thread_Id'Asm_Input ("r", First_Thread_Table (CPU_Id))),
          Volatile => True,
          Clobber  => "memory,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr");
+
+         --  MBTA.Log_RTE_Primitive_Duration
+         --     (MBTA.CSW, To_Duration (Clock - Start_Time), CPU_Id);
    end Context_Switch;
 
    ------------------------
@@ -516,6 +524,7 @@ package body System.BB.CPU_Primitives is
    procedure Disable_Interrupts is
    begin
       Asm ("cpsid i", Volatile => True);
+      Disable_Interr_Time := System.BB.Time.Clock;
    end Disable_Interrupts;
 
    -----------------------
@@ -523,7 +532,17 @@ package body System.BB.CPU_Primitives is
    -----------------------
 
    procedure Enable_Interrupts (Level : Integer) is
+      use System.BB.Time;
+      --  CPU_Id     : constant CPU  := Current_CPU;
    begin
+--        if Disable_Interr_Time /= 0 then
+--           MBTA.Log_RTE_Primitive_Duration
+--             (MBTA.BI, To_Duration
+--                (System.BB.Time.Clock - Disable_Interr_Time),
+--              CPU_Id);
+--           Disable_Interr_Time := 0;
+--        end if;
+
       Board_Support.Interrupts.Set_Current_Priority (Level);
 
       if Level < System.BB.Parameters.Interrupt_Unmask_Priority then

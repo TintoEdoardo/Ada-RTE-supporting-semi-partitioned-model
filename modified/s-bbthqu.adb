@@ -41,6 +41,7 @@ with Core_Execution_Modes;
 use Core_Execution_Modes;
 with CPU_Budget_Monitor;
 with Mixed_Criticality_System;
+--  with MBTA;
 
 pragma Warnings (Off);
 with Ada.Text_IO;
@@ -494,18 +495,24 @@ package body System.BB.Threads.Queues is
    ---------------------------
 
    function Context_Switch_Needed return Boolean is
-      --   Now : System.BB.Time.Time;
+      --  Start_Time   : constant System.BB.Time.Time := Clock;
+      Is_CS_Needed : Boolean;
+      --  CPU_Id       : constant CPU := BOSUMU.Current_CPU;
    begin
       --  A context switch is needed when there is a higher priority task ready
       --  to execute. It means that First_Thread is not null and it is not
       --  equal to the task currently executing (Running_Thread).
 
-      if First_Thread /= Running_Thread and Running_Thread.Preemption_Needed
+      Is_CS_Needed := (First_Thread /= Running_Thread);
+
+      if Is_CS_Needed and Running_Thread.Preemption_Needed
       then
          Add_Preemption (Running_Thread.Fake_Number_ID);
       end if;
 
-      return First_Thread /= Running_Thread;
+      --  MBTA.Log_RTE_Primitive_Duration
+      --    (MBTA.CSN, To_Duration (Clock - Start_Time), CPU_Id);
+      return Is_CS_Needed;
    end Context_Switch_Needed;
 
    ----------------------

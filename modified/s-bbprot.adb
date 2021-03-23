@@ -66,6 +66,7 @@ use System.Multiprocessors.Fair_Locks;
 with System.Multiprocessors;
 with System.BB.Board_Support;
 with Real_Time_No_Elab;
+--  with MBTA;
 
 package body System.BB.Protection is
 
@@ -93,6 +94,7 @@ package body System.BB.Protection is
       use type System.BB.Threads.Thread_States;
       Cancelled : Boolean := False;
       CPU_Id : constant CPU := Current_CPU;
+      Start_Time : System.BB.Time.Time;
    begin
       --  Interrupts are always disabled when entering here
 
@@ -124,6 +126,7 @@ package body System.BB.Protection is
             Scheduling_Event_Hook.all;
          end if;
 
+         Start_Time := Clock;
          CPU_Primitives.Context_Switch;
          --  Ada.Text_IO.Put_Line ("Context Switch done!");
          --  Start budget monitoring iff the new running thread
@@ -133,6 +136,8 @@ package body System.BB.Protection is
            and
              Running_Thread.Is_Monitored
          then
+            --  MBTA.Log_RTE_Primitive_Duration
+            --  (MBTA.CSW, To_Duration (Clock - Start_Time), CPU_Id);
             CPU_Budget_Monitor.Start_Monitor (Running_Thread.Active_Budget);
             Running_Thread.T_Start := System.BB.Time.Clock;
          end if;
