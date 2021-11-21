@@ -1,4 +1,4 @@
-# Exploring the viability of a MCS multicore runtime demonstrator: a comparison with a temporal isolation kernel
+# Evaluating a multicore Mixed-Criticality System implementation against a temporal isolation kernel
 
 An experimental Ada runtime environment implementating the ["Semi-partitioned model for dual-core mixed criticality system"](https://dl.acm.org/doi/10.1145/2834848.2834865) by Xu & Burns.
 
