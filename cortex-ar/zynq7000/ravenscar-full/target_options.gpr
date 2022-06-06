@@ -1,7 +1,9 @@
---  This is the default version of the target_options.gpr file,
+--  This WAS the default version of the target_options.gpr file,
 --  imported by runtime_build.gpr. Variables defined here are appended
 --  to the corresponding variables there. Target configurations may
 --  their own version of this file.
+
+-- The Compiler package has been modified, and flags have changed. 
 
 abstract project Target_Options is
 
