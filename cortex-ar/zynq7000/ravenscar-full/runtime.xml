@@ -9,6 +9,7 @@
    package Compiler is
       for Driver("Asm_Cpp") use "clang";
       
+      -- Switch has been temporarily moved into target_options.gpr. 
       Common_Required_Switches := (
           -- "-mlittle-endian", 
           -- "-mhard-float", 
