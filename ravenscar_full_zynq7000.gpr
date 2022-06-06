@@ -53,7 +53,7 @@ aggregate project Ravenscar_Full_Zynq7000 is
 
    for external ("INSTALL_PREFIX") use Install_Dir;
 
-   for Target use "arm-eabi";
+   for Target use "llvm";
    for Runtime ("Ada") use Base_BSP_Source_Dir &
        "ravenscar-full";
 
