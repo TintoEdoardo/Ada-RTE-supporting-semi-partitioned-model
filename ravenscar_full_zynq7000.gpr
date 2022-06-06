@@ -2,6 +2,7 @@ aggregate project Ravenscar_Full_Zynq7000 is
 
    Base_BSP_Source_Dir   := Project'Project_Dir & "cortex-ar/zynq7000/";
    Base_Installation_Dir := "arm-eabi/lib/gnat/";
+   GNAT_Installation_Dir := "/home/edoardo/opt/GNAT/2018-arm-elf/arm-eabi/";
    Board                 := "zynq7000";
    Default_Prefix        := 
      Base_Installation_Dir & "ravenscar-full-" & Board;
@@ -59,7 +60,8 @@ aggregate project Ravenscar_Full_Zynq7000 is
 
    for Project_Path use
      (Base_BSP_Source_Dir & "ravenscar-full",
-      "../lib/gnat");
+      "../lib/gnat",
+      GNAT_Installation_Dir & "lib/gnat");
    for Project_Files use
      (Base_BSP_Source_Dir & "ravenscar-full/libgnat.gpr",
       Base_BSP_Source_Dir & "ravenscar-full/libgnarl.gpr",
