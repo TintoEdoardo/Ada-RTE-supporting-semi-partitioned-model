@@ -1,4 +1,4 @@
-
+rm -rf $PWD/cortex-ar/zynq7000/ravenscar-full/adalib/ $PWD/cortex-ar/zynq7000/ravenscar-full/obj/ $PWD/cortex-ar/zynq7000/ravenscar-full/user_srcs/ &&
 mkdir -p $PWD/cortex-ar/zynq7000/ravenscar-full/adalib/ $PWD/cortex-ar/zynq7000/ravenscar-full/obj/ $PWD/cortex-ar/zynq7000/ravenscar-full/user_srcs/ &&
 gprbuild -P ravenscar_full_zynq7000.gpr -j0 &&
 mkdir -p runtime/arm-eabi/lib/gnat/ravenscar_full_zynq7000 &&
