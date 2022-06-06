@@ -14,16 +14,47 @@ abstract project Target_Options is
 
   package Compiler is
      --  COMFLAGS here is common flags (used for C and Ada).
-     COMFLAGS := ("-fcallgraph-info=su,da",
+     COMFLAGS := (
+        --  "-fcallgraph-info=su,da",
         "-ffunction-sections",
         "-fdata-sections",
         "-fomit-frame-pointer");
 
      --  Per language flags (COMFLAGS will be added later)
-     ADAFLAGS := ("-gnatg", "-nostdinc", "-fno-delete-null-pointer-checks");
-     ASMFLAGS := ("");
+     ADAFLAGS := (
+     	"-gnatg", 
+     	"-nostdinc", 
+     	"-fno-delete-null-pointer-checks", 
+     	"--target=armv7-none-eabi",
+     	"-mcpu=cortex-a9",
+     	"-fno-gnu-inline-asm");
+     ASMFLAGS := (
+        "-mlittle-endian",
+        "-mfloat-abi=hard",
+        "-mcpu=cortex-a9",
+        "-mfpu=vfpv3",
+        "-marm",
+        "-mno-unaligned-access",
+        "--target=arm-none-eabi",
+        "--sysroot=/lib/arm-none-eabi",
+        "-I/usr/lib/gcc/arm-none-eabi/9.2.1/include", 
+        "-I/home/edoardo/opt/GNAT/2018-arm-elf/arm-eabi/include");
      CFLAGS := ("-DIN_RTS",
-        "-Dinhibit_libc", "-Werror", "-Wall");
+        "-Dinhibit_libc", 
+        "-Werror", 
+        "-Wall", 
+        "-nostdinc",
+        "-mlittle-endian",
+        "-mfloat-abi=hard",
+        "-mcpu=cortex-a9",
+        "-mfpu=vfpv3",
+        "-marm",
+        "-march=armv7",
+        "-mno-unaligned-access",
+        "--target=arm-none-eabi",
+        "--sysroot=/lib/arm-none-eabi",
+        "-I/usr/lib/gcc/arm-none-eabi/9.2.1/include", 
+        "-I/home/edoardo/opt/GNAT/2018-arm-elf/arm-eabi/include");
      case Build is
         when "Production" =>
 	   --  Optimize
