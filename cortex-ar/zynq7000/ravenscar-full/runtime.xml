@@ -7,7 +7,15 @@
    Loader : Loaders := external("LOADER", "RAM");
 
    package Compiler is
-      Common_Required_Switches := ("-mlittle-endian", "-mhard-float", "-mcpu=cortex-a9", "-mfpu=vfpv3", "-marm", "-mno-unaligned-access");
+      for Driver("Asm_Cpp") use "clang";
+      
+      Common_Required_Switches := (
+          -- "-mlittle-endian", 
+          -- "-mhard-float", 
+          -- "-mcpu=cortex-a9", 
+          -- "-mfpu=vfpv3", 
+          -- "-marm", 
+          -- "-mno-unaligned-access");
 
       for Leading_Required_Switches ("Ada") use
          Compiler'Leading_Required_Switches ("Ada") &
