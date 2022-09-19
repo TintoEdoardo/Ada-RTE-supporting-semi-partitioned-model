@@ -16,6 +16,10 @@ package Stack_Pool is
    pragma Elaborate_Body;
    --  Needed to ensure that library routines can execute allocators
 
+   type Address_Array is
+     array (System.Storage_Elements.Storage_Count range <>)
+       of aliased System.Address;
+
    ------------------------
    -- Stack_Bounded_Pool --
    ------------------------
@@ -38,8 +42,11 @@ package Stack_Pool is
          First_Free        : System.Storage_Elements.Storage_Count;
          First_Empty       : System.Storage_Elements.Storage_Count;
          Aligned_Elmt_Size : System.Storage_Elements.Storage_Count;
+         Next_Allocated    : System.Storage_Elements.Storage_Count;
          The_Pool          : System.Storage_Elements.Storage_Array
-                                                       (1 .. Pool_Size);
+        (1 .. Pool_Size);
+         Address_List      : Address_Array
+           (0 .. Pool_Size);
       end record;
 
    overriding function Storage_Size
@@ -58,5 +65,7 @@ package Stack_Pool is
       Alignment    : System.Storage_Elements.Storage_Count);
 
    overriding procedure Initialize (Pool : in out Stack_Bounded_Pool);
+
+   procedure Free (Pool : in out Stack_Bounded_Pool);
 
 end Stack_Pool;

@@ -4,7 +4,7 @@
 --                                                                          --
 --                            S T A C K _ P O O L                           --
 --                                                                          --
---                                 B o d y                                  --S
+--                                 B o d y                                  --
 --                                                                          --
 ------------------------------------------------------------------------------
 
@@ -64,16 +64,22 @@ package body Stack_Pool is
 
       if Pool.Elmt_Size = 0 then
          Vsize.Allocate (Pool, Address, Storage_Size, Alignment);
+         Pool.Address_List (Pool.Next_Allocated) := Address;
+         Pool.Next_Allocated := Pool.Next_Allocated + 1;
 
       elsif Pool.First_Free /= 0 then
          Address := Pool.The_Pool (Pool.First_Free)'Address;
          Pool.First_Free := To_Storage_Count_Access (Address).all;
+         Pool.Address_List (Pool.Next_Allocated) := Address;
+         Pool.Next_Allocated := Pool.Next_Allocated + 1;
 
       elsif
         Pool.First_Empty <= (Pool.Pool_Size - Pool.Aligned_Elmt_Size + 1)
       then
          Address := Pool.The_Pool (Pool.First_Empty)'Address;
          Pool.First_Empty := Pool.First_Empty + Pool.Aligned_Elmt_Size;
+         Pool.Address_List (Pool.Next_Allocated) := Address;
+         Pool.Next_Allocated := Pool.Next_Allocated + 1;
 
       else
          raise Storage_Error;
@@ -122,8 +128,9 @@ package body Stack_Pool is
          Vsize.Initialize (Pool);
 
       else
-         Pool.First_Free := 0;
-         Pool.First_Empty := 1;
+         Pool.First_Free     := 0;
+         Pool.First_Empty    := 1;
+         Pool.Next_Allocated := 0;
 
          --  Compute the size to allocate given the size of the element and
          --  the possible alignment requirement as defined above.
@@ -133,6 +140,23 @@ package body Stack_Pool is
              ((Pool.Elmt_Size + Align - 1) / Align) * Align);
       end if;
    end Initialize;
+
+   ----------
+   -- Free --
+   ----------
+
+   procedure Free (Pool : in out Stack_Bounded_Pool)
+   is
+      --  Clear the entire pool.
+   begin
+      for Addr in 0 .. (Pool.Next_Allocated - 1) loop
+         Deallocate
+           (Pool, Pool.Address_List (Addr), Pool.Elmt_Size, Pool.Alignment);
+      end loop;
+      Pool.First_Free     := 0;
+      Pool.First_Empty    := 1;
+      Pool.Next_Allocated := 0;
+   end Free;
 
    ------------------
    -- Storage_Size --
