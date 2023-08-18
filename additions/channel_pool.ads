@@ -25,9 +25,7 @@ package Channel_Pool is
    --    Pool dedicated to communication between
    --    tasks with different criticality levels.
 
-   type Channel_Bounded_Pool
-     (Pool_Size  : System.Storage_Elements.Storage_Count)
-   is
+   type Channel_Bounded_Pool is
      new System.Storage_Pools.Root_Storage_Pool with null record;
 
    overriding function Storage_Size

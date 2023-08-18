@@ -1286,11 +1286,15 @@ package body System.BB.Threads.Queues is
                   Insert (Curr_Pointer);
                elsif What_To_Do = Discard then
 
-                  --  Log discarding and insert in the Discarded queue.
-                  Curr_Pointer.State := Discarded;
-                  Curr_Pointer.Log_Table.Times_Discarded
-                                 := Curr_Pointer.Log_Table.Times_Discarded + 1;
-                  Insert_Discarded (Curr_Pointer);
+                  if Curr_Pointer.Resource_Nesting = 0 then
+
+                     --  Log discarding and insert in the Discarded queue.
+                     Curr_Pointer.State := Discarded;
+                     Curr_Pointer.Log_Table.Times_Discarded
+                        := Curr_Pointer.Log_Table.Times_Discarded + 1;
+                     Insert_Discarded (Curr_Pointer);
+                  end if;
+
                end if;
 
                --  Go ahead with the current pointer.

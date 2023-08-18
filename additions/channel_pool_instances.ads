@@ -14,6 +14,6 @@ package Channel_Pool_Instances is
    --  This pool will be used for communication
    --  between tasks with high criticality and
    --  task with low criticality levels.
-   High_Low_Channel_Pool : Channel_Pool.Channel_Bounded_Pool (10);
+   High_Low_Channel_Pool : Channel_Pool.Channel_Bounded_Pool;
 
 end Channel_Pool_Instances;

@@ -15,9 +15,11 @@ package CPU_Budget_Monitor is
    pragma Preelaborate;
 
    type CPU_Budget_Exceeded is new Timing_Event with
-        record
-            Id : System.BB.Threads.Thread_Id; --  @todo it seems useless...
-        end record;
+      record
+         Id : System.BB.Threads.Thread_Id; --  @todo it seems useless...
+      end record;
+
+   LO_Task_Budget_Exceeded : exception;
 
    BE_Happened : array (System.Multiprocessors.CPU)
                             of CPU_Budget_Exceeded;

@@ -44,7 +44,7 @@ package body Channel_Pool is
       --  Alignment argument can be safely ignored.
 
       if Allocated = Null_Address then
-         raise Storage_Error;
+         raise Storage_Error with "Storage error";
       end if;
 
       --  Case where alignment requested is greater than the alignment that is

@@ -9,6 +9,7 @@
 ------------------------------------------------------------------------------
 
 with Ada.Finalization;
+with Ada.Real_Time;
 with Ada.Unchecked_Deallocation;
 with Channel_Pool_Instances;
 with Mixed_Criticality_System;
@@ -47,15 +48,17 @@ package Channel_Pool_Access is
          Element : Element_Type_Reference;
       end record;
 
+      procedure Finalize (Reference : in out Reference_Type);
+
       ---------------------------------
       --  Channel type definition
       ---------------------------------
 
       protected type Shared_Reference is
-         procedure Send (Reference : in out Reference_Type);
-         entry Receive  (Reference : in out Reference_Type);
+         procedure Send    (Reference : in out Reference_Type);
+         procedure Receive (Reference : in out Reference_Type);
       private
-         Message_Available  : Boolean := False;
+         Message_Arrival_Time : Ada.Real_Time.Time;
          Internal_Reference : Reference_Type;
       end Shared_Reference;
 
@@ -80,33 +83,6 @@ package Channel_Pool_Access is
       --  Return the value of Initialization_List (reference.id).
       function Is_Null (Reference : Reference_Type)
                         return Boolean;
-
-      ---------------------------------
-      --  Experiments operations
-      ---------------------------------
-      protected type Experiment_Shared_Reference is
-         procedure Experiment_Send
-           (Reference  : in out Reference_Type;
-            Iteration  : Positive;
-            Experiment : Integer);
-         entry Experiment_Receive
-           (Reference  : in out Reference_Type;
-            Iteration  : Positive;
-            Experiment : Integer);
-      private
-         Message_Available  : Boolean := False;
-         Internal_Reference : Reference_Type;
-      end Experiment_Shared_Reference;
-
-      procedure Experiment_Allocate
-        (Reference  : in out Reference_Type;
-         Iteration  : Positive;
-         Experiment : Integer);
-
-      procedure Experiment_Free
-        (Reference  : in out Reference_Type;
-         Iteration  : Positive;
-         Experiment : Integer);
 
    private
 

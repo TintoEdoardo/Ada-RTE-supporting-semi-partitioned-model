@@ -268,6 +268,12 @@ package System.BB.Threads is
 
       First_Time_On_Delay_Until : Boolean := True;
 
+      --------------------------------
+      --  Support for defer freeze  --
+      --------------------------------
+
+      Resource_Nesting : Integer := 0;
+
    end record;
 
    function Get_Affinity
