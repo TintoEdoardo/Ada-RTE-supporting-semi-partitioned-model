@@ -33,13 +33,16 @@ package Channel_Pool_Access is
       --  Instead of using standard access type,
       --  a shared pointer type is used.
 
-      type Element_Type_Reference is access Element_Type;
+      type Accessor (Element : access Element_Type) is limited private
+        with Implicit_Dereference => Element;
+
+      type Element_Type_Reference is limited private;
 
       --  We assume that just two criticality levels exist.
       --  In order to support more criticality levels, it
       --  should be possible to chose the desired pool.
-      for Element_Type_Reference'Storage_Pool use
-        Channel_Pool_Instances.High_Low_Channel_Pool;
+      --  for Element_Type_Reference'Storage_Pool use
+      --  Channel_Pool_Instances.High_Low_Channel_Pool;
 
       --  Reference_Type encapsulate the access
       --  type for an element of Element_Type.
@@ -67,7 +70,7 @@ package Channel_Pool_Access is
       ---------------------------------
 
       function Get (Reference : Reference_Type)
-                    return Element_Type_Reference;
+                    return Accessor;
 
       procedure Move (Left  : in out Reference_Type;
                       Right : in out Reference_Type);
@@ -85,6 +88,12 @@ package Channel_Pool_Access is
                         return Boolean;
 
    private
+
+      type Accessor (Element : access Element_Type) is null record;
+
+      type Element_Type_Reference is access Element_Type;
+      for Element_Type_Reference'Storage_Pool use
+        Channel_Pool_Instances.High_Low_Channel_Pool;
 
       procedure Free_Element is new
         Ada.Unchecked_Deallocation

@@ -17,10 +17,10 @@ package body Channel_Pool_Access is
       ---------------------------------
 
       function Get (Reference : Reference_Type)
-                    return Element_Type_Reference
+                    return Accessor
       is
       begin
-         return Reference.Element;
+         return Accessor'(Element => Reference.Element.all'Access);
       end Get;
 
       procedure Move (Left  : in out Reference_Type;
